@@ -1,0 +1,5 @@
+seed: 42
+
+building_graph:
+  ncpus: 4
+  path_to_images: "data/images"
