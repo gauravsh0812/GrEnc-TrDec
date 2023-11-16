@@ -1,5 +1,11 @@
 seed: 42
+path_to_data: "/home/gauravs/data/grenc_trdec"
 
 building_graph:
   ncpus: 4
-  path_to_images: "data/images"
+  max_input_hgt: 100
+  preprocessed_image_width: 500
+  preprocessed_image_height: 60
+  resizing_factor: 0.5
+  padding: 8
+  
