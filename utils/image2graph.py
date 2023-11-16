@@ -137,53 +137,57 @@ def main(img):
     im, reject = crop_image(im)
 
     if not reject:
-        # bucketing
-        resize_factor = bucket(im)
+        try:
+            # bucketing
+            resize_factor = bucket(im)
 
-        # resize
-        im = resize_image(im, resize_factor)
+            # resize
+            im = resize_image(im, resize_factor)
 
-        # padding
-        im = pad_image(im)
+            # padding
+            im = pad_image(im)
 
-        # convert to tensor
-        convert = transforms.ToTensor()
-        _im = convert(im)
+            # convert to tensor
+            convert = transforms.ToTensor()
+            _im = convert(im)
 
-        # save them as tensors
-        img_name = os.path.basename(img).split('.')[0]
-        torch.save(
-            _im,
-            f"{cfg['path_to_data']}/image_tensors/{img_name}.txt",
-        )
+            # save them as tensors
+            img_name = os.path.basename(img).split('.')[0]
+            torch.save(
+                _im,
+                f"{cfg['path_to_data']}/image_tensors/{img_name}.txt",
+            )
 
-        im = np.array(im)
+            im = np.array(im)
+            
+            adj = image.img_to_graph(im)
+            edge_index = torch.tensor(np.vstack((adj.row, adj.col)))
+            edge_weight = adj.data
+            
+            # already RGB -- did while padding
+            # im = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB) * 255
+            feature_matrix = torch.tensor(im.flatten().reshape((-1,3)))
+
+            # Make a data object to store graph informaiton
+            data = Data(x=feature_matrix, 
+                        edge_index=edge_index,
+                        edge_attr=edge_weight
+                    )
+            
+            # build graph
+            G = to_networkx(data)
+            
+            # saving the graph
+            base_name = os.path.basename(img)
+            torch.save(G, os.path.join(
+                    cfg["path_to_data"], 
+                    f"image_graphs/{base_name.split('.')[0]}.txt")
+            )
+
+            return None
         
-        adj = image.img_to_graph(im)
-        edge_index = torch.tensor(np.vstack((adj.row, adj.col)))
-        edge_weight = adj.data
-        
-        # already RGB -- did while padding
-        # im = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB) * 255
-        feature_matrix = torch.tensor(im.flatten().reshape((-1,3)))
-
-        # Make a data object to store graph informaiton
-        data = Data(x=feature_matrix, 
-                    edge_index=edge_index,
-                    edge_attr=edge_weight
-                )
-        
-        # build graph
-        G = to_networkx(data)
-        
-        # saving the graph
-        base_name = os.path.basename(img)
-        torch.save(G, os.path.join(
-                cfg["path_to_data"], 
-                f"image_graphs/{base_name.split('.')[0]}.txt")
-        )
-
-        return None
+        except:
+            return img
 
     else:
         return img
