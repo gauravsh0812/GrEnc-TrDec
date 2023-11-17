@@ -196,20 +196,19 @@ def main(img):
 if __name__ == "__main__":
 
     path_to_images = os.path.join(cfg["path_to_data"], "images")
-    imgs = [os.path.join(path_to_images, i) 
-            for i in os.listdir(path_to_images) if ".png" in i]
+    imgs = [os.path.join(path_to_images, f"{i}.png") 
+            for i in range(30000)]
     
     # imgs = ["data/images/13.png"]
 
-    _adj_path = os.path.join(
-            os.path.dirname(cfg["path_to_data"]),
-            "adj_matrices")
+    # _adj_path = os.path.join(
+    #         cfg["path_to_data"],
+    #         "adj_matrices")
 
     _graph_path = os.path.join(cfg["path_to_data"], "image_graphs")
     _tnsr_path = os.path.join(cfg["path_to_data"], "image_tensors")
 
-    for _p in [_adj_path, 
-               _graph_path, 
+    for _p in [_graph_path, 
                _tnsr_path, 
                "./logs"]:
         if not os.path.exists(_p):
