@@ -19,6 +19,7 @@ from PIL import Image
 with open('configs/config.yaml') as f:
 	cfg = yaml.safe_load(f)
 args = cfg["building_graph"]
+path_to_data = cfg["preprocessing"]["path_to_data"]
 
 def crop_image(im, reject=False):
     # converting to np array
@@ -155,7 +156,7 @@ def main(img):
             img_name = os.path.basename(img).split('.')[0]
             torch.save(
                 _im,
-                f"{cfg['path_to_data']}/image_tensors/{img_name}.txt",
+                f"{path_to_data}/image_tensors/{img_name}.txt",
             )
 
             im = np.array(im)
@@ -180,7 +181,7 @@ def main(img):
             # saving the graph
             base_name = os.path.basename(img)
             torch.save(G, os.path.join(
-                    cfg["path_to_data"], 
+                    path_to_data, 
                     f"image_graphs/{base_name.split('.')[0]}.txt")
             )
 
@@ -195,18 +196,14 @@ def main(img):
 
 if __name__ == "__main__":
 
-    path_to_images = os.path.join(cfg["path_to_data"], "images")
+    path_to_images = os.path.join(path_to_data, "images")
     imgs = [os.path.join(path_to_images, f"{i}.png") 
             for i in range(30000)]
     
     # imgs = ["data/images/13.png"]
 
-    # _adj_path = os.path.join(
-    #         cfg["path_to_data"],
-    #         "adj_matrices")
-
-    _graph_path = os.path.join(cfg["path_to_data"], "image_graphs")
-    _tnsr_path = os.path.join(cfg["path_to_data"], "image_tensors")
+    _graph_path = os.path.join(path_to_data, "image_graphs")
+    _tnsr_path = os.path.join(path_to_data, "image_tensors")
 
     for _p in [_graph_path, 
                _tnsr_path, 

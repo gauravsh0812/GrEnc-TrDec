@@ -8,7 +8,12 @@ conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 -c pytorch 
 pip install -r requirements.txt
 ```
 
-### Preprocess - creating tensors and graphs from the image
+### Creating tensors and graphs from the image
 ```
 python utils/image2graph.py
+```
+
+### Training
+```
+python run.py
 ```
