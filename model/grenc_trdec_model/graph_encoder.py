@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from torch_geometric.nn import GCNConv, BatchNorm
 
-
 class Graph_Encoder(nn.Module):
     def __init__(self, 
                  in_channels, 

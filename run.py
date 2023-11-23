@@ -17,16 +17,18 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from model.preprocessing import preprocess_data
 from src.training import train
 from src.testing import evaluate
-from model.grenc_trdec_model.encoder import VIT_Encoder, Graph_Encoder
+from model.grenc_trdec_model.encoder import VisionTransformer, Graph_Encoder
 from model.grenc_trdec_model.decoder import Transformer_Decoder
 
 
 # opening training_args file
 with open('configs/config.yaml') as f:
 	cfg = yaml.safe_load(f)
+buiding_graph_args = cfg["building_graph"]
 training_args = cfg["training"]
 preprocessing_args = cfg["preprocessing_args"]
-model_args = cfg["model"]
+graph_args = cfg["model"]["graph_model"]
+vit_args = cfg["model"]["vit"]
 
 # torch.backends.cudnn.enabled = False
 
@@ -46,22 +48,33 @@ def define_model(vocab, device):
 
     print("defining model...")
 
-    INPUT_CHANNELS = model_args["input_channels"]
-    OUTPUT_DIM = len(vocab)
-    EMB_DIM = model_args["emb_dim"]
-    HID_DIM = model_args["dec_dim"]
-    DROPOUT = model_args["dropout"]
-    MAX_LEN = model_args["max_len"]
+    gr_in_chns = graph_args["input_channels"]
+    gr_out_dim = len(vocab)
+    gr_hid_dim = graph_args["dec_dim"]
+    gr_dropout = graph_args["dropout"]
+    
+    Gr_ENC = Graph_Encoder(gr_in_chns,
+                        gr_hid_dim,
+                        gr_out_dim,
+                        gr_dropout)
 
-    Gr_ENC = Graph_Encoder(INPUT_CHANNELS,
-                        HID_DIM,
-                        OUTPUT_DIM,
-                        DROPOUT)
-
-    Vit_ENC = VIT_Encoder()
+    image_w = buiding_graph_args["preprocessed_image_width"]
+    image_h = buiding_graph_args["preprocessed_image_height"]
+    
+    Vit_ENC = VisionTransformer(
+                    img_size=[image_w,image_h],
+                    patch_size=vit_args["patch_size"],
+                    in_chns=graph_args["input_channels"],
+                    embed_dim=vit_args["emb_dim"],
+                    depth=vit_args["depth"],
+                    n_heads=vit_args["n_heads"],
+                    mlp_ratio=vit_args["mlp_ratio"],
+                    qkv_bias=vit_args["qkv_bias"]
+                    p=gr_dropout,
+                    attn_p=gr_dropout,)
 
     Tr_DEC = Transformer_Decoder()
-    
+
     model = Image2MathML_Xfmer(ENC, DEC, VOCAB, DEVICE)
 
     return model

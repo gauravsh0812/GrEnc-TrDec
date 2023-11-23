@@ -26,9 +26,14 @@ preprocessing:
   markup: "mml"
 
 model:
-  input_channels: 3
-  emb_dim: 256
-  hid_dim: 512
-  max_len: 350
-  dropout: 0.1
+  graph_model:
+    input_channels: 3
+    hid_dim: 512
+    dropout: 0.1
   
+  vit:
+    patch_size: 10
+    nheads: 8
+    emb_dim: 512
+    depth: 6
+    mlp_ratio: 4
