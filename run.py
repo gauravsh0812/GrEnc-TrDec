@@ -14,10 +14,12 @@ import torch.nn as nn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
-from model.preprocessing import preprocess_data
 from src.training import train
 from src.testing import evaluate
-from model.grenc_trdec_model.encoder import VisionTransformer, Graph_Encoder
+from model.preprocessing import preprocess_data
+from model.grenc_trdec_model.model import Grenc_Trdec_Model
+from model.grenc_trdec_model.graph_encoder import Graph_Encoder
+from model.grenc_trdec_model.vit_encoder import VisionTransformer
 from model.grenc_trdec_model.decoder import Transformer_Decoder
 
 
@@ -29,6 +31,7 @@ training_args = cfg["training"]
 preprocessing_args = cfg["preprocessing_args"]
 graph_args = cfg["model"]["graph_model"]
 vit_args = cfg["model"]["vit"]
+xfmer_args = cfg["model"]["decoder_transformer"]
 
 # torch.backends.cudnn.enabled = False
 
@@ -60,7 +63,7 @@ def define_model(vocab, device):
 
     image_w = buiding_graph_args["preprocessed_image_width"]
     image_h = buiding_graph_args["preprocessed_image_height"]
-    
+
     Vit_ENC = VisionTransformer(
                     img_size=[image_w,image_h],
                     patch_size=vit_args["patch_size"],
@@ -69,13 +72,27 @@ def define_model(vocab, device):
                     depth=vit_args["depth"],
                     n_heads=vit_args["n_heads"],
                     mlp_ratio=vit_args["mlp_ratio"],
-                    qkv_bias=vit_args["qkv_bias"]
+                    qkv_bias=vit_args["qkv_bias"],
                     p=gr_dropout,
-                    attn_p=gr_dropout,)
+                    attn_p=gr_dropout,
+                    )
 
-    Tr_DEC = Transformer_Decoder()
+    Tr_DEC = Transformer_Decoder(
+        emb_dim=xfmer_args["emb_dim"],
+        dec_hid_dim=xfmer_args["dec_hid_dim"],
+        nheads=xfmer_args["nheads"],
+        dropout=gr_dropout,
+        max_len=xfmer_args["max_len"],
+        n_xfmer_decoder_layers=xfmer_args["n_xfmer_decoder_layers"],
+        dim_feedfwd=xfmer_args["dim_feedfwd"],
+        device=device,
+    )
 
-    model = Image2MathML_Xfmer(ENC, DEC, VOCAB, DEVICE)
+    model = Grenc_Trdec_Model(Gr_ENC, 
+                               Vit_ENC,
+                               Tr_DEC, 
+                               vocab, 
+                               device)
 
     return model
 

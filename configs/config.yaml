@@ -30,10 +30,17 @@ model:
     input_channels: 3
     hid_dim: 512
     dropout: 0.1
-  
+
   vit:
     patch_size: 10
     nheads: 8
     emb_dim: 512
     depth: 6
     mlp_ratio: 4
+  
+  decoder_transformer:
+    emb_dim: 512
+    nheads: 4
+    max_len: 350
+    n_xfmer_decoder_layers: 4
+    dim_feedfwd: 1024

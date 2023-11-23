@@ -3,7 +3,12 @@ import torch.nn as nn
 
 
 class Grenc_Trdec_Model(nn.Module):
-    def __init__(self, encoder, decoder, vocab, device):
+    def __init__(self, 
+                 gr_enc,
+                 tr_enc,
+                 tr_dec, 
+                 vocab, 
+                 device):
         """
         :param encoder: encoders CNN and XFMER
         :param decoder: decoder
