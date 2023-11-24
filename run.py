@@ -6,10 +6,9 @@ import random
 import yaml
 import numpy as np
 import time
-import json
 import math
-import argparse
 import torch
+import wandb
 import torch.nn as nn
 import torch.distributed as dist
 import torch.multiprocessing as mp
@@ -33,6 +32,9 @@ graph_args = cfg["model"]["graph_model"]
 vit_args = cfg["model"]["vit"]
 xfmer_args = cfg["model"]["decoder_transformer"]
 
+# for deterministic results, make it False.
+# to optimize performance, make it True, but that 
+# might affect the results a bit at atomic level.
 # torch.backends.cudnn.enabled = False
 
 def set_random_seed(SEED):
@@ -141,6 +143,10 @@ def train_model(rank=None,):
     load_trained_model_for_testing = training_args["load_trained_model_for_testing"]
     early_stopping_counts = training_args.early_stopping
     
+    # initiate the wandb    
+    wandb.init()
+    wandb.config.update(cfg)
+
     # set_random_seed
     set_random_seed(seed)
 
@@ -224,6 +230,7 @@ def train_model(rank=None,):
     )
 
     best_valid_loss = float("inf")
+    wandb.watch(model)
 
     # raw data paths
     img_tnsr_path = f"{preprocessing_args.data_path}/image_tensors"
@@ -237,50 +244,45 @@ def train_model(rank=None,):
                 # training and validation
                 train_loss = train(
                     model,
-                    model_type,
                     img_tnsr_path,
                     train_dataloader,
                     optimizer,
                     criterion,
-                    CLIP,
+                    clip,
                     device,
+                    isGraphEnc=cfg["model"]["isGraphEnc"],
                     ddp=ddp,
                     rank=rank,
                     scheduler=scheduler,
-                    isScheduler=isScheduler,
-                    whichScheduler=whichScheduler,
                 )
-
+                wandb.log({"train_loss": train_loss})
 
                 val_loss = evaluate(
                     model,
-                    model_type,
                     img_tnsr_path,
                     batch_size,
                     val_dataloader,
                     criterion,
                     device,
                     vocab,
+                    isGraphEnc=cfg["model"]["isGraphEnc"],
                     ddp=ddp,
                     rank=rank,
-                    g2p=g2p,
                 )
+
+                wandb.log({"val_loss": val_loss})
 
                 end_time = time.time()
                 # total time spent on training an epoch
                 epoch_mins, epoch_secs = epoch_time(start_time, end_time)
-
-                if isScheduler:
-                    if whichScheduler == "reduce_lr":
-                        scheduler.step(val_loss)
-                    else:
-                        scheduler.step()
-
+        
+                scheduler.step()
+                        
                 # saving the current model for transfer learning
                 if (not ddp) or (ddp and rank == 0):
                     torch.save(
                         model.state_dict(),
-                        f"trained_models/{model_type}_{dataset_type}_{training_args['markup']}_latest.pt",
+                        f"trained_models/{training_args['markup']}_latest.pt",
                     )
 
                 if val_loss < best_valid_loss:
@@ -289,10 +291,11 @@ def train_model(rank=None,):
                     if (not ddp) or (ddp and rank == 0):
                         torch.save(
                             model.state_dict(),
-                            f"trained_models/{model_type}_{dataset_type}_{training_args['markup']}_best.pt",
+                            f"trained_models/{training_args['markup']}_best.pt",
                         )
+                        wandb.save(f"trained_models/{training_args['markup']}_best.pt")
 
-                elif early_stopping:
+                else:
                     count_es += 1
 
                 # logging
@@ -326,7 +329,7 @@ def train_model(rank=None,):
 
         print(
             "best model saved as:  ",
-            f"trained_models/{model_type}_{dataset_type}_{training_args['markup']}_best.pt",
+            f"trained_models/{training_args['markup']}_best.pt",
         )
 
     if ddp:
@@ -336,13 +339,13 @@ def train_model(rank=None,):
 
     print(
         "loading best saved model: ",
-        f"trained_models/{model_type}_{dataset_type}_{training_args['markup']}_best.pt",
+        f"trained_models/{training_args['markup']}_best.pt",
     )
     try:
         # loading pre_tained_model
         model.load_state_dict(
             torch.load(
-                f"trained_models/{model_type}_{dataset_type}_{training_args['markup']}_best.pt"
+                f"trained_models/{training_args['markup']}_best.pt"
             )
         )
 
@@ -362,43 +365,19 @@ def train_model(rank=None,):
 
         model.load_state_dict(pretrained_dict)
 
-    epoch = "test_0"
-    if training_args["beam_search"]:
-        beam_params = [beam_k, alpha, min_length_bean_search_normalization]
-    else:
-        beam_params = None
-
-    """
-    bin comparison
-    """
-    if training_args["bin_comparison"]:
-        print("comparing bin...")
-        from bin_testing import bin_test_dataloader
-
-        test_dataloader = bin_test_dataloader(
-            training_args,
-            vocab,
-            device,
-            start=training_args["start_bin"],
-            end=training_args["end_bin"],
-            length_based_binning=training_args["length_based_binning"],
-            content_based_binning=training_args["content_based_binning"],
-        )
 
     test_loss = evaluate(
         model,
-        model_type,
         img_tnsr_path,
         batch_size,
         test_dataloader,
         criterion,
         device,
         vocab,
-        beam_params=beam_params,
+        isGraphEnc=cfg["model"]["isGraphEnc"],
         is_test=True,
         ddp=ddp,
         rank=rank,
-        g2p=g2p,
     )
 
     if (not ddp) or (ddp and rank == 0):

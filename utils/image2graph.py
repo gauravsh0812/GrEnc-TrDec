@@ -159,6 +159,8 @@ def main(img):
                 f"{path_to_data}/image_tensors/{img_name}.txt",
             )
 
+            ######### GETTING GRAPH AT PIXEL LEVEL ###########
+            
             im = np.array(im)
             
             adj = image.img_to_graph(im)
@@ -182,7 +184,7 @@ def main(img):
             base_name = os.path.basename(img)
             torch.save(G, os.path.join(
                     path_to_data, 
-                    f"image_graphs/{base_name.split('.')[0]}.txt")
+                    f"image_graphs/{base_name.split('.')[0]}.pt")
             )
 
             return None

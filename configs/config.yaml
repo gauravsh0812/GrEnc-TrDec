@@ -26,6 +26,8 @@ preprocessing:
   markup: "mml"
 
 model:
+  isGraphEnc: True
+  garbage2pad: True
   graph_model:
     input_channels: 3
     hid_dim: 512
