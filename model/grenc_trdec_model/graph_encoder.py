@@ -46,10 +46,11 @@ class Graph_Encoder(nn.Module):
                     nn.init.constant_(param.data, 0)
 
     def forward(self, 
-                features, 
-                edge_index, 
+                graphs,
                 ):
         
+        features = graphs
+        edge_index = graphs
         x = self.relu(self.conv1(self.p(features), edge_index))  # in_chn --> hid/8
         x = self.relu(self.bn1(self.conv2(self.p(x), edge_index)))  # hid/8 --> hid/4
         x = self.relu(self.conv3(self.p(x), edge_index))  # hid/4 --> hid/2

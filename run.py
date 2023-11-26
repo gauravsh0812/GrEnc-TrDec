@@ -53,31 +53,37 @@ def define_model(vocab, device):
 
     print("defining model...")
 
+    isGraphEnc = cfg["model"]["isGraphEnc"]
+    isVitEnc = cfg["model"]["isVitEnc"]
     gr_in_chns = graph_args["input_channels"]
     gr_out_dim = len(vocab)
     gr_hid_dim = graph_args["dec_dim"]
     gr_dropout = graph_args["dropout"]
     
-    Gr_ENC = Graph_Encoder(gr_in_chns,
-                        gr_hid_dim,
-                        gr_out_dim,
-                        gr_dropout)
+    assert isGraphEnc or isVitEnc, "Need to select either one of the encoder or both of them."
 
-    image_w = buiding_graph_args["preprocessed_image_width"]
-    image_h = buiding_graph_args["preprocessed_image_height"]
+    if isGraphEnc:
+        Gr_ENC = Graph_Encoder(gr_in_chns,
+                            gr_hid_dim,
+                            gr_out_dim,
+                            gr_dropout)
 
-    Vit_ENC = VisionTransformer(
-                    img_size=[image_w,image_h],
-                    patch_size=vit_args["patch_size"],
-                    in_chns=graph_args["input_channels"],
-                    embed_dim=vit_args["emb_dim"],
-                    depth=vit_args["depth"],
-                    n_heads=vit_args["n_heads"],
-                    mlp_ratio=vit_args["mlp_ratio"],
-                    qkv_bias=vit_args["qkv_bias"],
-                    p=gr_dropout,
-                    attn_p=gr_dropout,
-                    )
+    elif isVitEnc:
+        image_w = buiding_graph_args["preprocessed_image_width"]
+        image_h = buiding_graph_args["preprocessed_image_height"]
+
+        Vit_ENC = VisionTransformer(
+                        img_size=[image_w,image_h],
+                        patch_size=vit_args["patch_size"],
+                        in_chns=graph_args["input_channels"],
+                        embed_dim=vit_args["emb_dim"],
+                        depth=vit_args["depth"],
+                        n_heads=vit_args["n_heads"],
+                        mlp_ratio=vit_args["mlp_ratio"],
+                        qkv_bias=vit_args["qkv_bias"],
+                        p=gr_dropout,
+                        attn_p=gr_dropout,
+                        )
 
     Tr_DEC = Transformer_Decoder(
         emb_dim=xfmer_args["emb_dim"],
@@ -90,11 +96,12 @@ def define_model(vocab, device):
         device=device,
     )
 
-    model = Grenc_Trdec_Model(Gr_ENC, 
-                               Vit_ENC,
-                               Tr_DEC, 
-                               vocab, 
-                               device)
+    model = Grenc_Trdec_Model(vocab, 
+                            device,
+                            Gr_ENC, 
+                            Vit_ENC,
+                            Tr_DEC, 
+                            )
 
     return model
 
@@ -251,6 +258,7 @@ def train_model(rank=None,):
                     clip,
                     device,
                     isGraphEnc=cfg["model"]["isGraphEnc"],
+                    isVitEnc=cfg["model"]["isVitEnc"],
                     ddp=ddp,
                     rank=rank,
                     scheduler=scheduler,
@@ -266,6 +274,7 @@ def train_model(rank=None,):
                     device,
                     vocab,
                     isGraphEnc=cfg["model"]["isGraphEnc"],
+                    isVitEnc=cfg["model"]["isVitEnc"],
                     ddp=ddp,
                     rank=rank,
                 )
@@ -375,6 +384,7 @@ def train_model(rank=None,):
         device,
         vocab,
         isGraphEnc=cfg["model"]["isGraphEnc"],
+        isVitEnc=cfg["model"]["isVitEnc"],
         is_test=True,
         ddp=ddp,
         rank=rank,

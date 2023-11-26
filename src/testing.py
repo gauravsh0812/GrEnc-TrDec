@@ -12,6 +12,7 @@ def evaluate(
     device,
     vocab,
     isGraphEnc=True,
+    isVitEnc=True,
     is_test=False,
     ddp=False,
     rank=None,
@@ -27,14 +28,23 @@ def evaluate(
         for i, (img, mml) in enumerate(test_dataloader):
             batch_size = mml.shape[0]
             mml = mml.to(device, dtype=torch.long)
-            imgs = list()
-            for im in img:
-                imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+            _imgs = list()
+        _graphs = list()
+        for im in img:
             if isGraphEnc:
-                graphs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
-            img = torch.stack(imgs).to(device)
-            if isGraphEnc:
-                graphs = torch.stack(graphs).to(device)
+                _graphs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+            elif isVitEnc:
+                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+        
+        if isGraphEnc:
+            graphs = torch.stack(_graphs).to(device)
+        else:
+            graphs = None
+
+        if isVitEnc:
+            imgs = torch.stack(_imgs).to(device)
+        else:
+            imgs = None
 
             """
             we will pass "mml" just to provide initial <sos> token.

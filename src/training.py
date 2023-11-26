@@ -17,9 +17,9 @@ def train(
     clip,
     device,
     isGraphEnc=True,
+    isVitEnc=True,
     ddp=False,
     rank=None,
-    scheduler=None,
 ):
     # train mode is ON i.e. dropout and normalization tech. will be used
     model.train()
@@ -32,20 +32,28 @@ def train(
         # mml: (B, max_len)
         # img: (B, in_channel, H, W)
         mml = mml.to(device, dtype=torch.long)
-        imgs = list()
-        graphs = list()
+        _imgs = list()
+        _graphs = list()
         for im in img:
-            imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
             if isGraphEnc:
-                graphs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
-        img = torch.stack(imgs).to(device)
+                _graphs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+            elif isVitEnc:
+                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+        
         if isGraphEnc:
-            graphs = torch.stack(graphs).to(device)
+            graphs = torch.stack(_graphs).to(device)
+        else:
+            graphs = None
+
+        if isVitEnc:
+            imgs = torch.stack(_imgs).to(device)
+        else:
+            imgs = None
 
         # setting gradients to zero
         optimizer.zero_grad()
 
-        outputs, _ = model(img, mml, graphs)  # (B, max_len, output_dim)
+        outputs, _ = model(imgs, graphs, mml)  # (B, max_len, output_dim)
         output_dim = outputs.shape[-1]
 
         # avoiding <sos> token while Calculating loss

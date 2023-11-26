@@ -3,12 +3,13 @@ import torch.nn as nn
 
 
 class Grenc_Trdec_Model(nn.Module):
-    def __init__(self, 
-                 gr_enc,
-                 tr_enc,
-                 tr_dec, 
+    def __init__(self,  
                  vocab, 
-                 device):
+                 device,
+                 Gr_ENC=None,
+                 Vit_ENC=None,
+                 Tr_DEC=None,
+                 ):
         """
         :param encoder: encoders CNN and XFMER
         :param decoder: decoder
@@ -16,21 +17,26 @@ class Grenc_Trdec_Model(nn.Module):
         """
         super(Grenc_Trdec_Model, self).__init__()
 
-        self.cnn_encoder = encoder["GRAPH"]
-        self.xfmer_encoder = encoder["VIT"]
-        self.xfmer_decoder = decoder
+        self.gr_enc = Gr_ENC
+        self.xfmer_encoder = Vit_ENC
+        self.xfmer_decoder = Tr_DEC
         self.vocab = vocab
         self.device = device
 
     def forward(
         self,
-        src,
-        trg,
+        imgs=None,
+        graphs=None,
+        mml=None,
         is_test=False,
         SOS_token=None,
         EOS_token=None,
         PAD_token=None,
-    ):
+    ):  
+
+        # running the graph encoder 
+        gr_output = self.gr_enc(graphs)
+
         # run the encoder --> get flattened FV of images
         # for inference Batch(B)=1
         cnn_enc_output = self.cnn_encoder(src)  # (B, L, dec_hid_dim)
