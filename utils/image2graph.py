@@ -178,11 +178,11 @@ def main(img):
                     )
             
             # build graph
-            G = to_networkx(data)
+            # G = to_networkx(data)
             
             # saving the graph
             base_name = os.path.basename(img)
-            torch.save(G, os.path.join(
+            torch.save(data, os.path.join(
                     path_to_data, 
                     f"image_graphs/{base_name.split('.')[0]}.pt")
             )
