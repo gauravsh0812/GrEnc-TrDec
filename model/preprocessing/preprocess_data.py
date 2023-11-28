@@ -125,7 +125,7 @@ def preprocess_dataset(args):
         return x.split()
 
     # initializing pad collate class
-    mypadcollate = My_pad_collate(device, vocab, args["max_len"])
+    mypadcollate = My_pad_collate(args["device"], vocab, args["max_len"])
 
     print("saving dataset files to data/ folder...")
 
