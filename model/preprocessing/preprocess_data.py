@@ -130,14 +130,14 @@ def preprocess_dataset(args):
     print("saving dataset files to data/ folder...")
 
     train.to_csv(
-        f"{args['data_path']}/{args['dataset_type']}/train.csv",
+        f"{args['path_to_data']}/{args['dataset_type']}/train.csv",
         index=False,
     )
     test.to_csv(
-        f"{args['data_path']}/{args['dataset_type']}/test.csv", index=False
+        f"{args['path_to_data']}/{args['dataset_type']}/test.csv", index=False
     )
     val.to_csv(
-        f"{args['data_path']}/{args['dataset_type']}/val.csv", index=False
+        f"{args['path_to_data']}/{args['dataset_type']}/val.csv", index=False
     )
 
     print("building dataloaders...")
