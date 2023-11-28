@@ -182,12 +182,11 @@ def train_model(rank=None,):
     # defining model using DataParallel
     preprocessing_args["batch_size"] = training_args.batch_size
     preprocessing_args["max_len"] = xfmer_args.max_len
+    preprocessing_args["ddp"] = training_args.ddp
     if torch.cuda.is_available():
         if ddp:
             # add a few args for temporarily purpose
             # this is to avoid replicating in config file
-            preprocessing_args["ddp"] = True
-
             # create default process group
             dist.init_process_group("nccl", rank=rank, world_size=len(gpus))
             # add rank to training_args
