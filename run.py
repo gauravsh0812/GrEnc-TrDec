@@ -162,9 +162,10 @@ def train_model(rank=None,):
     load_trained_model_for_testing = training_args["load_trained_model_for_testing"]
     early_stopping_counts = training_args.early_stopping
     
-    # initiate the wandb    
-    wandb.init()
-    wandb.config.update(cfg)
+    if training_args.wandb:
+        # initiate the wandb    
+        wandb.init()
+        wandb.config.update(cfg)
 
     # set_random_seed
     set_random_seed(seed)
@@ -249,7 +250,9 @@ def train_model(rank=None,):
     )
 
     best_valid_loss = float("inf")
-    wandb.watch(model)
+    
+    if training_args.wandb:
+        wandb.watch(model)
 
     # raw data paths
     img_tnsr_path = f"{preprocessing_args.data_path}/image_tensors"
@@ -275,7 +278,9 @@ def train_model(rank=None,):
                     rank=rank,
                     scheduler=scheduler,
                 )
-                wandb.log({"train_loss": train_loss})
+
+                if training_args.wandb:
+                    wandb.log({"train_loss": train_loss})
 
                 val_loss = evaluate(
                     model,
@@ -291,7 +296,8 @@ def train_model(rank=None,):
                     rank=rank,
                 )
 
-                wandb.log({"val_loss": val_loss})
+                if training_args.wandb:
+                    wandb.log({"val_loss": val_loss})
 
                 end_time = time.time()
                 # total time spent on training an epoch
@@ -314,7 +320,8 @@ def train_model(rank=None,):
                             model.state_dict(),
                             f"trained_models/{training_args['markup']}_best.pt",
                         )
-                        wandb.save(f"trained_models/{training_args['markup']}_best.pt")
+                        if training_args.wandb:
+                            wandb.save(f"trained_models/{training_args['markup']}_best.pt")
 
                 else:
                     count_es += 1
