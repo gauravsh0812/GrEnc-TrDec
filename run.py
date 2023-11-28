@@ -192,7 +192,7 @@ def train_model(rank=None,):
                 test_dataloader,
                 val_dataloader,
                 vocab,
-            ) = preprocess_dataset(preprocessing_args)
+            ) = preprocess_dataset(preprocessing_args, ddp=True)
 
             model = define_model(training_args, vocab, rank)
             model = DDP(
