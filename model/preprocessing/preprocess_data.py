@@ -69,7 +69,7 @@ class My_pad_collate(object):
         )
 
 
-def preprocess_dataset(args):
+def preprocess_dataset(args, ddp=False):
     print("preprocessing data...")
 
     # reading raw text files
@@ -145,7 +145,7 @@ def preprocess_dataset(args):
     # initailizing class Img2MML_dataset: train dataloader
     imml_train = Img2MML_dataset(train, vocab, tokenizer)
     # creating dataloader
-    if args["DDP"]:
+    if ddp:
         train_sampler = DistributedSampler(
             dataset=imml_train,
             num_replicas=args["world_size"],
@@ -170,7 +170,7 @@ def preprocess_dataset(args):
     # initailizing class Img2MML_dataset: val dataloader
     imml_val = Img2MML_dataset(val, vocab, tokenizer)
 
-    if args["DDP"]:
+    if ddp:
         val_sampler = SequentialSampler(imml_val)
         sampler = val_sampler
         shuffle = False
@@ -190,7 +190,7 @@ def preprocess_dataset(args):
 
     # initailizing class Img2MML_dataset: test dataloader
     imml_test = Img2MML_dataset(test, vocab, tokenizer)
-    if args["DDP"]:
+    if ddp:
         test_sampler = SequentialSampler(imml_test)
         sampler = test_sampler
         shuffle = False
