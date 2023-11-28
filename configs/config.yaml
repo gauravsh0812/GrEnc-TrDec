@@ -1,5 +1,5 @@
 building_graph:
-  ncpus: 2
+  ncpus: 1
   max_input_hgt: 100
   preprocessed_image_width: 500
   preprocessed_image_height: 60
@@ -30,7 +30,7 @@ model:
   isVitEnc: True
   graph_model:
     input_channels: 3
-    hid_dim: 512
+    hid_dim: 64
     dropout: 0.1
 
   vit:
@@ -42,6 +42,7 @@ model:
   
   decoder_transformer:
     emb_dim: 512
+    dec_hid_dim: 512
     nheads: 4
     max_len: 350
     n_xfmer_decoder_layers: 4

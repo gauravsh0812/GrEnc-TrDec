@@ -33,17 +33,20 @@ def train(
         # img: (B, in_channel, H, W)
         mml = mml.to(device, dtype=torch.long)
         _imgs = list()
-        _graphs = list()
+        _graphs_list = list()
         for im in img:
             if isGraphEnc:
-                _graphs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+                G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
+                _graphs_list.append(G)
+                
             elif isVitEnc:
-                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
         
         if isGraphEnc:
-            graphs = torch.stack(_graphs).to(device)
+            graphs_list = torch.stack(_graphs_list).to(device)
+            
         else:
-            graphs = None
+            graphs_list = None
 
         if isVitEnc:
             imgs = torch.stack(_imgs).to(device)
@@ -53,7 +56,7 @@ def train(
         # setting gradients to zero
         optimizer.zero_grad()
 
-        outputs, _ = model(imgs, graphs, mml)  # (B, max_len, output_dim)
+        outputs, _ = model(imgs, graphs_list, mml)  # (B, max_len, output_dim)
         output_dim = outputs.shape[-1]
 
         # avoiding <sos> token while Calculating loss

@@ -156,7 +156,7 @@ def main(img):
             img_name = os.path.basename(img).split('.')[0]
             torch.save(
                 _im,
-                f"{path_to_data}/image_tensors/{img_name}.txt",
+                f"{path_to_data}/image_tensors/{img_name}.pt",
             )
 
             ######### GETTING GRAPH AT PIXEL LEVEL ###########

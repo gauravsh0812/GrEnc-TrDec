@@ -29,29 +29,34 @@ def evaluate(
             batch_size = mml.shape[0]
             mml = mml.to(device, dtype=torch.long)
             _imgs = list()
-        _graphs = list()
-        for im in img:
+            _g_features = list()
+            _g_edge_index = list()
+            for im in img:
+                if isGraphEnc:
+                    G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
+                    _g_features.append(G.x)
+                    _g_edge_index.append(G.edge_index)
+                
+                elif isVitEnc:
+                    _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+            
             if isGraphEnc:
-                _graphs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
-            elif isVitEnc:
-                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
-        
-        if isGraphEnc:
-            graphs = torch.stack(_graphs).to(device)
-        else:
-            graphs = None
+                features = torch.stack(_g_features).to(device)
+                edge_index = torch.stack(_g_edge_index).to(device)
+            else:
+                features, edge_index = None, None
 
-        if isVitEnc:
-            imgs = torch.stack(_imgs).to(device)
-        else:
-            imgs = None
+            if isVitEnc:
+                imgs = torch.stack(_imgs).to(device)
+            else:
+                imgs = None
 
             """
             we will pass "mml" just to provide initial <sos> token.
             There will no teacher forcing while validation and testing.
             """
             outputs, preds = model(
-                img, mml, graphs, is_test=is_test
+                imgs, features, edge_index, mml, is_test=is_test
             )  # O: (B, max_len, output_dim), preds: (B, max_len)
 
             if is_test:

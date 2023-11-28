@@ -4,7 +4,7 @@ inspired from https://github.com/jankrepl/mildlyoverfitted/blob/master/github_ad
 
 import torch 
 import torch.nn as nn
-from model.grenc_trdec_model.position_encoding import add_positional_features
+from model.grenc_trdec_model.position_encoding import PositionalEncoding # Positional_features
 
 class PatchEmbed(nn.Module):
     """
@@ -187,9 +187,13 @@ class VisionTransformer(nn.Module):
         self.patch_embed = PatchEmbed(
                 img_size=img_size,
                 patch_size=patch_size,
-                in_chans=in_chns,
-                embed_dim=embed_dim,
+                in_channels=in_chns,
+                emb_dim=embed_dim,
         )
+        n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
+        self.pf = PositionalEncoding(n_patches, 
+                                     embed_dim,
+                                     dropout=p)
         
         self.blocks = nn.ModuleList(
             [
@@ -211,11 +215,11 @@ class VisionTransformer(nn.Module):
         # x: (N, in_chns, H, W)
         x = self.patch_embed(x)    # (N, emb_dim, n_patches)
         x = x.permute(0,2,1)   # (N, n_patches, emb_dim)
-        x = x + add_positional_features(x) # (n_samples, n_patches, embed_dim)
+        x = x + self.pf(x) 
+        x = x.permute(0,2,1)  # (n_samples, n_patches, embed_dim)
 
         for block in self.blocks:
             x = block(x)
-
-        x = self.norm(x)
-
+        x = self.norm(x)  # (n_samples, n_patches, embed_dim)
+        
         return x

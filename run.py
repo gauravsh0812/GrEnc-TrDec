@@ -13,6 +13,7 @@ import torch.nn as nn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
+from box import Box
 from src.training import train
 from src.testing import evaluate
 from model.preprocessing import preprocess_data
@@ -24,13 +25,13 @@ from model.grenc_trdec_model.decoder import Transformer_Decoder
 
 # opening training_args file
 with open('configs/config.yaml') as f:
-	cfg = yaml.safe_load(f)
-buiding_graph_args = cfg["building_graph"]
-training_args = cfg["training"]
-preprocessing_args = cfg["preprocessing_args"]
-graph_args = cfg["model"]["graph_model"]
-vit_args = cfg["model"]["vit"]
-xfmer_args = cfg["model"]["decoder_transformer"]
+	cfg = Box(yaml.safe_load(f))
+buiding_graph_args = cfg.building_graph
+training_args = cfg.training
+preprocessing_args = cfg.preprocessing
+graph_args = cfg.model.graph_model
+vit_args = cfg.model.vit
+xfmer_args = cfg.model.decoder_transformer
 
 # for deterministic results, make it False.
 # to optimize performance, make it True, but that 
@@ -53,46 +54,57 @@ def define_model(vocab, device):
 
     print("defining model...")
 
-    isGraphEnc = cfg["model"]["isGraphEnc"]
-    isVitEnc = cfg["model"]["isVitEnc"]
-    gr_in_chns = graph_args["input_channels"]
-    gr_out_dim = len(vocab)
-    gr_hid_dim = graph_args["dec_dim"]
-    gr_dropout = graph_args["dropout"]
+    isGraphEnc = cfg.model.isGraphEnc
+    isVitEnc = cfg.model.isVitEnc
+    gr_dropout = graph_args.dropout
     
     assert isGraphEnc or isVitEnc, "Need to select either one of the encoder or both of them."
 
     if isGraphEnc:
-        Gr_ENC = Graph_Encoder(gr_in_chns,
-                            gr_hid_dim,
-                            gr_out_dim,
-                            gr_dropout)
+        Gr_ENC = Graph_Encoder(gr_in_chns=graph_args.input_channels,
+                            gr_hid_dim=graph_args.dec_dim,
+                            gr_out_dim=len(vocab),
+                            vit_embed_dim=vit_args.emb_dim,
+                            gr_dropout=gr_dropout,
+                            )
 
     elif isVitEnc:
-        image_w = buiding_graph_args["preprocessed_image_width"]
-        image_h = buiding_graph_args["preprocessed_image_height"]
+        image_w = buiding_graph_args.preprocessed_image_width
+        image_h = buiding_graph_args.preprocessed_image_height
 
         Vit_ENC = VisionTransformer(
                         img_size=[image_w,image_h],
-                        patch_size=vit_args["patch_size"],
-                        in_chns=graph_args["input_channels"],
-                        embed_dim=vit_args["emb_dim"],
-                        depth=vit_args["depth"],
-                        n_heads=vit_args["n_heads"],
-                        mlp_ratio=vit_args["mlp_ratio"],
-                        qkv_bias=vit_args["qkv_bias"],
+                        patch_size=vit_args.patch_size,
+                        in_chns=graph_args.input_channels,
+                        embed_dim=vit_args.emb_dim,
+                        depth=vit_args.depth,
+                        n_heads=vit_args.n_heads,
+                        mlp_ratio=vit_args.mlp_ratio,
+                        qkv_bias=vit_args.qkv_bias,
                         p=gr_dropout,
                         attn_p=gr_dropout,
                         )
 
+    assert cfg.building_graph.preprocessed_image_width % cfg.model.vit.patch_size == 0
+    assert cfg.building_graph.preprocessed_image_height % cfg.model.vit.patch_size == 0
+
+    n_patches = (
+        cfg.building_graph.preprocessed_image_width // cfg.model.vit.patch_size
+        ) * (
+        cfg.building_graph.preprocessed_image_height // cfg.model.vit.patch_size
+        )
+
     Tr_DEC = Transformer_Decoder(
-        emb_dim=xfmer_args["emb_dim"],
-        dec_hid_dim=xfmer_args["dec_hid_dim"],
-        nheads=xfmer_args["nheads"],
+        emb_dim=xfmer_args.emb_dim,
+        dec_hid_dim=xfmer_args.dec_hid_dim,
+        gr_hid_dim=graph_args.hid_dim,
+        nheads=xfmer_args.nheads,
+        output_dim=len(vocab),
+        n_patches=n_patches,
         dropout=gr_dropout,
-        max_len=xfmer_args["max_len"],
-        n_xfmer_decoder_layers=xfmer_args["n_xfmer_decoder_layers"],
-        dim_feedfwd=xfmer_args["dim_feedfwd"],
+        max_len=xfmer_args.max_len,
+        n_xfmer_decoder_layers=xfmer_args.n_xfmer_decoder_layers,
+        dim_feedfwd=xfmer_args.dim_feedfwd,
         device=device,
     )
 
