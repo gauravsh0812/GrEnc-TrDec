@@ -29,6 +29,7 @@ preprocessing:
   device: "cuda"
   shuffle: True
   num_workers: 0
+  pin_memory: False
 
 model:
   isGraphEnc: True
