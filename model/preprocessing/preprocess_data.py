@@ -9,7 +9,6 @@ from torch.utils.data import (Dataset,
 from collections import Counter
 from torchtext.vocab import Vocab
 
-
 class Img2MML_dataset(Dataset):
     def __init__(self, dataframe, vocab, tokenizer):
         self.dataframe = dataframe
@@ -126,7 +125,8 @@ def preprocess_dataset(args):
         return x.split()
 
     # initializing pad collate class
-    mypadcollate = My_pad_collate(args["device"], vocab, args["max_len"])
+    device = "cuda" if torch.cuda.available() else "cpu"
+    mypadcollate = My_pad_collate(device, vocab, args["max_len"])
 
     print("saving dataset files to data/ folder...")
 
