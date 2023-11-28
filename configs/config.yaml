@@ -26,6 +26,8 @@ preprocessing:
   path_to_data: "/home/gauravs/data/grenc_trdec"
   markup: "mml"
   vocab_freq: 5
+  max_len: 350
+  device: "cuda"
 
 model:
   isGraphEnc: True

@@ -125,7 +125,6 @@ def preprocess_dataset(args):
         return x.split()
 
     # initializing pad collate class
-    device = "cuda" if torch.cuda.available() else "cpu"
     mypadcollate = My_pad_collate(device, vocab, args["max_len"])
 
     print("saving dataset files to data/ folder...")
