@@ -28,6 +28,7 @@ preprocessing:
   vocab_freq: 5
   device: "cuda"
   shuffle: True
+  num_workers: 0
 
 model:
   isGraphEnc: True
