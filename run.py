@@ -16,7 +16,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from box import Box
 from src.training import train
 from src.testing import evaluate
-from model.preprocessing import preprocess_data
+from model.preprocessing.preprocess_data import preprocess_dataset
 from model.grenc_trdec_model.model import Grenc_Trdec_Model
 from model.grenc_trdec_model.graph_encoder import Graph_Encoder
 from model.grenc_trdec_model.vit_encoder import VisionTransformer
@@ -192,7 +192,7 @@ def train_model(rank=None,):
                 test_dataloader,
                 val_dataloader,
                 vocab,
-            ) = preprocess_data(preprocessing_args)
+            ) = preprocess_dataset(preprocessing_args)
 
             model = define_model(training_args, vocab, rank)
             model = DDP(
@@ -210,7 +210,7 @@ def train_model(rank=None,):
                 test_dataloader,
                 val_dataloader,
                 vocab,
-            ) = preprocess_data(preprocessing_args)
+            ) = preprocess_dataset(preprocessing_args)
             model = define_model(training_args, vocab, device).to("cuda")
 
     else:
