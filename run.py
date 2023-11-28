@@ -180,13 +180,13 @@ def train_model(rank=None,):
     loss_file = open("logs/loss_file.txt", "w")
 
     # defining model using DataParallel
+    preprocessing_args["batch_size"] = training_args.batch_size
+    preprocessing_args["max_len"] = xfmer_args.max_len
     if torch.cuda.is_available():
         if ddp:
             # add a few args for temporarily purpose
             # this is to avoid replicating in config file
             preprocessing_args["ddp"] = True
-            preprocessing_args["batch_size"] = training_args.batch_size
-            preprocessing_args["max_len"] = xfmer_args.max_len
 
             # create default process group
             dist.init_process_group("nccl", rank=rank, world_size=len(gpus))
