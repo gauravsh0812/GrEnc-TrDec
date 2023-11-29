@@ -211,7 +211,6 @@ class VisionTransformer(nn.Module):
     def forward(self, x):
         # x: (N, in_chns, H, W)
         x = self.patch_embed(x)    # (n_samples, n_patches, emb_dim)
-        print("vit x: ", x.shape)
         x = x.permute(1,0,2)   # (n_patches, n_samples, emb_dim)
         x = x + self.pf(x) 
         x = x.permute(1,0,2)  # (n_samples, n_patches, embed_dim)

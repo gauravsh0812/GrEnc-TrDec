@@ -63,6 +63,7 @@ class Graph_Encoder(nn.Module):
         final_nodes_list = list()
         
         for i, data in enumerate(graphs_list):
+            print(data)
             x = data.x
             edge_index = (data.edge_index).long()
             
