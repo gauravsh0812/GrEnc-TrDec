@@ -71,9 +71,11 @@ class Graph_Encoder(nn.Module):
             
             has_nan = torch.isnan(edge_index).any()
             has_inf = torch.isinf(edge_index).any()
+            isgt = edge_index.max() > x.size(0)
 
             print('\n Contains NaN:', has_nan.item())
             print('\n Contains inf:', has_inf.item())
+            print('\n Contains isgt:', isgt)
 
 
             # node embedding
