@@ -228,7 +228,7 @@ def train_model(rank=None,):
             val_dataloader,
             vocab,
         ) = preprocess_dataset(preprocessing_args)
-        model = define_model(training_args, vocab, device).to(device)
+        model = define_model(vocab, device).to(device)
 
     print("MODEL: ")
     print(f"The model has {count_parameters(model)} trainable parameters")
