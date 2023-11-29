@@ -8,7 +8,6 @@ class Graph_Encoder(nn.Module):
     def __init__(self, 
                  in_channels, 
                  hidden_channels, 
-                 out_channels,
                  vit_embed_dim,
                  dropout=0.1,
                  ):

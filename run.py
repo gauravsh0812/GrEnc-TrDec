@@ -63,12 +63,11 @@ def define_model(vocab, device):
     if isGraphEnc:
         Gr_ENC = Graph_Encoder(in_channels=graph_args.input_channels,
                             hidden_channels=graph_args.hid_dim,
-                            out_channels=len(vocab),
                             vit_embed_dim=vit_args.emb_dim,
                             dropout=gr_dropout,
                             )
 
-    elif isVitEnc:
+    if isVitEnc:
         image_w = buiding_graph_args.preprocessed_image_width
         image_h = buiding_graph_args.preprocessed_image_height
 
