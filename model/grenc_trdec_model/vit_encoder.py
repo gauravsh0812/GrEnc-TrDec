@@ -191,9 +191,7 @@ class VisionTransformer(nn.Module):
                 emb_dim=embed_dim,
         )
         n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
-        self.pf = PositionalEncoding(n_patches, 
-                                     embed_dim,
-                                     dropout=p)
+        self.pf = PositionalEncoding(embed_dim, p, n_patches)
         
         self.blocks = nn.ModuleList(
             [
