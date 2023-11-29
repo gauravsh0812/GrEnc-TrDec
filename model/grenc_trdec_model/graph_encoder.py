@@ -73,6 +73,8 @@ class Graph_Encoder(nn.Module):
             print("\n befor shape: ", x.shape)
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
             print("\n after shape: ", x.shape)
+
+            print("\n edge: ", (edge_index>=30000).any())
             
             x = self.p(x)
             x = self.conv2(x, edge_index)
