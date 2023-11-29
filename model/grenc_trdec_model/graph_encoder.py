@@ -69,25 +69,10 @@ class Graph_Encoder(nn.Module):
         for i, (x, edge_index) in enumerate(zip(features_list, edges_list)):
             edge_index = edge_index.long()
             
-            has_negative_values = (edge_index < 0).any()
-            print(has_negative_values)
-
-            if edge_index.max() < x.size(0):
-                print("YES!!")
-            else:
-                print("NO!!")
-                
             # node embedding
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
+            print("shape: ", x.shape)
             
-            has_negative_values = (edge_index < 0).any()
-            print(has_negative_values)
-
-            if edge_index.max() < x.size(0):
-                print("YES!!")
-            else:
-                print("NO!!")
-
             x = self.p(x)
             x = self.conv2(x, edge_index)
             x = self.bn1(x)
