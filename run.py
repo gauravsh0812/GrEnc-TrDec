@@ -280,7 +280,6 @@ def train_model(rank=None,):
                     isVitEnc=cfg["model"]["isVitEnc"],
                     ddp=ddp,
                     rank=rank,
-                    scheduler=scheduler,
                 )
 
                 if training_args.wandb:
