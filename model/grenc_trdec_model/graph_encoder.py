@@ -70,13 +70,9 @@ class Graph_Encoder(nn.Module):
             edge_index = edge_index.long()
             
             # node embedding
-            print("\n befor shape: ", x.shape)
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
-            print("\n after shape: ", x.shape)
-
-            print(edge_index)
             
-            x = self.p(x)
+            # x = self.p(x)
             x = self.conv2(x, edge_index)
             x = self.bn1(x)
             x = self.relu(x)
