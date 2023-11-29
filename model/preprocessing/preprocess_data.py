@@ -21,7 +21,8 @@ class Img2MML_dataset(Dataset):
     def __getitem__(self, index):
         eqn = self.dataframe.iloc[index, 2]
         indexed_eqn = []
-        for token in eqn.split():
+        tokens = self.tokenizer(eqn)
+        for token in tokens:
             if self.vocab.stoi[token] is not None:
                 indexed_eqn.append(self.vocab.stoi[token])
             else:
