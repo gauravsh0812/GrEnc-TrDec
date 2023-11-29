@@ -69,10 +69,17 @@ class Graph_Encoder(nn.Module):
         for i, (x, edge_index) in enumerate(zip(features_list, edges_list)):
             edge_index = edge_index.long()
             
+            has_nan = torch.isnan(edge_index).any()
+            has_inf = torch.isinf(edge_index).any()
+
+            print('\n Contains NaN:', has_nan.item())
+            print('\n Contains inf:', has_inf.item())
+
+
             # node embedding
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
             print(edge_index)
-            
+
             x = self.p(x)
             x = self.conv2(x, edge_index)
             x = self.bn1(x)
