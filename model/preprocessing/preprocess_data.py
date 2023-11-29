@@ -10,7 +10,7 @@ from collections import Counter
 from torchtext.vocab import Vocab
 
 class Img2MML_dataset(Dataset):
-    def __init__(self, dataframe, vocab):
+    def __init__(self, dataframe, vocab, tokenizer):
         self.dataframe = dataframe
         self.vocab = vocab
 
