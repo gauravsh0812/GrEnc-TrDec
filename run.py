@@ -62,7 +62,7 @@ def define_model(vocab, device):
 
     if isGraphEnc:
         Gr_ENC = Graph_Encoder(gr_in_chns=graph_args.input_channels,
-                            gr_hid_dim=graph_args.dec_dim,
+                            gr_hid_dim=graph_args.hid_dim,
                             gr_out_dim=len(vocab),
                             vit_embed_dim=vit_args.emb_dim,
                             gr_dropout=gr_dropout,
