@@ -200,7 +200,7 @@ if __name__ == "__main__":
 
     path_to_images = os.path.join(path_to_data, "images")
     imgs = [os.path.join(path_to_images, f"{i}.png") 
-            for i in range(100)]
+            for i in range(5000)]
     
     # imgs = ["data/images/13.png"]
 
