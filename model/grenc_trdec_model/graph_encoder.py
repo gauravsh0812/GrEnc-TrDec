@@ -41,7 +41,6 @@ class Graph_Encoder(nn.Module):
                       self.conv2,
                       self.conv3,
                       self.conv4,
-                      self.conv5,
                       self.bn1,
                       self.bn2]:
             
