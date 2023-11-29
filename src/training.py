@@ -39,7 +39,7 @@ def train(
         for im in img:
             if isGraphEnc:
                 G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
-                _features_list.append(G.x)
+                _features_list.append(G.x.float())
                 _edge_list.append(G.edge_index)
                 
             if isVitEnc:

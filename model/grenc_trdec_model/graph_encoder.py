@@ -67,9 +67,6 @@ class Graph_Encoder(nn.Module):
         assert len(features_list) == len(edges_list)
 
         for i, (x, edge_index) in enumerate(zip(features_list, edges_list)):
-            # print(data)
-            # x = data.x
-            # edge_index = (data.edge_index).long()
             edge_index = edge_index.long()
             
             # node embedding
