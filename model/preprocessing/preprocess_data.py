@@ -19,7 +19,6 @@ class Img2MML_dataset(Dataset):
 
     def __getitem__(self, index):
         eqn = self.dataframe.iloc[index, 1]
-        print(eqn)
         indexed_eqn = []
         for token in eqn.split():
             if self.vocab.stoi[token] is not None:
@@ -142,6 +141,7 @@ def preprocess_dataset(args):
     )
 
     print("building dataloaders...")
+    print(train.head())
 
     # initailizing class Img2MML_dataset: train dataloader
     imml_train = Img2MML_dataset(train, vocab, tokenizer)
