@@ -39,12 +39,11 @@ def train(
                 G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
                 _graphs_list.append(G)
                 
-            elif isVitEnc:
+            if isVitEnc:
                 _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
         
         if isGraphEnc:
             graphs_list = torch.stack(_graphs_list).to(device)
-            
         else:
             graphs_list = None
 
