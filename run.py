@@ -61,11 +61,11 @@ def define_model(vocab, device):
     assert isGraphEnc or isVitEnc, "Need to select either one of the encoder or both of them."
 
     if isGraphEnc:
-        Gr_ENC = Graph_Encoder(gr_in_chns=graph_args.input_channels,
-                            gr_hid_dim=graph_args.hid_dim,
-                            gr_out_dim=len(vocab),
+        Gr_ENC = Graph_Encoder(in_channels=graph_args.input_channels,
+                            hidden_channels=graph_args.hid_dim,
+                            out_channels=len(vocab),
                             vit_embed_dim=vit_args.emb_dim,
-                            gr_dropout=gr_dropout,
+                            dropout=gr_dropout,
                             )
 
     elif isVitEnc:
