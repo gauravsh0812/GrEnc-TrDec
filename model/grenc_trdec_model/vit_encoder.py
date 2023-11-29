@@ -51,8 +51,7 @@ class PatchEmbed(nn.Module):
         img = self.patch_embed(img) 
 
         # n_patches = H/patch_size * W/patch_size
-        # (N, n_patches, emb_dim)
-        img = img.view(img.shape[0], img.shape[1], -1).permute(0,2,1)
+        img = img.view(img.shape[0], img.shape[1], -1).permute(0,2,1) # (N, n_patches, emb_dim)
 
         return img
 
@@ -211,9 +210,9 @@ class VisionTransformer(nn.Module):
 
     def forward(self, x):
         # x: (N, in_chns, H, W)
-        x = self.patch_embed(x)    # (n_samples, emb_dim, n_patches)
+        x = self.patch_embed(x)    # (n_samples, n_patches, emb_dim)
         print("vit x: ", x.shape)
-        x = x.permute(2,0,1)   # (n_patches, n_samples, emb_dim)
+        x = x.permute(1,0,2)   # (n_patches, n_samples, emb_dim)
         x = x + self.pf(x) 
         x = x.permute(1,0,2)  # (n_samples, n_patches, embed_dim)
 
