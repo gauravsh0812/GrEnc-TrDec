@@ -10,7 +10,7 @@ from collections import Counter
 from torchtext.vocab import Vocab
 
 class Img2MML_dataset(Dataset):
-    def __init__(self, dataframe, vocab, tokenizer):
+    def __init__(self, dataframe, vocab):
         self.dataframe = dataframe
         self.vocab = vocab
 
@@ -19,6 +19,7 @@ class Img2MML_dataset(Dataset):
 
     def __getitem__(self, index):
         eqn = self.dataframe.iloc[index, 1]
+        print(eqn)
         indexed_eqn = []
         for token in eqn.split():
             if self.vocab.stoi[token] is not None:
