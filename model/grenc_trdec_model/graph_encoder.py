@@ -75,7 +75,7 @@ class Graph_Encoder(nn.Module):
 
             print('\n Contains NaN:', has_nan.item())
             print('\n Contains inf:', has_inf.item())
-            print('\n Contains isgt:', isgt)
+            print('\n Contains isgt:', isgt, edge_index.max())
 
 
             # node embedding
