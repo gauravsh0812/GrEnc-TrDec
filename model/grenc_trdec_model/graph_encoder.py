@@ -71,7 +71,11 @@ class Graph_Encoder(nn.Module):
             
             # node embedding
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
-            x = self.relu(self.bn1(self.conv2(self.p(x), edge_index)))  # hid --> hid*2
+            x = self.p(x)
+            x = self.conv2(x, edge_index)
+            x = self.bn1(x)
+            x = self.relu(x)
+            # x = self.relu(self.bn1(self.conv2(self.p(x), edge_index)))  # hid --> hid*2
             x = self.relu(self.conv3(self.p(x), edge_index))  # hid*2 --> hid*4
             x = self.relu(self.bn2(self.conv4(self.p(x), edge_index)))  # hid*4 --> hid*8
 
