@@ -1,5 +1,5 @@
 building_graph:
-  ncpus: 10
+  ncpus: 200
   max_input_hgt: 100
   preprocessed_image_width: 500
   preprocessed_image_height: 60
