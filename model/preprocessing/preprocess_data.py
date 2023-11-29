@@ -13,12 +13,13 @@ class Img2MML_dataset(Dataset):
     def __init__(self, dataframe, vocab, tokenizer):
         self.dataframe = dataframe
         self.vocab = vocab
+        self.tokenizer = tokenizer
 
     def __len__(self):
         return len(self.dataframe)
 
     def __getitem__(self, index):
-        eqn = self.dataframe.iloc[index, 1]
+        eqn = self.dataframe.iloc[index, 2]
         indexed_eqn = []
         for token in eqn.split():
             if self.vocab.stoi[token] is not None:
