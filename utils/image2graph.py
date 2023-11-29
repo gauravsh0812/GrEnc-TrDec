@@ -168,7 +168,7 @@ def main(img):
             edge_weight = adj.data
             
             # already RGB -- did while padding
-            # im = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB) * 255
+            im = im.flatten().reshape((-1,3))
             feature_matrix = torch.tensor(im.flatten().reshape((-1,3)))
 
             # Make a data object to store graph informaiton
