@@ -28,7 +28,11 @@ class Img2MML_dataset(Dataset):
             else:
                 indexed_eqn.append(self.vocab.stoi["<unk>"])
 
-        return self.dataframe.iloc[index, 0], torch.Tensor(indexed_eqn)
+        return (
+            self.dataframe.iloc[index, 0], 
+            self.dataframe.iloc[index, 1],
+            torch.Tensor(indexed_eqn)
+        )
 
 
 class My_pad_collate(object):
