@@ -259,7 +259,7 @@ def train_model(rank=None,):
         wandb.watch(model)
 
     # raw data paths
-    img_tnsr_path = f"{preprocessing_args.data_path}/image_tensors"
+    img_tnsr_path = f"{preprocessing_args.path_to_data}/image_tensors"
 
     if not load_trained_model_for_testing:
         count_es = 0
