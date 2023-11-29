@@ -36,7 +36,7 @@ xfmer_args = cfg.model.decoder_transformer
 # for deterministic results, make it False.
 # to optimize performance, make it True, but that 
 # might affect the results a bit at atomic level.
-# torch.backends.cudnn.enabled = False
+torch.backends.cudnn.enabled = False
 
 def set_random_seed(SEED):
     # set up seed
