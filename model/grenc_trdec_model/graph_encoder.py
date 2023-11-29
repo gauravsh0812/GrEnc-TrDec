@@ -74,7 +74,8 @@ class Graph_Encoder(nn.Module):
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
             print("\n after shape: ", x.shape)
 
-            print("\n edge: ", (edge_index>=30000).any())
+            if (edge_index>=30000).any():
+                print("\n edge: YES!!")
             
             x = self.p(x)
             x = self.conv2(x, edge_index)
