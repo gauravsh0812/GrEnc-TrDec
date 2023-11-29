@@ -45,6 +45,7 @@ model:
     emb_dim: 512
     depth: 6
     mlp_ratio: 4
+    qkv_bias: True
   
   decoder_transformer:
     emb_dim: 512
