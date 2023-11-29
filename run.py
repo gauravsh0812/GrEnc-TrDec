@@ -77,7 +77,7 @@ def define_model(vocab, device):
                         in_chns=graph_args.input_channels,
                         embed_dim=vit_args.emb_dim,
                         depth=vit_args.depth,
-                        n_heads=vit_args.n_heads,
+                        n_heads=vit_args.nheads,
                         mlp_ratio=vit_args.mlp_ratio,
                         qkv_bias=vit_args.qkv_bias,
                         p=gr_dropout,
