@@ -260,6 +260,7 @@ def train_model(rank=None,):
 
     # raw data paths
     img_tnsr_path = f"{preprocessing_args.path_to_data}/image_tensors"
+    img_graph_path = f"{preprocessing_args.path_to_data}/image_graphs"
 
     if not load_trained_model_for_testing:
         count_es = 0
@@ -271,6 +272,7 @@ def train_model(rank=None,):
                 train_loss = train(
                     model,
                     img_tnsr_path,
+                    img_graph_path,
                     train_dataloader,
                     optimizer,
                     criterion,
@@ -288,6 +290,7 @@ def train_model(rank=None,):
                 val_loss = evaluate(
                     model,
                     img_tnsr_path,
+                    img_graph_path,
                     batch_size,
                     val_dataloader,
                     criterion,
@@ -400,6 +403,7 @@ def train_model(rank=None,):
     test_loss = evaluate(
         model,
         img_tnsr_path,
+        img_graph_path,
         batch_size,
         test_dataloader,
         criterion,

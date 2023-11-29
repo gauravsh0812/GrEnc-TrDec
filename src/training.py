@@ -11,6 +11,7 @@ from src.testing import evaluate
 def train(
     model,
     img_tnsr_path,
+    img_graph_path,
     train_dataloader,
     optimizer,
     criterion,
@@ -38,7 +39,8 @@ def train(
         _edge_list = list()
         for im in img:
             if isGraphEnc:
-                G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
+                G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
+                print(G)
                 _features_list.append(G.x)
                 _edge_list.append(G.edge_index)
                 # G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
