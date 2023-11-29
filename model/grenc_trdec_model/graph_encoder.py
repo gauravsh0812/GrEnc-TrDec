@@ -56,16 +56,22 @@ class Graph_Encoder(nn.Module):
                         nn.init.constant_(param.data, 0)
 
     def forward(self, 
-                graphs_list,
+                # graphs_list,
+                features_list, 
+                edges_list,
                 vit_output,
                 ):
         
         final_nodes_list = list()
         
-        for i, data in enumerate(graphs_list):
-            print(data)
-            x = data.x
-            edge_index = (data.edge_index).long()
+        # for i, data in enumerate(graphs_list):
+        assert len(features_list) == len(edges_list)
+
+        for i, (x, edge_index) in enumerate(zip(features_list, edges_list)):
+            # print(data)
+            # x = data.x
+            # edge_index = (data.edge_index).long()
+            edge_index = edge_index.long()
             
             # node embedding
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
