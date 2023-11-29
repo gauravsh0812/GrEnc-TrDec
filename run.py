@@ -227,7 +227,7 @@ def train_model(rank=None,):
             test_dataloader,
             val_dataloader,
             vocab,
-        ) = preprocess_data(preprocessing_args)
+        ) = preprocess_dataset(preprocessing_args)
         model = define_model(training_args, vocab, device).to(device)
 
     print("MODEL: ")
