@@ -147,7 +147,6 @@ def preprocess_dataset(args):
     )
 
     print("building dataloaders...")
-    print(train.head())
 
     # initailizing class Img2MML_dataset: train dataloader
     imml_train = Img2MML_dataset(train, vocab, tokenizer)
