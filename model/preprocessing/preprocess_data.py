@@ -49,7 +49,7 @@ class My_pad_collate(object):
         self.pad_idx = vocab.stoi["<pad>"]
 
     def __call__(self, batch):
-        _img, _mml = zip(*batch)
+        _gr, _img, _mml = zip(*batch)
 
         # padding mml
         # padding to a fix max_len equations with more tokens than
@@ -66,10 +66,12 @@ class My_pad_collate(object):
             else:
                 padded_mml_tensors[b][: self.max_len] = _mml[b][: self.max_len]
 
-        # images tensors
+        # graphs and images tensors
+        _gr = torch.Tensor(_gr)
         _img = torch.Tensor(_img)
 
         return (
+            _gr.to(self.device),
             _img.to(self.device),
             padded_mml_tensors.to(self.device),
         )
