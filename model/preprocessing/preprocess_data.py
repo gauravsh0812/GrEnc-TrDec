@@ -19,7 +19,7 @@ class Img2MML_dataset(Dataset):
         return len(self.dataframe)
 
     def __getitem__(self, index):
-        eqn = self.dataframe.iloc[index, 2]
+        eqn = self.dataframe.iloc[index, 1]
         indexed_eqn = []
         tokens = self.tokenizer(eqn)
         for token in tokens:
@@ -30,7 +30,6 @@ class Img2MML_dataset(Dataset):
 
         return (
             self.dataframe.iloc[index, 0], 
-            self.dataframe.iloc[index, 1],
             torch.Tensor(indexed_eqn)
         )
 
@@ -49,7 +48,7 @@ class My_pad_collate(object):
         self.pad_idx = vocab.stoi["<pad>"]
 
     def __call__(self, batch):
-        _gr, _img, _mml = zip(*batch)
+        _img, _mml = zip(*batch)
 
         # padding mml
         # padding to a fix max_len equations with more tokens than
@@ -66,12 +65,10 @@ class My_pad_collate(object):
             else:
                 padded_mml_tensors[b][: self.max_len] = _mml[b][: self.max_len]
 
-        # graphs and images tensors
-        _gr = torch.Tensor(_gr)
+        # graphs and images tensors (they both have same numbering)
         _img = torch.Tensor(_img)
 
         return (
-            _gr.to(self.device),
             _img.to(self.device),
             padded_mml_tensors.to(self.device),
         )
@@ -95,19 +92,18 @@ def preprocess_dataset(args):
 
     for t_idx, t_images in enumerate([train_images, test_images, val_images]):
         raw_mml_data = {
-            "GRAPH": [num for num in t_images],
-            "IMG": [num for num in t_images],
+            "IMG": [num for num in t_images],   # both graph and img gonna have same numbering
             "EQUATION": [
                 ("<sos> " + mml_txt[num] + " <eos>") for num in t_images
             ],
         }
 
         if t_idx == 0:
-            train = pd.DataFrame(raw_mml_data, columns=["GRAPH", "IMG", "EQUATION"])
+            train = pd.DataFrame(raw_mml_data, columns=["IMG", "EQUATION"])
         elif t_idx == 1:
-            test = pd.DataFrame(raw_mml_data, columns=["GRAPH", "IMG", "EQUATION"])
+            test = pd.DataFrame(raw_mml_data, columns=["IMG", "EQUATION"])
         else:
-            val = pd.DataFrame(raw_mml_data, columns=["GRAPH", "IMG", "EQUATION"])
+            val = pd.DataFrame(raw_mml_data, columns=["IMG", "EQUATION"])
 
     # build vocab
     print("building vocab...")
