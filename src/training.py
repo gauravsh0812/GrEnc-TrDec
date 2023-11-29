@@ -28,7 +28,7 @@ def train(
 
     tset = tqdm(iter(train_dataloader))
 
-    for i, (gr, img, mml) in enumerate(tset):
+    for i, (img, mml) in enumerate(tset):
         # mml: (B, max_len)
         # img: (B, in_channel, H, W)
         mml = mml.to(device, dtype=torch.long)
