@@ -34,27 +34,21 @@ def train(
         # img: (B, in_channel, H, W)
         mml = mml.to(device, dtype=torch.long)
         _imgs = list()
-        # _graphs_list = list()
         _features_list = list()
         _edge_list = list()
         for im in img:
             if isGraphEnc:
                 G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
-                print(G)
                 _features_list.append(G.x)
                 _edge_list.append(G.edge_index)
-                # G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
-                # _graphs_list.append(G)
                 
             if isVitEnc:
                 _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
         
         if isGraphEnc:
-            # graphs_list = torch.stack(_graphs_list).to(device)
             features_list = torch.stack(_features_list).to(device)
             edges_list = torch.stack(_edge_list).to(device)
         else:
-            # graphs_list = None
             features_list = None
             edges_list = None
 
@@ -66,7 +60,6 @@ def train(
         # setting gradients to zero
         optimizer.zero_grad()
 
-        # outputs, _ = model(imgs, graphs_list, mml)  # (B, max_len, output_dim)
         outputs, _ = model(
             imgs,
             features_list,

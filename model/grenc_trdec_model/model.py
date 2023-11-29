@@ -26,7 +26,8 @@ class Grenc_Trdec_Model(nn.Module):
     def forward(
         self,
         imgs=None,
-        graphs_list=None,
+        features_list=None,
+        edge_list=None,
         mml=None,
         is_test=False,
     ):  
@@ -35,7 +36,7 @@ class Grenc_Trdec_Model(nn.Module):
         vit_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
         
         # running the graph encoder 
-        gr_output = self.gr_enc(graphs_list, vit_output)  # (n_samples, n_patches, gr_hidden*8)
+        gr_output = self.gr_enc(features_list, edge_list, vit_output)  # (n_samples, n_patches, gr_hidden*8)
         
         # normal training and testing part
         # we will be using torchtext.vocab object

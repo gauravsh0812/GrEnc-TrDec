@@ -56,7 +56,6 @@ class Graph_Encoder(nn.Module):
                         nn.init.constant_(param.data, 0)
 
     def forward(self, 
-                # graphs_list,
                 features_list, 
                 edges_list,
                 vit_output,

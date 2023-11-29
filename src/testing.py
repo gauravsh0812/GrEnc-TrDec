@@ -6,6 +6,7 @@ from utils.garbage_to_pad import garbage2pad
 def evaluate(
     model,
     img_tnsr_path,
+    img_graph_path,
     batch_size,
     test_dataloader,
     criterion,
@@ -29,22 +30,23 @@ def evaluate(
             batch_size = mml.shape[0]
             mml = mml.to(device, dtype=torch.long)
             _imgs = list()
-            _g_features = list()
-            _g_edge_index = list()
+            _features_list = list()
+            _edge_list = list()
             for im in img:
                 if isGraphEnc:
                     G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
-                    _g_features.append(G.x)
-                    _g_edge_index.append(G.edge_index)
+                    _features_list.append(G.x)
+                    _edge_list.append(G.edge_index) 
                 
-                elif isVitEnc:
+                if isVitEnc:
                     _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
             
             if isGraphEnc:
-                features = torch.stack(_g_features).to(device)
-                edge_index = torch.stack(_g_edge_index).to(device)
+                features_list = torch.stack(_features_list).to(device)
+                edges_list = torch.stack(_edge_list).to(device)
             else:
-                features, edge_index = None, None
+                features_list = None
+                edges_list = None
 
             if isVitEnc:
                 imgs = torch.stack(_imgs).to(device)
@@ -56,7 +58,7 @@ def evaluate(
             There will no teacher forcing while validation and testing.
             """
             outputs, preds = model(
-                imgs, features, edge_index, mml, is_test=is_test
+                imgs, features_list, edges_list, mml, is_test=is_test
             )  # O: (B, max_len, output_dim), preds: (B, max_len)
 
             if is_test:
