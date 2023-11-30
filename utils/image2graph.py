@@ -209,7 +209,7 @@ if __name__ == "__main__":
     _graph_path = os.path.join(path_to_data, "image_graphs")
     _tnsr_path = os.path.join(path_to_data, "image_tensors")
 
-    main(imgs[0])
+    # main(imgs[0])
 
     for _p in [_graph_path, 
                _tnsr_path, 
