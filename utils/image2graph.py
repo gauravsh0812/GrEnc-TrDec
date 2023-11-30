@@ -157,7 +157,7 @@ def create_image_graphs(im, img_name):
     # edge_weight = adj.data
     
     w,h = im.size
-    # print(w,h)
+    print(w,h)
     edge_index, _ = grid(height=h, width=w)
 
     # already RGB -- did while padding
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     _graph_path = os.path.join(path_to_data, "image_graphs")
     _tnsr_path = os.path.join(path_to_data, "image_tensors")
 
-    # main(imgs[0])
+    main(imgs[0])
 
     for _p in [_graph_path, 
                _tnsr_path, 
