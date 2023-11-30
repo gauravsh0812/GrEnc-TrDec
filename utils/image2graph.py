@@ -145,6 +145,8 @@ def create_image_tensors(im, img_name):
         f"{path_to_data}/image_tensors/{img_name}.pt",
     )
 
+    return im
+
 def create_image_graphs(im, img_name):
     ######### GETTING GRAPH AT PIXEL LEVEL ###########
             
@@ -191,7 +193,7 @@ def main(img):
 
     img_name = os.path.basename(img).split('.')[0]
     if not reject:
-        create_image_tensors(im, img_name)
+        im = create_image_tensors(im, img_name)
         create_image_graphs(im, img_name)
     else:
         return img
