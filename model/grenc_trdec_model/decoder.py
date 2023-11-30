@@ -112,8 +112,9 @@ class Transformer_Decoder(nn.Module):
         pos_trg = self.modify_dimension(pos_trg)  # (max_len-1, B, dec_hid_dim)
 
         # changing n_patches to max_len
+        print("decoder-115; gr_output shape: ", gr_output.shape)
         gr_output = gr_output.permute(1,2,0) # (B, gr_hid*8, n_patches)
-        print("decoder-116; gr_output shape: ", gr_output.shape)
+        print("decoder-117; gr_output shape: ", gr_output.shape)
         gr_output = self.change_len(gr_output).permute(2,0,1)  # (max_len, B, gr_hid*8)
         gr_output = self.change_dim(gr_output) # (max_len, B, dec_hid_dim)
 
