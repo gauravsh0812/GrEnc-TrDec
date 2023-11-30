@@ -73,20 +73,14 @@ class Graph_Encoder(nn.Module):
             has_inf = torch.isinf(edge_index).any()
             isgt = edge_index.max() > x.size(0)
 
-            print('\n Contains NaN:', has_nan.item())
-            print('\n Contains inf:', has_inf.item())
-            print('\n Contains isgt:', isgt, edge_index.max())
+            # print('\n Contains NaN:', has_nan.item())
+            # print('\n Contains inf:', has_inf.item())
+            # print('\n Contains isgt:', isgt, edge_index.max())
 
 
             # node embedding
             x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
-            print(edge_index)
-
-            x = self.p(x)
-            x = self.conv2(x, edge_index)
-            x = self.bn1(x)
-            x = self.relu(x)
-            # x = self.relu(self.bn1(self.conv2(self.p(x), edge_index)))  # hid --> hid*2
+            x = self.relu(self.bn1(self.conv2(self.p(x), edge_index)))  # hid --> hid*2
             x = self.relu(self.conv3(self.p(x), edge_index))  # hid*2 --> hid*4
             x = self.relu(self.bn2(self.conv4(self.p(x), edge_index)))  # hid*4 --> hid*8
 
@@ -96,7 +90,8 @@ class Graph_Encoder(nn.Module):
             _vit_1 = _vit.shape[0]  # n_patches
             _x_1 = x.shape[0]  # n_pixels
 
-            x = nn.Linear(_x_1, _vit_1)(x.permute(1,0)).permute(1,0) # (n_patch, out)
+            lin = nn.Linear(_x_1, _vit_1).to("cuda")
+            x = lin(x.permute(1,0)).permute(1,0) # (n_patch, out)
             x = torch.cat((_vit, x), dim=1)   # (n_patch, emb_dim + hid*8)
             x = self.linear(x)  # (n_patches, hid*8)
             
