@@ -11,7 +11,7 @@ import multiprocessing as mp
 import networkx as nx
 from sklearn.feature_extraction import image
 from torch_geometric.data import Data
-from torch_geometric.utils.convert import to_networkx
+from torch_geometric.utils import grid
 from torchvision import transforms
 from PIL import Image
 
@@ -123,9 +123,60 @@ def downsampling(im):
         Image.Resampling.LANCZOS,
     )
     return im
+    
+def create_image_tensors(im, img_name):
+
+    # bucketing
+    resize_factor = bucket(im)
+
+    # resize
+    im = resize_image(im, resize_factor)
+
+    # padding
+    im = pad_image(im)
+
+    # convert to tensor
+    convert = transforms.ToTensor()
+    _im = convert(im)
+
+    # save them as tensors
+    torch.save(
+        _im,
+        f"{path_to_data}/image_tensors/{img_name}.pt",
+    )
+
+def create_image_graphs(im, img_name):
+    ######### GETTING GRAPH AT PIXEL LEVEL ###########
+            
+    # im = np.array(im)
+    
+    # adj = image.img_to_graph(im)
+    # edge_index = torch.tensor(np.vstack((adj.row, adj.col)))
+    # edge_weight = adj.data
+    
+    w,h = im.size
+    edge_index, _ = grid(height=h, width=w)
+
+    # already RGB -- did while padding
+    im = np.array(im)
+    im = im.flatten().reshape((-1,3))
+    feature_matrix = torch.tensor(im.flatten().reshape((-1,3)))
+
+    # Make a data object to store graph informaiton
+    data = Data(x=feature_matrix, 
+                edge_index=edge_index
+            )
+    
+    # saving the graph
+    torch.save(data, os.path.join(
+            path_to_data, 
+            f"image_graphs/{img_name}.pt")
+    )
+
+    print(data)
+    print(data.edge_index.max() > data.x[0])
 
 def main(img):
-
     im = Image.open(img).convert("L")
 
     # checking the size of the image
@@ -137,86 +188,36 @@ def main(img):
     # crop the image
     im, reject = crop_image(im)
 
+    img_name = os.path.basename(img).split('.')[0]
     if not reject:
-        try:
-            # bucketing
-            resize_factor = bucket(im)
-
-            # resize
-            im = resize_image(im, resize_factor)
-
-            # padding
-            im = pad_image(im)
-
-            # convert to tensor
-            convert = transforms.ToTensor()
-            _im = convert(im)
-
-            # save them as tensors
-            img_name = os.path.basename(img).split('.')[0]
-            torch.save(
-                _im,
-                f"{path_to_data}/image_tensors/{img_name}.pt",
-            )
-
-            ######### GETTING GRAPH AT PIXEL LEVEL ###########
-            
-            im = np.array(im)
-            
-            adj = image.img_to_graph(im)
-            edge_index = torch.tensor(np.vstack((adj.row, adj.col)))
-            edge_weight = adj.data
-            
-            # already RGB -- did while padding
-            im = im.flatten().reshape((-1,3))
-            feature_matrix = torch.tensor(im.flatten().reshape((-1,3)))
-
-            # Make a data object to store graph informaiton
-            data = Data(x=feature_matrix, 
-                        edge_index=edge_index,
-                        edge_attr=edge_weight
-                    )
-            
-            # build graph
-            # G = to_networkx(data)
-            
-            # saving the graph
-            base_name = os.path.basename(img)
-            torch.save(data, os.path.join(
-                    path_to_data, 
-                    f"image_graphs/{base_name.split('.')[0]}.pt")
-            )
-
-            return None
-        
-        except:
-            return img
-
+        create_image_tensors(im, img_name)
+        create_image_graphs(im, img_name)
     else:
         return img
-    
 
 if __name__ == "__main__":
 
-    path_to_images = os.path.join(path_to_data, "images")
-    imgs = [os.path.join(path_to_images, f"{i}.png") 
-            for i in range(5000)]
+    # path_to_images = os.path.join(path_to_data, "images")
+    # imgs = [os.path.join(path_to_images, f"{i}.png") 
+    #         for i in range(5000)]
     
-    # imgs = ["data/images/13.png"]
+    imgs = ["data/images/13.png"]
 
     _graph_path = os.path.join(path_to_data, "image_graphs")
     _tnsr_path = os.path.join(path_to_data, "image_tensors")
 
-    for _p in [_graph_path, 
-               _tnsr_path, 
-               "./logs"]:
-        if not os.path.exists(_p):
-            os.mkdir(_p)
+    main(imgs[0])
 
-    with mp.Pool(args["ncpus"]) as pool:
-        result = pool.map(main, imgs)
+    # for _p in [_graph_path, 
+    #            _tnsr_path, 
+    #            "./logs"]:
+    #     if not os.path.exists(_p):
+    #         os.mkdir(_p)
+
+    # with mp.Pool(args["ncpus"]) as pool:
+    #     result = pool.map(main, imgs)
     
-    blank_images = [i for i in result if i is not None]
+    # blank_images = [i for i in result if i is not None]
     
-    with open("logs/blank_images.lst", "w") as out:
-        out.write("\n".join(str(item) for item in blank_images))
+    # with open("logs/blank_images.lst", "w") as out:
+    #     out.write("\n".join(str(item) for item in blank_images))

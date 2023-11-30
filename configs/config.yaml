@@ -23,7 +23,7 @@ training:
   load_trained_model_for_testing: False
 
 preprocessing:
-  path_to_data: "/home/gauravs/data/grenc_trdec"
+  path_to_data: "data/"
   markup: "mml"
   vocab_freq: 5
   device: "cuda"
