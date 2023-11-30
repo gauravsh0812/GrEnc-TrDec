@@ -157,7 +157,7 @@ def create_image_graphs(im, img_name):
     # edge_weight = adj.data
     
     w,h = im.size
-    print(w,h)
+    # print(w,h)
     edge_index, _ = grid(height=h, width=w)
 
     # already RGB -- did while padding
