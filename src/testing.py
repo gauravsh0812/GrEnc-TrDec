@@ -15,8 +15,6 @@ def evaluate(
     isGraphEnc=True,
     isVitEnc=True,
     is_test=False,
-    ddp=False,
-    rank=None,
 ):
     model.eval()
     epoch_loss = 0
@@ -35,6 +33,7 @@ def evaluate(
             for im in img:
                 if isGraphEnc:
                     G = torch.load(f"{img_tnsr_path}/{int(im.item())}.pt")
+                    print("testing G:", G)
                     _features_list.append(G.x.float())
                     _edge_list.append(G.edge_index) 
                 
