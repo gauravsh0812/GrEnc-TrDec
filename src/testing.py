@@ -33,7 +33,6 @@ def evaluate(
             for im in img:
                 if isGraphEnc:
                     G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
-                    print("testing G:", G)
                     _features_list.append(G.x.float())
                     _edge_list.append(G.edge_index) 
                 

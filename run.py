@@ -313,7 +313,7 @@ def train_model(rank=None,):
                 if (not ddp) or (ddp and rank == 0):
                     torch.save(
                         model.state_dict(),
-                        f"trained_models/{training_args['markup']}_latest.pt",
+                        f"trained_models/{preprocessing_args['markup']}_latest.pt",
                     )
 
                 if val_loss < best_valid_loss:
@@ -322,10 +322,10 @@ def train_model(rank=None,):
                     if (not ddp) or (ddp and rank == 0):
                         torch.save(
                             model.state_dict(),
-                            f"trained_models/{training_args['markup']}_best.pt",
+                            f"trained_models/{preprocessing_args['markup']}_best.pt",
                         )
                         if training_args.wandb:
-                            wandb.save(f"trained_models/{training_args['markup']}_best.pt")
+                            wandb.save(f"trained_models/{preprocessing_args['markup']}_best.pt")
 
                 else:
                     count_es += 1
@@ -361,7 +361,7 @@ def train_model(rank=None,):
 
         print(
             "best model saved as:  ",
-            f"trained_models/{training_args['markup']}_best.pt",
+            f"trained_models/{preprocessing_args['markup']}_best.pt",
         )
 
     if ddp:
@@ -371,13 +371,13 @@ def train_model(rank=None,):
 
     print(
         "loading best saved model: ",
-        f"trained_models/{training_args['markup']}_best.pt",
+        f"trained_models/{preprocessing_args['markup']}_best.pt",
     )
     try:
         # loading pre_tained_model
         model.load_state_dict(
             torch.load(
-                f"trained_models/{training_args['markup']}_best.pt"
+                f"trained_models/{preprocessing_args['markup']}_best.pt"
             )
         )
 
