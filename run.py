@@ -381,21 +381,21 @@ def train_model(rank=None,):
             )
         )
 
-    except:
-        try:
-            # removing "module." from keys
-            pretrained_dict = {
-                key.replace("module.", ""): value
-                for key, value in model.state_dict().items()
-            }
-        except:
-            # adding "module." in keys
-            pretrained_dict = {
-                f"module.{key}": value
-                for key, value in model.state_dict().items()
-            }
+    # except:
+    #     try:
+    #         # removing "module." from keys
+    #         pretrained_dict = {
+    #             key.replace("module.", ""): value
+    #             for key, value in model.state_dict().items()
+    #         }
+    #     except:
+    #         # adding "module." in keys
+    #         pretrained_dict = {
+    #             f"module.{key}": value
+    #             for key, value in model.state_dict().items()
+    #         }
 
-        model.load_state_dict(pretrained_dict)
+    #     model.load_state_dict(pretrained_dict)
 
 
     test_loss = evaluate(
