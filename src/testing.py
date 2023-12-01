@@ -38,7 +38,7 @@ def evaluate(
                     _edge_list.append(G.edge_index) 
                 
                 if isVitEnc:
-                    _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
+                    _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
             
             if isGraphEnc:
                 features_list = torch.stack(_features_list).to(device)
