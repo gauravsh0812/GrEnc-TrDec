@@ -1,4 +1,5 @@
 import torch 
 
-G = torch.load("data/image_graphs/1.pt")
-print(G)
+print(torch.cuda.device_count())
+
+torch.load(f"trained_models/mml_best.pt")
