@@ -374,6 +374,7 @@ def train_model(rank=None,):
         f"trained_models/{preprocessing_args['markup']}_best.pt",
     )
     
+    print("iscuda: ", model.is_cuda())
     # loading pre_tained_model
     model.load_state_dict(
         torch.load(
