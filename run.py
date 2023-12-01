@@ -298,8 +298,6 @@ def train_model(rank=None,):
                     vocab,
                     isGraphEnc=cfg["model"]["isGraphEnc"],
                     isVitEnc=cfg["model"]["isVitEnc"],
-                    ddp=ddp,
-                    rank=rank,
                 )
 
                 if training_args.wandb:
