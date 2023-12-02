@@ -206,6 +206,7 @@ def train_model(rank=None,):
                 find_unused_parameters=True,
             )
         else:
+            print(f"using {str(gpus)}...")
             os.environ["CUDA_VISIBLE_DEVICES"] = str(gpus)
             device = torch.device("cuda")
             
