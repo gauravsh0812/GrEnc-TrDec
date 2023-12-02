@@ -396,8 +396,6 @@ def train_model(rank=None,):
         isGraphEnc=cfg["model"]["isGraphEnc"],
         isVitEnc=cfg["model"]["isVitEnc"],
         is_test=True,
-        ddp=ddp,
-        rank=rank,
     )
 
     if (not ddp) or (ddp and rank == 0):
