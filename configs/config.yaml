@@ -11,7 +11,7 @@ training:
   seed: 42
   clip: 1
   ddp: False
-  gpus: [5]
+  gpus: 5
   epochs: 1
   batch_size: 32
   learning_rate: 0.01

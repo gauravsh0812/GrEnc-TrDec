@@ -207,7 +207,7 @@ def train_model(rank=None,):
             )
         else:
             print(f"using gpu {str(gpus)}...")
-            os.environ["CUDA_VISIBLE_DEVICES"] = str(gpus[0])
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(gpus)
             device = torch.device("cuda")
             
             (
