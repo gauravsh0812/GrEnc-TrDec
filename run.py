@@ -374,6 +374,7 @@ def train_model(rank=None,):
         f"trained_models/{preprocessing_args['markup']}_best.pt",
     )
     # loading pre_tained_model
+    print(torch.cuda.device_count())
     model.load_state_dict(
         torch.load(
             f"trained_models/{preprocessing_args['markup']}_best.pt"
