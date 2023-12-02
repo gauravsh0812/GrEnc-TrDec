@@ -375,6 +375,8 @@ def train_model(rank=None,):
         f"trained_models/{preprocessing_args['markup']}_best.pt",
     )
     # loading pre_tained_model
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpus)
+    device = torch.device("cuda")
     print("available?: ", torch.cuda.is_available())
     print("num: ", torch.cuda.device_count())
     model.load_state_dict(
