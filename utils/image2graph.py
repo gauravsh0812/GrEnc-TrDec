@@ -224,3 +224,15 @@ if __name__ == "__main__":
     
     with open("logs/blank_images.lst", "w") as out:
         out.write("\n".join(str(item) for item in blank_images))
+    
+    tnsrs = sorted(
+        [
+            int(i.split(".")[0])
+            for i in os.listdir(_tnsr_path)
+        ]
+    )
+    os.chdir(path_to_data)
+    for t in range(len(tnsrs)):
+        os.rename(f"image_tensors/{tnsrs[t]}.pt", f"image_tensors{t}.pt")
+        os.rename(f"image_graphs/{tnsrs[t]}.pt", f"image_graphs{t}.pt")
+    
