@@ -49,7 +49,7 @@ def train(
                 _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
         
         if isGraphEnc:
-            batch = Batch.from_data_list(_data_list)
+            batch = Batch.from_data_list(_data_list).to(device)
             # features_list = torch.stack(_features_list).to(device)
             # edges_list = torch.stack(_edge_list).to(device)
         else:
