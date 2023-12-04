@@ -153,6 +153,8 @@ def epoch_time(start_time, end_time):
 
 
 def train_model(rank=None,):
+
+    print("in train model def... \n")
     # parameters
     epochs = training_args["epochs"]
     batch_size = training_args["batch_size"]
