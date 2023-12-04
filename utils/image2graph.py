@@ -176,8 +176,8 @@ def create_image_graphs(im, img_name):
             f"image_graphs/{img_name}.pt")
     )
 
-    print(data)
-    print(data.edge_index.max() > data.x[0])
+    # print(data)
+    # print(data.edge_index.max() > data.x[0])
 
 def main(img):
     im = Image.open(img).convert("L")
@@ -202,7 +202,7 @@ if __name__ == "__main__":
 
     path_to_images = os.path.join(path_to_data, "images")
     imgs = [os.path.join(path_to_images, f"{i}.png") 
-            for i in range(5000)]
+            for i in range(50)]
     
     # imgs = ["data/images/13.png"]
 
