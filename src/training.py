@@ -41,6 +41,7 @@ def train(
         for im in img:
             if isGraphEnc:
                 G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
+                print("G.x shape, G.edge shape: ", G.x.shape, G.edge_index.shape)
                 _data_list.append(G)
                 # _features_list.append(G.x.float())
                 # _edge_list.append(G.edge_index)
