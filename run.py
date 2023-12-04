@@ -59,18 +59,32 @@ def define_model(vocab, device):
     gr_dropout = graph_args.dropout
     
     assert isGraphEnc or isVitEnc, "Need to select either one of the encoder or both of them."
+    
+    image_w = buiding_graph_args.preprocessed_image_width
+    image_h = buiding_graph_args.preprocessed_image_height
+    
+    assert image_w % cfg.model.vit.patch_size == 0
+    assert image_h % cfg.model.vit.patch_size == 0
+
+    n_patches = (
+        image_w // cfg.model.vit.patch_size
+        ) * (
+        image_h // cfg.model.vit.patch_size
+        )
+
+    n_pixels = image_h * image_w
 
     if isGraphEnc:
-        Gr_ENC = Graph_Encoder(in_channels=graph_args.input_channels,
+        Gr_ENC = Graph_Encoder(
+                            in_channels=graph_args.input_channels,
                             hidden_channels=graph_args.hid_dim,
                             vit_embed_dim=vit_args.emb_dim,
+                            n_patches=n_patches,
+                            n_pixels=n_pixels,
                             dropout=gr_dropout,
                             )
 
     if isVitEnc:
-        image_w = buiding_graph_args.preprocessed_image_width
-        image_h = buiding_graph_args.preprocessed_image_height
-
         Vit_ENC = VisionTransformer(
                         img_size=[image_w,image_h],
                         patch_size=vit_args.patch_size,
@@ -83,15 +97,6 @@ def define_model(vocab, device):
                         p=gr_dropout,
                         attn_p=gr_dropout,
                         )
-
-    assert cfg.building_graph.preprocessed_image_width % cfg.model.vit.patch_size == 0
-    assert cfg.building_graph.preprocessed_image_height % cfg.model.vit.patch_size == 0
-
-    n_patches = (
-        cfg.building_graph.preprocessed_image_width // cfg.model.vit.patch_size
-        ) * (
-        cfg.building_graph.preprocessed_image_height // cfg.model.vit.patch_size
-        )
 
     Tr_DEC = Transformer_Decoder(
         emb_dim=xfmer_args.emb_dim,

@@ -9,6 +9,8 @@ class Graph_Encoder(nn.Module):
                  in_channels, 
                  hidden_channels, 
                  vit_embed_dim,
+                 n_patches,
+                 n_pixels,
                  dropout=0.1,
                  ):
 
@@ -21,7 +23,8 @@ class Graph_Encoder(nn.Module):
         
         self.bn1 = BatchNorm(hidden_channels*2)
         self.bn2 = BatchNorm(hidden_channels*8)
-
+        
+        self.pixel2patch = nn.Linear(n_pixels, n_patches)
         self.linear = nn.Linear(vit_embed_dim+hidden_channels*8, hidden_channels*8)
         
         self.relu = nn.ReLU()
@@ -95,8 +98,7 @@ class Graph_Encoder(nn.Module):
         _vit_1 = vit_output.shape[1]  # n_patches
         _x_1 = x.shape[1]  # n_pixels
 
-        lin = nn.Linear(_x_1, _vit_1).to("cuda")
-        x = lin(x.permute(0,2,1)).permute(0,2,1) # (n_samples, n_patch, emb)
+        x = self.pixel2patch(x.permute(0,2,1)).permute(0,2,1) # (n_samples, n_patch, emb)
         x = torch.cat((vit_output, x), dim=2)   # (n_samples, n_patch, emb_dim + hid*8)
         x = self.linear(x)  # (n_samples, n_patches, hid*8)
 
