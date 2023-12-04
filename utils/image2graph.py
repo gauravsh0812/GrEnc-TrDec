@@ -202,9 +202,9 @@ if __name__ == "__main__":
 
     path_to_images = os.path.join(path_to_data, "images")
     imgs = [os.path.join(path_to_images, f"{i}.png") 
-            for i in range(50)]
+            for i in range(len(os.listdir(path_to_images)))]
     
-    # imgs = ["data/images/13.png"]  len(os.listdir(path_to_images))
+    # imgs = ["data/images/13.png"]  
 
     _graph_path = os.path.join(path_to_data, "image_graphs")
     _tnsr_path = os.path.join(path_to_data, "image_tensors")
