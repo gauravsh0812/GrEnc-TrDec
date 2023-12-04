@@ -13,7 +13,7 @@ training:
   ddp: False
   gpus: 0
   epochs: 1
-  batch_size: 32
+  batch_size: 64
   learning_rate: 0.001
   weight_decay: 0.00001
   betas: [0.9, 0.999]
@@ -37,18 +37,18 @@ model:
   graph_model:
     input_channels: 3
     hid_dim: 64
-    dropout: 0.2
+    dropout: 0.1
 
   vit:
     patch_size: 10
     nheads: 4
-    emb_dim: 256
-    depth: 6
+    emb_dim: 512
+    depth: 4
     mlp_ratio: 4
     qkv_bias: True
   
   decoder_transformer:
-    emb_dim: 256
+    emb_dim: 512
     dec_hid_dim: 512
     nheads: 4
     max_len: 350
