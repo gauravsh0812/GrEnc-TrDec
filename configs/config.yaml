@@ -37,7 +37,7 @@ model:
   graph_model:
     input_channels: 3
     hid_dim: 64
-    dropout: 0.1
+    dropout: 0.2
 
   vit:
     patch_size: 10
