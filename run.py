@@ -255,12 +255,10 @@ def train_model(rank=None,):
     )
     
     # multistep_lr scheduler
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(
+    scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
-        milestones=[training_args.scheduler_step_size],
+        step_size=training_args.scheduler_step_size,
         gamma=training_args.scheduler_gamma,
-        last_epoch=-1,
-        verbose=False
     )
 
     best_valid_loss = float("inf")
