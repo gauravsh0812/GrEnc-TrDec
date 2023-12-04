@@ -189,6 +189,7 @@ def train_model(rank=None,):
     preprocessing_args["max_len"] = xfmer_args.max_len
     preprocessing_args["ddp"] = training_args.ddp
     preprocessing_args["world_size"] = world_size
+    preprocessing_args["rank"] = rank
     if torch.cuda.is_available():
         if ddp:
             # add a few args for temporarily purpose
