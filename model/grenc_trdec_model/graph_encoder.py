@@ -98,10 +98,8 @@ class Graph_Encoder(nn.Module):
         lin = nn.Linear(_x_1, _vit_1).to("cuda")
         x = lin(x.permute(0,2,1)).permute(0,2,1) # (n_samples, n_patch, emb)
         x = torch.cat((vit_output, x), dim=2)   # (n_samples, n_patch, emb_dim + hid*8)
-        x = self.linear(x)  # (n_patches, hid*8)
-        
-        print("x final shape: ", x.shape)
-        
+        x = self.linear(x)  # (n_samples, n_patches, hid*8)
+
         return x
     
         # final_nodes_list.append(x)
