@@ -86,9 +86,9 @@ class Graph_Encoder(nn.Module):
         x = self.relu(self.conv3(self.p(x), edge_index))  # hid*2 --> hid*4
         x = self.relu(self.bn2(self.conv4(self.p(x), edge_index)))  # hid*4 --> hid*8
 
-        print("vit_output shape:", vit_output.shape)
+        print("vit_output, x shape:", vit_output.shape, x.shape)
         batch_size = vit_output.shape[0]
-        x = x.reshape(batch_size, -1, x.shape[2])
+        x = x.reshape(batch_size, -1, x.shape[-1])
         print("x.shape final: ", x.shape)
 
         # graph embedding + vit output concat
