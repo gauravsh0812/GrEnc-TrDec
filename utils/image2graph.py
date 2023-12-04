@@ -202,9 +202,9 @@ if __name__ == "__main__":
 
     path_to_images = os.path.join(path_to_data, "images")
     imgs = [os.path.join(path_to_images, f"{i}.png") 
-            for i in range(len(os.listdir(path_to_images)))]
+            for i in range(50)]
     
-    # imgs = ["data/images/13.png"]
+    # imgs = ["data/images/13.png"]  len(os.listdir(path_to_images))
 
     _graph_path = os.path.join(path_to_data, "image_graphs")
     _tnsr_path = os.path.join(path_to_data, "image_tensors")
@@ -233,6 +233,6 @@ if __name__ == "__main__":
     )
     os.chdir(path_to_data)
     for t in range(len(tnsrs)):
-        os.rename(f"image_tensors/{tnsrs[t]}.pt", f"image_tensors{t}.pt")
-        os.rename(f"image_graphs/{tnsrs[t]}.pt", f"image_graphs{t}.pt")
+        os.rename(f"image_tensors/{tnsrs[t]}.pt", f"image_tensors/{t}.pt")
+        os.rename(f"image_graphs/{tnsrs[t]}.pt", f"image_graphs/{t}.pt")
     
