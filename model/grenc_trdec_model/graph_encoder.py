@@ -86,22 +86,24 @@ class Graph_Encoder(nn.Module):
         x = self.relu(self.conv3(self.p(x), edge_index))  # hid*2 --> hid*4
         x = self.relu(self.bn2(self.conv4(self.p(x), edge_index)))  # hid*4 --> hid*8
 
-        print("vit_output, x shape:", vit_output.shape, x.shape)
-        batch_size = vit_output.shape[0]
-        x = x.reshape(batch_size, -1, x.shape[-1])
-        print("x.shape final: ", x.shape)
+        batch_size = vit_output.shape[0]   # [n_samples, n_patches, emb_dim]
+        x = x.reshape(batch_size, -1, x.shape[-1])  # [n_samples, n_pixels, hid_dim*8]
 
         # graph embedding + vit output concat
         # vit_output: (n_samples, n_patches, emb_dim.    
         # _vit = vit_output[i,:,:] # (n_patches,emb_dim)
-        # _vit_1 = _vit.shape[0]  # n_patches
-        # _x_1 = x.shape[0]  # n_pixels
+        _vit_1 = vit_output.shape[1]  # n_patches
+        _x_1 = x.shape[1]  # n_pixels
 
         lin = nn.Linear(_x_1, _vit_1).to("cuda")
-        x = lin(x.permute(1,0)).permute(1,0) # (n_patch, out)
-        x = torch.cat((_vit, x), dim=1)   # (n_patch, emb_dim + hid*8)
+        x = lin(x.permute(0,2,1)).permute(0,2,1) # (n_samples, n_patch, emb)
+        x = torch.cat((vit_output, x), dim=2)   # (n_samples, n_patch, emb_dim + hid*8)
         x = self.linear(x)  # (n_patches, hid*8)
         
+        print("x final shape: ", x.shape)
+        
+        return x
+    
         # final_nodes_list.append(x)
 
-        return torch.stack(final_nodes_list)
+        # return torch.stack(final_nodes_list)
