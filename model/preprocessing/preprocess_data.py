@@ -79,7 +79,7 @@ def preprocess_dataset(args):
 
     # reading raw text files
     mml_path = f'{args["path_to_data"]}/{args["markup"]}.lst'
-    mml_txt = open(mml_path).read().split("\n")[:100]
+    mml_txt = open(mml_path).read().split("\n")
     image_num = range(0, len(mml_txt))
 
     # split the image_num into train, test, validate
