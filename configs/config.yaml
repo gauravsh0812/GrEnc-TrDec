@@ -35,6 +35,7 @@ preprocessing:
 model:
   isGraphEnc: True
   isVitEnc: True
+
   graph_model:
     input_channels: 3
     hid_dim: 64
@@ -54,4 +55,4 @@ model:
     nheads: 4
     max_len: 350
     n_xfmer_decoder_layers: 4
-    dim_feedfwd: 1024
+    dim_feedfwd: 512
