@@ -41,14 +41,14 @@ model:
 
   vit:
     patch_size: 10
-    nheads: 8
+    nheads: 4
     emb_dim: 256
     depth: 6
     mlp_ratio: 4
     qkv_bias: True
   
   decoder_transformer:
-    emb_dim: 512
+    emb_dim: 256
     dec_hid_dim: 512
     nheads: 4
     max_len: 350
