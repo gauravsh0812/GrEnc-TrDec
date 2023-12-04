@@ -56,45 +56,47 @@ class Graph_Encoder(nn.Module):
                         nn.init.constant_(param.data, 0)
 
     def forward(self, 
-                features_list, 
-                edges_list,
+                x,
+                edge_index,
+                # features_list, 
+                # edges_list,
                 vit_output,
                 ):
         
-        final_nodes_list = list()
+        # final_nodes_list = list()
         
         # for i, data in enumerate(graphs_list):
-        assert len(features_list) == len(edges_list)
+        # assert len(features_list) == len(edges_list)
 
-        for i, (x, edge_index) in enumerate(zip(features_list, edges_list)):
-            edge_index = edge_index.long()
+        # for i, (x, edge_index) in enumerate(zip(features_list, edges_list)):
+            # edge_index = edge_index.long()
             
-            has_nan = torch.isnan(edge_index).any()
-            has_inf = torch.isinf(edge_index).any()
-            isgt = edge_index.max() > x.size(0)
+            # has_nan = torch.isnan(edge_index).any()
+            # has_inf = torch.isinf(edge_index).any()
+            # isgt = edge_index.max() > x.size(0)
 
             # print('\n Contains NaN:', has_nan.item())
             # print('\n Contains inf:', has_inf.item())
             # print('\n Contains isgt:', isgt, edge_index.max())
 
 
-            # node embedding
-            x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
-            x = self.relu(self.bn1(self.conv2(self.p(x), edge_index)))  # hid --> hid*2
-            x = self.relu(self.conv3(self.p(x), edge_index))  # hid*2 --> hid*4
-            x = self.relu(self.bn2(self.conv4(self.p(x), edge_index)))  # hid*4 --> hid*8
+        # node embedding
+        x = self.relu(self.conv1(self.p(x), edge_index))  # in_chn --> hid
+        x = self.relu(self.bn1(self.conv2(self.p(x), edge_index)))  # hid --> hid*2
+        x = self.relu(self.conv3(self.p(x), edge_index))  # hid*2 --> hid*4
+        x = self.relu(self.bn2(self.conv4(self.p(x), edge_index)))  # hid*4 --> hid*8
 
-            # graph embedding + vit output concat
-            # vit_output: (n_samples, n_patches, emb_dim.    
-            _vit = vit_output[i,:,:] # (n_patches,emb_dim)
-            _vit_1 = _vit.shape[0]  # n_patches
-            _x_1 = x.shape[0]  # n_pixels
+        # graph embedding + vit output concat
+        # vit_output: (n_samples, n_patches, emb_dim.    
+        _vit = vit_output[i,:,:] # (n_patches,emb_dim)
+        _vit_1 = _vit.shape[0]  # n_patches
+        _x_1 = x.shape[0]  # n_pixels
 
-            lin = nn.Linear(_x_1, _vit_1).to("cuda")
-            x = lin(x.permute(1,0)).permute(1,0) # (n_patch, out)
-            x = torch.cat((_vit, x), dim=1)   # (n_patch, emb_dim + hid*8)
-            x = self.linear(x)  # (n_patches, hid*8)
-            
-            final_nodes_list.append(x)
+        lin = nn.Linear(_x_1, _vit_1).to("cuda")
+        x = lin(x.permute(1,0)).permute(1,0) # (n_patch, out)
+        x = torch.cat((_vit, x), dim=1)   # (n_patch, emb_dim + hid*8)
+        x = self.linear(x)  # (n_patches, hid*8)
+        
+        # final_nodes_list.append(x)
 
         return torch.stack(final_nodes_list)
