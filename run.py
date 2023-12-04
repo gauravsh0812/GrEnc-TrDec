@@ -414,7 +414,7 @@ def train_model(rank=None,):
 
 # for DDP
 def ddp_main(world_size, gpus):    
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpus
+    # os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     mp.spawn(train_model, args=(), nprocs=world_size, join=True)
 
 if __name__ == "__main__":
