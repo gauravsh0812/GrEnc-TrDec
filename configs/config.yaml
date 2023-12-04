@@ -55,4 +55,4 @@ model:
     nheads: 4
     max_len: 350
     n_xfmer_decoder_layers: 4
-    dim_feedfwd: 512
+    dim_feedfwd: 1024
