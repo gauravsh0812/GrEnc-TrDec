@@ -153,8 +153,6 @@ def epoch_time(start_time, end_time):
 
 
 def train_model(rank=None,):
-
-    print("in train model def... \n")
     # parameters
     epochs = training_args["epochs"]
     batch_size = training_args["batch_size"]
@@ -165,6 +163,7 @@ def train_model(rank=None,):
     seed = training_args["seed"]
     ddp = training_args["ddp"]
     gpus = training_args["gpus"]
+    world_size = training_args["world_size"]
     load_trained_model_for_testing = training_args["load_trained_model_for_testing"]
     early_stopping_counts = training_args.early_stopping
     
@@ -194,7 +193,7 @@ def train_model(rank=None,):
             # add a few args for temporarily purpose
             # this is to avoid replicating in config file
             # create default process group
-            dist.init_process_group("nccl", rank=rank, world_size=len(gpus))
+            dist.init_process_group("nccl", rank=rank, world_size=world_size)
             # add rank to training_args
             training_args["rank"] = rank
             device = f"cuda:{rank}"
@@ -421,8 +420,8 @@ def ddp_main(world_size,):
 
 if __name__ == "__main__":
     if training_args["ddp"]:
-        gpus = training_args["gpus"].split(",")
-        world_size = len(gpus)
+        gpus = training_args["gpus"]
+        world_size = training_args["world_size"]
         os.environ["MASTER_ADDR"] = "localhost"
         os.environ["MASTER_PORT"] = "29800"
         ddp_main(world_size)
