@@ -42,7 +42,7 @@ model:
   vit:
     patch_size: 10
     nheads: 4
-    emb_dim: 256
+    emb_dim: 512
     depth: 6
     mlp_ratio: 4
     qkv_bias: True
