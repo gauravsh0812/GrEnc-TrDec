@@ -200,7 +200,6 @@ def train_model(rank=None,):
             # add rank to training_args
             training_args["rank"] = rank
             device = f"cuda:{rank}"
-            print("device: ", rank, device)
             (
                 train_dataloader,
                 test_dataloader,
