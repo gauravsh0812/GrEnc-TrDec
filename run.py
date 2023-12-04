@@ -424,7 +424,7 @@ if __name__ == "__main__":
         gpus = training_args["gpus"].split(",")
         world_size = len(gpus)
         os.environ["MASTER_ADDR"] = "localhost"
-        os.environ["MASTER_PORT"] = "29890"
+        os.environ["MASTER_PORT"] = "29800"
         ddp_main(world_size)
     else:
         train_model()
