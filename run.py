@@ -190,6 +190,7 @@ def train_model(rank=None,):
     preprocessing_args["ddp"] = training_args.ddp
     preprocessing_args["world_size"] = world_size
     preprocessing_args["rank"] = rank
+
     if torch.cuda.is_available():
         if ddp:
             # add a few args for temporarily purpose
@@ -199,6 +200,7 @@ def train_model(rank=None,):
             # add rank to training_args
             training_args["rank"] = rank
             device = f"cuda:{rank}"
+            print("device: ", rank, device)
             (
                 train_dataloader,
                 test_dataloader,
@@ -208,7 +210,7 @@ def train_model(rank=None,):
 
             model = define_model(vocab, rank)
             model = DDP(
-                model.to(f"cuda:{rank}"),
+                model.to(device),
                 device_ids=[rank],
                 output_device=rank,
                 find_unused_parameters=True,
