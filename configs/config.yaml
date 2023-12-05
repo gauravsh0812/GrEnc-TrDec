@@ -11,8 +11,8 @@ training:
   seed: 42
   clip: 1
   ddp: True
-  gpus: 0,1
-  world_size: 2
+  gpus: 0,1,2,3,4,5
+  world_size: 6
   epochs: 10
   batch_size: 32
   learning_rate: 0.001
