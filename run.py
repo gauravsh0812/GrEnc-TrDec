@@ -255,9 +255,10 @@ def train_model(rank=None,):
     )
     
     # multistep_lr scheduler
-    scheduler = torch.optim.lr_scheduler.StepLR(
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer,
-        step_size=training_args.scheduler_step_size,
+        # step_size=training_args.scheduler_step_size,
+        milestones=[4]
         gamma=training_args.scheduler_gamma,
     )
 

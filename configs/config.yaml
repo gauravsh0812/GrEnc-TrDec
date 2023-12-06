@@ -20,7 +20,7 @@ training:
   betas: [0.9, 0.8]
   early_stopping: 5
   scheduler_step_size: 10
-  scheduler_gamma: 0.9
+  scheduler_gamma: 0.5
   load_trained_model_for_testing: False
 
 preprocessing:
