@@ -204,7 +204,8 @@ class VisionTransformer(nn.Module):
             self.pixel2patch = nn.Linear(n_pixels, n_patches)
             self.final_lin = nn.Linear(2*embed_dim, embed_dim)
             
-        self.pf = PositionalEncoding(embed_dim, p, n_patches)
+        self.patch_pe = PositionalEncoding(embed_dim, p, n_patches)
+        self.pixel_pe = PositionalEncoding(embed_dim, p, n_pixels)
         
         self.blocks = nn.ModuleList(
             [
@@ -231,12 +232,15 @@ class VisionTransformer(nn.Module):
         # x: (N, in_chns, H, W)
         if not isVitPixel:
             x = self.patch_embed(x)    # (n_samples, n_patches, emb_dim)
+            x = x.permute(1,0,2)   # (n_patches, n_samples, emb_dim)
+            x = x + self.patch_pe(x) 
+            
         else:
             x = self.pixel_embed(x)    # (n_samples, n_pixels, emb_dim)
+            x = x.permute(1,0,2)   # (n_pixels, n_samples, emb_dim)
+            x = x + self.pixel_pe(x)         
 
-        x = x.permute(1,0,2)   # (n_patches, n_samples, emb_dim)
-        x = x + self.pf(x) 
-        x = x.permute(1,0,2)  # (n_samples, n_patches, embed_dim)
+        x = x.permute(1,0,2)  # (n_samples, n_patches/pixles, embed_dim)
 
         for block in self.blocks:
             x = block(x)
