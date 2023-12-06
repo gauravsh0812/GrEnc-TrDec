@@ -18,7 +18,7 @@ def train(
     criterion,
     clip,
     device,
-    isGraphPixel=True,
+    isGraphPixel=False,
     ddp=False,
     rank=None,
 ):
@@ -33,6 +33,7 @@ def train(
         # mml: (B, max_len)
         # img: (B, in_channel, H, W)
         mml = mml.to(device, dtype=torch.long)
+        
         _imgs = list()
         _data_list = list()
         for im in img:

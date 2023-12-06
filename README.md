@@ -4,7 +4,7 @@
 ```
 conda create -n grenc_trdec python=3.9 -y
 source activate grenc_trdec
-conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 -c pytorch -y
+pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 ```
 
