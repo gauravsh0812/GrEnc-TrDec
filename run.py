@@ -58,7 +58,7 @@ def define_model(vocab, device):
     isVitPixel = cfg.model.isVitPixel
     gr_dropout = graph_args.dropout
     
-    assert isGraphPixel or isVitEnc, "Need to select either one of the encoder or both of them."
+    assert isGraphPixel or isVitPixel, "Need to select either one of the encoder or both of them."
     
     image_w = buiding_graph_args.preprocessed_image_width
     image_h = buiding_graph_args.preprocessed_image_height
@@ -292,7 +292,6 @@ def train_model(rank=None,):
                     clip,
                     device,
                     isGraphPixel=cfg["model"]["isGraphPixel"],
-                    isVitEnc=cfg["model"]["isVitPixel"],
                     ddp=ddp,
                     rank=rank,
                 )
@@ -310,7 +309,6 @@ def train_model(rank=None,):
                     device,
                     vocab,
                     isGraphPixel=cfg["model"]["isGraphPixel"],
-                    isVitEnc=cfg["model"]["isVitPixel"],
                 )
 
                 if training_args.wandb:
@@ -403,7 +401,6 @@ def train_model(rank=None,):
         device,
         vocab,
         isGraphPixel=cfg["model"]["isGraphPixel"],
-        isVitEnc=cfg["model"]["isVitPixel"],
         is_test=True,
     )
 
