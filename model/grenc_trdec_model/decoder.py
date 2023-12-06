@@ -7,7 +7,8 @@ from model.grenc_trdec_model.position_encoding import PositionalEncoding
 class Transformer_Decoder(nn.Module):
     def __init__(
         self,
-        emb_dim,
+        vit_emb_dim,
+        dec_emb_dim,
         dec_hid_dim,
         nheads,
         output_dim,
@@ -21,11 +22,11 @@ class Transformer_Decoder(nn.Module):
         super(Transformer_Decoder, self).__init__()
         self.device = device
         self.output_dim = output_dim
-        self.emb_dim = emb_dim
-        self.embed = nn.Embedding(output_dim, emb_dim)
-        self.pos = PositionalEncoding(emb_dim, dropout, max_len)
+        self.emb_dim = dec_emb_dim
+        self.embed = nn.Embedding(output_dim, dec_emb_dim)
+        self.pos = PositionalEncoding(dec_emb_dim, dropout, max_len)
         self.change_len = nn.Linear(n_patches, max_len)
-        self.change_dim = nn.Linear(emb_dim, dec_hid_dim)
+        self.change_dim = nn.Linear(vit_emb_dim, dec_hid_dim)
 
         """
         NOTE:
@@ -43,7 +44,7 @@ class Transformer_Decoder(nn.Module):
             xfmer_dec_layer, num_layers=n_xfmer_decoder_layers
         )
 
-        self.modify_dimension = nn.Linear(emb_dim, dec_hid_dim)
+        self.modify_dimension = nn.Linear(dec_emb_dim, dec_hid_dim)
         self.final_linear = nn.Linear(dec_hid_dim, output_dim)
         self.init_weights()
 
@@ -79,7 +80,7 @@ class Transformer_Decoder(nn.Module):
         pad_idx,
         is_test=False,
     ):
-        # enc_output: (B, n_patches, emb_dim)
+        # enc_output: (B, n_patches, vit_emb_dim)
         # trg: (B, max_len)
         """
         we provide input: [<sos>, x1, x2, ...]
@@ -105,15 +106,14 @@ class Transformer_Decoder(nn.Module):
 
         trg = self.embed(trg) * math.sqrt(
             self.emb_dim
-        )  # (max_len-1, B, emb_dim)
+        )  # (max_len-1, B, dec_emb_dim)
 
         pos_trg = self.pos(trg)  # (max_len-1, B, emb_dim)
         pos_trg = self.modify_dimension(pos_trg)  # (max_len-1, B, dec_hid_dim)
 
         # changing n_patches to max_len
-        gr_output = gr_output.permute(0,2,1) # (B, emb, n_patches)
-        gr_output = self.change_len(gr_output).permute(2,0,1)  # (max_len, B, emb)
-        print("gr_output shape: ", gr_output.shape)
+        gr_output = gr_output.permute(0,2,1) # (B, vit_emb, n_patches)
+        gr_output = self.change_len(gr_output).permute(2,0,1)  # (max_len, B, vit_emb)
         gr_output = self.change_dim(gr_output) # (max_len, B, dec_hid_dim)
 
         # outputs: (max_len-1,B, dec_hid_dim)
