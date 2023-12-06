@@ -13,8 +13,7 @@ def evaluate(
     criterion,
     device,
     vocab,
-    isGraphEnc=True,
-    isVitEnc=True,
+    isGraphPixel=True,
     is_test=False,
 ):
     model.eval()
@@ -29,32 +28,24 @@ def evaluate(
             batch_size = mml.shape[0]
             mml = mml.to(device, dtype=torch.long)
             _imgs = list()
-            # _features_list = list()
-            # _edge_list = list()
+            
             _data_list = list()
             for im in img:
-                if isGraphEnc:
+                # for vit patch encoder 
+                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
+
+                # for pixel encoders
+                # for vit pixel encoder, _imgs will be same
+                if isGraphPixel:
                     G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
                     _data_list.append(G)
-                    # _features_list.append(G.x.float())
-                    # _edge_list.append(G.edge_index) 
-                
-                if isVitEnc:
-                    _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
             
-            if isGraphEnc:
+            if isGraphPixel:
                 batch = Batch.from_data_list(_data_list).to(device)
-                # features_list = torch.stack(_features_list).to(device)
-                # edges_list = torch.stack(_edge_list).to(device)
             else:
-                batch = None
-                # features_list = None
-                # edges_list = None
+                batch=None
 
-            if isVitEnc:
-                imgs = torch.stack(_imgs).to(device)
-            else:
-                imgs = None
+            imgs = torch.stack(_imgs).to(device)
 
             """
             we will pass "mml" just to provide initial <sos> token.
@@ -63,8 +54,6 @@ def evaluate(
             outputs, preds = model(
                 imgs,
                 batch,  
-                # features_list, 
-                # edges_list,
                 mml, 
                 is_test=is_test,
             )  # O: (B, max_len, output_dim), preds: (B, max_len)

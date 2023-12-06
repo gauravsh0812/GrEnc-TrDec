@@ -18,8 +18,7 @@ def train(
     criterion,
     clip,
     device,
-    isGraphEnc=True,
-    isVitEnc=True,
+    isGraphPixel=True,
     ddp=False,
     rank=None,
 ):
@@ -35,42 +34,30 @@ def train(
         # img: (B, in_channel, H, W)
         mml = mml.to(device, dtype=torch.long)
         _imgs = list()
-        # _features_list = list()
-        # _edge_list = list()
         _data_list = list()
         for im in img:
-            if isGraphEnc:
+            # for vit patch encoder 
+            _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
+
+            # for pixel encoders
+            # for vit pixel encoder, _imgs will be same
+            if isGraphPixel:
                 G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
-                # print("G.x shape, G.edge shape: ", G.x.shape, G.edge_index.shape)
                 _data_list.append(G)
-                # _features_list.append(G.x.float())
-                # _edge_list.append(G.edge_index)
-                
-            if isVitEnc:
-                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
         
-        if isGraphEnc:
+        if isGraphPixel:
             batch = Batch.from_data_list(_data_list).to(device)
-            # features_list = torch.stack(_features_list).to(device)
-            # edges_list = torch.stack(_edge_list).to(device)
         else:
             batch=None
-            # features_list = None
-            # edges_list = None
 
-        if isVitEnc:
-            imgs = torch.stack(_imgs).to(device)
-        else:
-            imgs = None
-
+        imgs = torch.stack(_imgs).to(device)
+        
         # setting gradients to zero
         optimizer.zero_grad()
 
         outputs, _ = model(
             imgs,
             batch,
-            # features_list,
-            # edges_list,
             mml,
         )
         output_dim = outputs.shape[-1]

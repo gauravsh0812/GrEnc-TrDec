@@ -54,11 +54,11 @@ def define_model(vocab, device):
 
     print("defining model...")
 
-    isGraphEnc = cfg.model.isGraphEnc
+    isGraphPixel = cfg.model.isGraphPixel
     isVitPixel = cfg.model.isVitPixel
     gr_dropout = graph_args.dropout
     
-    assert isGraphEnc or isVitEnc, "Need to select either one of the encoder or both of them."
+    assert isGraphPixel or isVitEnc, "Need to select either one of the encoder or both of them."
     
     image_w = buiding_graph_args.preprocessed_image_width
     image_h = buiding_graph_args.preprocessed_image_height
@@ -74,7 +74,7 @@ def define_model(vocab, device):
 
     n_pixels = image_h * image_w
 
-    if isGraphEnc:
+    if isGraphPixel:
         Gr_ENC = Graph_Encoder(
                             in_channels=graph_args.input_channels,
                             hidden_channels=graph_args.hid_dim,
@@ -119,7 +119,7 @@ def define_model(vocab, device):
                             Gr_ENC, 
                             Vit_ENC,
                             Tr_DEC, 
-                            isGraph=isGraphEnc,
+                            isGraph=isGraphPixel,
                             isVitPixel=isVitPixel,
                             )
 
@@ -291,8 +291,8 @@ def train_model(rank=None,):
                     criterion,
                     clip,
                     device,
-                    isGraphEnc=cfg["model"]["isGraphEnc"],
-                    isVitEnc=cfg["model"]["isVitEnc"],
+                    isGraphPixel=cfg["model"]["isGraphPixel"],
+                    isVitEnc=cfg["model"]["isVitPixel"],
                     ddp=ddp,
                     rank=rank,
                 )
@@ -309,8 +309,8 @@ def train_model(rank=None,):
                     criterion,
                     device,
                     vocab,
-                    isGraphEnc=cfg["model"]["isGraphEnc"],
-                    isVitEnc=cfg["model"]["isVitEnc"],
+                    isGraphPixel=cfg["model"]["isGraphPixel"],
+                    isVitEnc=cfg["model"]["isVitPixel"],
                 )
 
                 if training_args.wandb:
@@ -402,8 +402,8 @@ def train_model(rank=None,):
         criterion,
         device,
         vocab,
-        isGraphEnc=cfg["model"]["isGraphEnc"],
-        isVitEnc=cfg["model"]["isVitEnc"],
+        isGraphPixel=cfg["model"]["isGraphPixel"],
+        isVitEnc=cfg["model"]["isVitPixel"],
         is_test=True,
     )
 

@@ -33,7 +33,7 @@ preprocessing:
   pin_memory: False
 
 model:
-  isGraphEnc: False
+  isGraphPixel: False
   isVitPixel: True
 
   graph_model:
