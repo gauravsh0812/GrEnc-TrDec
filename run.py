@@ -56,6 +56,7 @@ def define_model(vocab, device):
 
     isGraphEnc = cfg.model.isGraphEnc
     isVitEnc = cfg.model.isVitEnc
+    isVitPixel = cfg.model.isVitPixel
     gr_dropout = graph_args.dropout
     
     assert isGraphEnc or isVitEnc, "Need to select either one of the encoder or both of them."
@@ -96,12 +97,12 @@ def define_model(vocab, device):
                         qkv_bias=vit_args.qkv_bias,
                         p=gr_dropout,
                         attn_p=gr_dropout,
+                        isVitPixel=isVitPixel,
                         )
 
     Tr_DEC = Transformer_Decoder(
         emb_dim=xfmer_args.emb_dim,
         dec_hid_dim=xfmer_args.dec_hid_dim,
-        gr_hid_dim=graph_args.hid_dim,
         nheads=xfmer_args.nheads,
         output_dim=len(vocab),
         n_patches=n_patches,

@@ -180,8 +180,12 @@ class VisionTransformer(nn.Module):
             qkv_bias,
             p=0.,
             attn_p=0.,
+            isVitPixel=False,
     ):
         super().__init__()
+
+        n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
+        n_pixels = (img_size[0]//1) * (img_size[1]//1)
 
         self.patch_embed = PatchEmbed(
                 img_size=img_size,
@@ -189,7 +193,17 @@ class VisionTransformer(nn.Module):
                 in_channels=in_chns,
                 emb_dim=embed_dim,
         )
-        n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
+        
+        if isVitPixel:   # patch size will be 1
+            self.pixel_embed = PatchEmbed(
+                img_size=img_size,
+                patch_size=1,
+                in_channels=in_chns,
+                emb_dim=embed_dim,
+            )
+            self.pixel2patch = nn.Linear(n_pixels, n_patches)
+            self.final_lin = nn.Linear(2*embed_dim, embed_dim)
+            
         self.pf = PositionalEncoding(embed_dim, p, n_patches)
         
         self.blocks = nn.ModuleList(
@@ -208,9 +222,18 @@ class VisionTransformer(nn.Module):
 
         self.norm = nn.LayerNorm(embed_dim, eps=1e-6)
 
-    def forward(self, x):
+    def forward(self, 
+                x, 
+                vit_patch_output=None,
+                isVitPixel=False
+        ):
+
         # x: (N, in_chns, H, W)
-        x = self.patch_embed(x)    # (n_samples, n_patches, emb_dim)
+        if not isVitPixel:
+            x = self.patch_embed(x)    # (n_samples, n_patches, emb_dim)
+        else:
+            x = self.pixel_embed(x)    # (n_samples, n_pixels, emb_dim)
+
         x = x.permute(1,0,2)   # (n_patches, n_samples, emb_dim)
         x = x + self.pf(x) 
         x = x.permute(1,0,2)  # (n_samples, n_patches, embed_dim)
@@ -219,4 +242,9 @@ class VisionTransformer(nn.Module):
             x = block(x)
         x = self.norm(x)  # (n_samples, n_patches, embed_dim)
         
-        return x
+        if not isVitPixel:
+            return x        # (n_samples, n_patches, embed_dim)
+        else:
+            x = self.pixel2patch(x.permute(0,2,1)).permute(0,2,1)  # (n_samples, n_pixels, embed_dim)
+            x = self.final_lin(torch.cat((x, vit_patch_output), dim=2))   # (n_samples, n_patch, emb_dim)
+            return x

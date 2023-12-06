@@ -33,8 +33,9 @@ preprocessing:
   pin_memory: False
 
 model:
-  isGraphEnc: True
+  isGraphEnc: False
   isVitEnc: True
+  isVitPixel: True
 
   graph_model:
     input_channels: 3

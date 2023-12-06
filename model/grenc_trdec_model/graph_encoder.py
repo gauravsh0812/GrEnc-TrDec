@@ -25,7 +25,7 @@ class Graph_Encoder(nn.Module):
         self.bn2 = BatchNorm(hidden_channels*8)
         
         self.pixel2patch = nn.Linear(n_pixels, n_patches)
-        self.linear = nn.Linear(vit_embed_dim+hidden_channels*8, hidden_channels*8)
+        self.linear = nn.Linear(vit_embed_dim+hidden_channels*8, vit_embed_dim)
         
         self.relu = nn.ReLU()
         self.p = nn.Dropout(p=dropout)
@@ -100,7 +100,7 @@ class Graph_Encoder(nn.Module):
 
         x = self.pixel2patch(x.permute(0,2,1)).permute(0,2,1) # (n_samples, n_patch, emb)
         x = torch.cat((vit_output, x), dim=2)   # (n_samples, n_patch, emb_dim + hid*8)
-        x = self.linear(x)  # (n_samples, n_patches, hid*8)
+        x = self.linear(x)  # (n_samples, n_patches, vit_embed_dim)
 
         return x
     

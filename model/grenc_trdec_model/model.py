@@ -9,6 +9,8 @@ class Grenc_Trdec_Model(nn.Module):
                  Gr_ENC=None,
                  Vit_ENC=None,
                  Tr_DEC=None,
+                 isGraph=False,
+                 isVitPixel=True,
                  ):
         """
         :param encoder: encoders CNN and XFMER
@@ -23,23 +25,32 @@ class Grenc_Trdec_Model(nn.Module):
         self.vocab = vocab
         self.device = device
 
+        # for pixel information
+        self.isGraphPixel = isGraph
+        self.isVitPixel = isVitPixel
+
     def forward(
         self,
         imgs=None,
         batch = None,
-        # features_list=None,
-        # edge_list=None,
         mml=None,
         is_test=False,
     ):  
 
-        # running the Vit
-        vit_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
+        # running the Vit for Patch information
+        vit_patch_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
+
+        if self.isVitPixel:
+            enc_output = self.vit_enc(imgs, 
+                                      vit_patch_output, 
+                                      isVitPixel=True)  # (n_samples, n_pixels, embed_dim)
         
-        # running the graph encoder 
-        features_list = batch.x.float()
-        edge_list = batch.edge_index.long()
-        gr_output = self.gr_enc(features_list, edge_list, vit_output)  # (n_samples, n_patches, gr_hidden*8)
+        # for pixel information
+        elif self.isGraphPixel:
+            # running the graph encoder 
+            features_list = batch.x.float()
+            edge_list = batch.edge_index.long()
+            enc_output = self.gr_enc(features_list, edge_list, vit_patch_output)  # (n_samples, n_patches, emb_dim)
         
         # normal training and testing part
         # we will be using torchtext.vocab object
@@ -48,7 +59,7 @@ class Grenc_Trdec_Model(nn.Module):
         PAD_token = self.vocab.stoi["<pad>"]
 
         xfmer_dec_outputs, preds = self.xfmer_dec(
-            mml, gr_output, SOS_token, PAD_token, is_test=is_test,
+            mml, enc_output, SOS_token, PAD_token, is_test=is_test,
         )
 
         return xfmer_dec_outputs, preds
