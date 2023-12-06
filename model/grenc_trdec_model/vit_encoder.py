@@ -186,7 +186,7 @@ class VisionTransformer(nn.Module):
 
         n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
         n_pixels = (img_size[0]//1) * (img_size[1]//1)
-
+        
         self.patch_embed = PatchEmbed(
                 img_size=img_size,
                 patch_size=patch_size,
