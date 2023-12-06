@@ -39,6 +39,7 @@ class Grenc_Trdec_Model(nn.Module):
 
         # running the Vit for Patch information
         vit_patch_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
+        print("vit_patch_output: ", vit_patch_output.shape)
 
         if self.isVitPixel:
             enc_output = self.vit_enc(imgs, 
