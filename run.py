@@ -55,7 +55,6 @@ def define_model(vocab, device):
     print("defining model...")
 
     isGraphEnc = cfg.model.isGraphEnc
-    isVitEnc = cfg.model.isVitEnc
     isVitPixel = cfg.model.isVitPixel
     gr_dropout = graph_args.dropout
     
@@ -84,21 +83,23 @@ def define_model(vocab, device):
                             n_pixels=n_pixels,
                             dropout=gr_dropout,
                             )
+    else:
+        Gr_ENC = None
 
-    if isVitEnc:
-        Vit_ENC = VisionTransformer(
-                        img_size=[image_w,image_h],
-                        patch_size=vit_args.patch_size,
-                        in_chns=graph_args.input_channels,
-                        embed_dim=vit_args.emb_dim,
-                        depth=vit_args.depth,
-                        n_heads=vit_args.nheads,
-                        mlp_ratio=vit_args.mlp_ratio,
-                        qkv_bias=vit_args.qkv_bias,
-                        p=gr_dropout,
-                        attn_p=gr_dropout,
-                        isVitPixel=isVitPixel,
-                        )
+    
+    Vit_ENC = VisionTransformer(
+                    img_size=[image_w,image_h],
+                    patch_size=vit_args.patch_size,
+                    in_chns=graph_args.input_channels,
+                    embed_dim=vit_args.emb_dim,
+                    depth=vit_args.depth,
+                    n_heads=vit_args.nheads,
+                    mlp_ratio=vit_args.mlp_ratio,
+                    qkv_bias=vit_args.qkv_bias,
+                    p=gr_dropout,
+                    attn_p=gr_dropout,
+                    isVitPixel=isVitPixel,
+                    )
 
     Tr_DEC = Transformer_Decoder(
         emb_dim=xfmer_args.emb_dim,
@@ -118,6 +119,8 @@ def define_model(vocab, device):
                             Gr_ENC, 
                             Vit_ENC,
                             Tr_DEC, 
+                            isGraph=isGraphEnc,
+                            isVitPixel=isVitPixel,
                             )
 
     return model
