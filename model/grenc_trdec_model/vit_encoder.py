@@ -185,8 +185,8 @@ class VisionTransformer(nn.Module):
         super().__init__()
 
         n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
-        n_pixels = (img_size[0]//1) * (img_size[1]//1)
-        
+        n_pixels = (img_size[0]//5) * (img_size[1]//5)
+
         self.patch_embed = PatchEmbed(
                 img_size=img_size,
                 patch_size=patch_size,
@@ -197,7 +197,7 @@ class VisionTransformer(nn.Module):
         if isVitPixel:   # patch size will be 1
             self.pixel_embed = PatchEmbed(
                 img_size=img_size,
-                patch_size=1,
+                patch_size=5,
                 in_channels=in_chns,
                 emb_dim=embed_dim,
             )
