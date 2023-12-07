@@ -7,7 +7,7 @@ building_graph:
   padding: 8
 
 training:
-  wandb: False
+  wandb: True
   seed: 42
   clip: 1
   ddp: True
@@ -21,7 +21,7 @@ training:
   early_stopping: 5
   scheduler_step_size: 10
   scheduler_gamma: 0.5
-  load_trained_model_for_testing: True
+  load_trained_model_for_testing: False
 
 preprocessing:
   path_to_data: "/home/gauravs/data/grenc_trdec"
