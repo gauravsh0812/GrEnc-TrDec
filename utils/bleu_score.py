@@ -17,6 +17,6 @@ if __name__ == "__main__":
     print("cleaning the files...")
     calculate_bleu_score()
 
-    print(" calculating Bleu Score...  ")
-    cmd = "perl ./utils/mulit-bleu.perl ./logs/final_targets.txt < ./logs/final_preds.txt"
+    print("calculating Bleu Score...  ")
+    cmd = "perl ./utils/multi-bleu.perl ./logs/final_targets.txt < ./logs/final_preds.txt"
     os.system(cmd)
