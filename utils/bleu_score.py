@@ -15,6 +15,7 @@ def calculate_bleu_score():
 
 if __name__ == "__main__":
     print(" calculating Bleu Score...  ")
-
+    print(os.path.exists("./logs"))
+    
     cmd = "perl ./utils/mulit-bleu.perl logs/final_targets.txt < logs/final_preds.txt"
     os.system(cmd)
