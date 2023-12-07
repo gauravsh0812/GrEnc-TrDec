@@ -172,6 +172,7 @@ class VisionTransformer(nn.Module):
             self,
             img_size,
             patch_size,
+            pixel_patch_size,
             in_chns,
             embed_dim,
             depth,
@@ -185,7 +186,7 @@ class VisionTransformer(nn.Module):
         super().__init__()
 
         n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
-        n_pixels = (img_size[0]//5) * (img_size[1]//5)
+        n_pixels = (img_size[0]//pixel_patch_size) * (img_size[1]//pixel_patch_size)
 
         self.patch_embed = PatchEmbed(
                 img_size=img_size,

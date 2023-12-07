@@ -90,6 +90,7 @@ def define_model(vocab, device):
     Vit_ENC = VisionTransformer(
                     img_size=[image_w,image_h],
                     patch_size=vit_args.patch_size,
+                    pixel_patch_size=vit_args.pixel_patch_size,
                     in_chns=graph_args.input_channels,
                     embed_dim=vit_args.emb_dim,
                     depth=vit_args.depth,

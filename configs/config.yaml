@@ -42,7 +42,8 @@ model:
     dropout: 0.1
 
   vit:
-    patch_size: 10
+    patch_size: 20
+    pixel_patch_size: 5
     nheads: 8
     emb_dim: 128
     depth: 4
