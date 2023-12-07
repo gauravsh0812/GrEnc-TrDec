@@ -14,8 +14,9 @@ def calculate_bleu_score():
         _tp.write(j[6:eos_j] + "\n")
 
 if __name__ == "__main__":
-    print(" calculating Bleu Score...  ")
-    print(os.path.exists("./logs/test_targets_100K.txt"))
+    print("cleaning the files...")
+    calculate_bleu_score()
 
-    cmd = "perl ./utils/mulit-bleu.perl logs/final_targets.txt < logs/final_preds.txt"
+    print(" calculating Bleu Score...  ")
+    cmd = "perl ./utils/mulit-bleu.perl ./logs/final_targets.txt < ./logs/final_preds.txt"
     os.system(cmd)
