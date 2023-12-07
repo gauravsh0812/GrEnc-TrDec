@@ -194,7 +194,7 @@ def main(img):
     img_name = os.path.basename(img).split('.')[0]
     if not reject:
         im = create_image_tensors(im, img_name)
-        create_image_graphs(im, img_name)
+        # create_image_graphs(im, img_name)
     else:
         return img
 
