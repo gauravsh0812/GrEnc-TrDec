@@ -43,7 +43,7 @@ model:
 
   vit:
     patch_size: 20
-    pixel_patch_size: 5
+    pixel_patch_size: 2
     nheads: 8
     emb_dim: 128
     depth: 4
