@@ -173,10 +173,11 @@ def train_model(rank=None,):
     load_trained_model_for_testing = training_args["load_trained_model_for_testing"]
     early_stopping_counts = training_args.early_stopping
     
-    if training_args.wandb:
-        # initiate the wandb    
-        wandb.init()
-        wandb.config.update(cfg)
+    if (training_args.wandb):
+        if (not ddp) or (ddp and rank == 0): 
+            # initiate the wandb    
+            wandb.init()
+            wandb.config.update(cfg)
 
     # set_random_seed
     set_random_seed(seed)
@@ -271,7 +272,8 @@ def train_model(rank=None,):
     best_valid_loss = float("inf")
     
     if training_args.wandb:
-        wandb.watch(model)
+        if (not ddp) or (ddp and rank == 0):
+            wandb.watch(model)
 
     # raw data paths
     img_tnsr_path = f"{preprocessing_args.path_to_data}/image_tensors"
@@ -298,9 +300,6 @@ def train_model(rank=None,):
                     rank=rank,
                 )
 
-                if training_args.wandb:
-                    wandb.log({"train_loss": train_loss})
-
                 val_loss = evaluate(
                     model,
                     img_tnsr_path,
@@ -314,7 +313,9 @@ def train_model(rank=None,):
                 )
 
                 if training_args.wandb:
-                    wandb.log({"val_loss": val_loss})
+                    if (not ddp) or (ddp and rank == 0):
+                        wandb.log({"train_loss": train_loss})
+                        wandb.log({"val_loss": val_loss})
 
                 end_time = time.time()
                 # total time spent on training an epoch
