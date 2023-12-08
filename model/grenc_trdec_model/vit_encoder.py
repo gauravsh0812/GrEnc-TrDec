@@ -188,6 +188,7 @@ class VisionTransformer(nn.Module):
         n_patches = (img_size[0]//patch_size) * (img_size[1]//patch_size)
         n_pixels = (img_size[0]//pixel_patch_size) * (img_size[1]//pixel_patch_size)
 
+
         self.patch_embed = PatchEmbed(
                 img_size=img_size,
                 patch_size=patch_size,
@@ -207,6 +208,9 @@ class VisionTransformer(nn.Module):
             
         self.patch_pe = PositionalEncoding(embed_dim, p, n_patches)
         self.pixel_pe = PositionalEncoding(embed_dim, p, n_pixels)
+
+        # =============== trying out!! ================= #
+        self.trying = nn.Linear(n_pixels + n_patches, n_patches)
         
         self.blocks = nn.ModuleList(
             [
@@ -250,6 +254,9 @@ class VisionTransformer(nn.Module):
         if not isVitPixel:
             return x        # (n_samples, n_patches, embed_dim)
         else:
-            x = self.pixel2patch(x.permute(0,2,1)).permute(0,2,1)  # (n_samples, n_pixels, embed_dim)
-            x = self.final_lin(torch.cat((x, vit_patch_output), dim=2))   # (n_samples, n_patch, emb_dim)
+            # x = self.pixel2patch(x.permute(0,2,1)).permute(0,2,1)  # (n_samples, n_pixels, embed_dim)
+            # x = self.final_lin(torch.cat((x, vit_patch_output), dim=2))   # (n_samples, n_patch, emb_dim)
+
+            # ==================== trying out!! ====================== #
+            x = self.trying(torch.cat((x, vit_patch_output), dim=1))
             return x
