@@ -259,5 +259,6 @@ class VisionTransformer(nn.Module):
 
             # ==================== trying out!! ====================== #
             x = torch.cat((x, vit_patch_output), dim=1).permute(0,2,1)  # (n_samples, emb_dim, n_patch + n_pixel)
+            print("x shape: ", x.shape)
             x = self.trying(x).permute(0,2,1)  # (n_smaplpes, n_patches, emb_dim)
             return x
