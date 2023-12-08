@@ -199,7 +199,7 @@ class VisionTransformer(nn.Module):
         if isVitPixel:   # patch size will be 1
             self.pixel_embed = PatchEmbed(
                 img_size=img_size,
-                patch_size=5,
+                patch_size=pixel_patch_size,
                 in_channels=in_chns,
                 emb_dim=embed_dim,
             )
