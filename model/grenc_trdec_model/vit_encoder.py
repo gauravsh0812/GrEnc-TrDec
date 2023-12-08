@@ -258,6 +258,7 @@ class VisionTransformer(nn.Module):
             # x = self.final_lin(torch.cat((x, vit_patch_output), dim=2))   # (n_samples, n_patch, emb_dim)
 
             # ==================== trying out!! ====================== #
+            print("shapes: ", x.shape, vit_patch_output.shape)
             x = torch.cat((x, vit_patch_output), dim=1).permute(0,2,1)  # (n_samples, emb_dim, n_patch + n_pixel)
             print("x shape: ", x.shape)
             print("trying: ", self.trying)
