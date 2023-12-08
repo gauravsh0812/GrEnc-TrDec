@@ -247,10 +247,13 @@ class VisionTransformer(nn.Module):
 
         x = x.permute(1,0,2)  # (n_samples, n_patches/pixles, embed_dim)
 
+        print("x1 shape: ", x.shape)
+
         for block in self.blocks:
             x = block(x)
         x = self.norm(x)  # (n_samples, n_patches, embed_dim)
-        
+        print("x2 shape: ", x.shape)
+
         if not isVitPixel:
             return x        # (n_samples, n_patches, embed_dim)
         else:
@@ -260,7 +263,7 @@ class VisionTransformer(nn.Module):
             # ==================== trying out!! ====================== #
             print("shapes: ", x.shape, vit_patch_output.shape)
             x = torch.cat((x, vit_patch_output), dim=1).permute(0,2,1)  # (n_samples, emb_dim, n_patch + n_pixel)
-            print("x shape: ", x.shape)
+            print("x3 shape: ", x.shape)
             print("trying: ", self.trying)
             x = self.trying(x).permute(0,2,1)  # (n_smaplpes, n_patches, emb_dim)
             return x
