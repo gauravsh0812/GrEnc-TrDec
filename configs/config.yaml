@@ -7,7 +7,7 @@ building_graph:
   padding: 8
 
 training:
-  wandb: True
+  wandb: False
   seed: 42
   clip: 1
   ddp: True
