@@ -52,6 +52,9 @@ class Grenc_Trdec_Model(nn.Module):
             edge_list = batch.edge_index.long()
             enc_output = self.gr_enc(features_list, edge_list, vit_patch_output)  # (n_samples, n_patches, emb_dim)
         
+        else:
+            enc_output = vit_patch_output   # (n_samples, n_patches, embed_dim)
+
         # normal training and testing part
         # we will be using torchtext.vocab object
         # while inference, we will provide them
