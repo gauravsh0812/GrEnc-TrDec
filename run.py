@@ -58,7 +58,9 @@ def define_model(vocab, device):
     isVitPixel = cfg.model.isVitPixel
     gr_dropout = graph_args.dropout
     
-    assert isGraphPixel or isVitPixel, "Need to select either one of the encoder or both of them."
+    # assert isGraphPixel or isVitPixel, "Need to select either one of the encoder or both of them."
+    if (not isGraphPixel) and (not isVitPixel):
+        print(" NO PIXEL ENCODER IS PRESENT!!")
     
     image_w = buiding_graph_args.preprocessed_image_width
     image_h = buiding_graph_args.preprocessed_image_height
