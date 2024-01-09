@@ -1,7 +1,5 @@
 import torch
 import torch.nn as nn
-
-
 class Grenc_Trdec_Model(nn.Module):
     def __init__(self,  
                  vocab, 
@@ -64,5 +62,5 @@ class Grenc_Trdec_Model(nn.Module):
         xfmer_dec_outputs, preds = self.xfmer_dec(
             mml, enc_output, SOS_token, PAD_token, is_test=is_test,
         )
-
+        
         return xfmer_dec_outputs, preds
