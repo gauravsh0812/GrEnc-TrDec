@@ -17,11 +17,9 @@ from box import Box
 from src.training import train
 from src.testing import evaluate
 from model.preprocessing.preprocess_data import preprocess_dataset
-from model.grenc_trdec_model.model import Grenc_Trdec_Model
-from model.grenc_trdec_model.graph_encoder import Graph_Encoder
+from model.grenc_trdec_model.model import ClipModel
 from model.grenc_trdec_model.vit_encoder import VisionTransformer
-from model.grenc_trdec_model.decoder import Transformer_Decoder
-
+from model.grenc_trdec_model.xfmer_encoder import Transformer_Encoder
 
 # opening training_args file
 with open('configs/config.yaml') as f:
@@ -29,9 +27,8 @@ with open('configs/config.yaml') as f:
 buiding_graph_args = cfg.building_graph
 training_args = cfg.training
 preprocessing_args = cfg.preprocessing
-graph_args = cfg.model.graph_model
 vit_args = cfg.model.vit
-xfmer_args = cfg.model.decoder_transformer
+xfmer_args = cfg.model.xfmer_enc
 
 # for deterministic results, make it False.
 # to optimize performance, make it True, but that 
@@ -54,12 +51,11 @@ def define_model(vocab, device):
 
     print("defining model...")
 
-    isGraphPixel = cfg.model.isGraphPixel
     isVitPixel = cfg.model.isVitPixel
-    gr_dropout = graph_args.dropout
+    dropout = cfg.model.dropout
     
     # assert isGraphPixel or isVitPixel, "Need to select either one of the encoder or both of them."
-    if (not isGraphPixel) and (not isVitPixel):
+    if (not isVitPixel):
         print(" NO PIXEL ENCODER IS PRESENT!!")
     
     image_w = buiding_graph_args.preprocessed_image_width
@@ -73,59 +69,43 @@ def define_model(vocab, device):
         ) * (
         image_h // cfg.model.vit.patch_size
         )
-
-    n_pixels = image_h * image_w
-
-    if isGraphPixel:
-        Gr_ENC = Graph_Encoder(
-                            in_channels=graph_args.input_channels,
-                            hidden_channels=graph_args.hid_dim,
-                            vit_embed_dim=vit_args.emb_dim,
-                            n_patches=n_patches,
-                            n_pixels=n_pixels,
-                            dropout=gr_dropout,
-                            )
-    else:
-        Gr_ENC = None
-
     
     Vit_ENC = VisionTransformer(
                     img_size=[image_w,image_h],
                     patch_size=vit_args.patch_size,
                     pixel_patch_size=vit_args.pixel_patch_size,
-                    in_chns=graph_args.input_channels,
+                    in_chns=vit_args.input_channels,
                     embed_dim=vit_args.emb_dim,
                     depth=vit_args.depth,
                     n_heads=vit_args.nheads,
                     mlp_ratio=vit_args.mlp_ratio,
                     qkv_bias=vit_args.qkv_bias,
-                    p=gr_dropout,
-                    attn_p=gr_dropout,
+                    p=dropout,
+                    attn_p=dropout,
                     isVitPixel=isVitPixel,
                     )
 
-    Tr_DEC = Transformer_Decoder(
-        vit_emb_dim=vit_args.emb_dim,
-        dec_emb_dim=xfmer_args.emb_dim,
-        dec_hid_dim=xfmer_args.dec_hid_dim,
+    Tr_ENC = Transformer_Encoder(
+        emb_dim=xfmer_args.emb_dim,
+        hid_dim=xfmer_args.hid_dim,
         nheads=xfmer_args.nheads,
-        output_dim=len(vocab),
-        n_patches=n_patches,
-        dropout=gr_dropout,
+        dropout=dropout,
         max_len=xfmer_args.max_len,
-        n_xfmer_decoder_layers=xfmer_args.n_xfmer_decoder_layers,
+        n_xfmer_encoder_layers=xfmer_args.n_xfmer_encoder_layers,
         dim_feedfwd=xfmer_args.dim_feedfwd,
-        device=device,
-    )
+    ) 
 
-    model = Grenc_Trdec_Model(vocab, 
-                            device,
-                            Gr_ENC, 
-                            Vit_ENC,
-                            Tr_DEC, 
-                            isGraph=isGraphPixel,
-                            isVitPixel=isVitPixel,
-                            )
+    model = ClipModel(
+        vocab, 
+        device,
+        vit_args.emb_dim,  
+        xfmer_args.emb_dim, 
+        cfg.model.projection_dim,
+        dropout,
+        Vit_ENC,
+        Tr_ENC, 
+        isVitPixel=isVitPixel,
+    )
 
     return model
 

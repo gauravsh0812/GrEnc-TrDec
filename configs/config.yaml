@@ -33,15 +33,12 @@ preprocessing:
   pin_memory: False
 
 model:
-  isGraphPixel: False
   isVitPixel: False
-
-  graph_model:
-    input_channels: 3
-    hid_dim: 64
-    dropout: 0.1
+  dropout: 0.1
+  projection_dim: 256
 
   vit:
+    input_dim: 3
     patch_size: 4
     pixel_patch_size: 4
     nheads: 8
@@ -49,11 +46,11 @@ model:
     depth: 4
     mlp_ratio: 4
     qkv_bias: True
-  
-  decoder_transformer:
+
+  xfmer_enc:
     emb_dim: 256
-    dec_hid_dim: 512
-    nheads: 4
+    hid_dim: 512
     max_len: 350
-    n_xfmer_decoder_layers: 4
-    dim_feedfwd: 1024
+    nheads: 4
+    n_xfmer_encoder_layers: 4
+    dim_feedfwd: 512
