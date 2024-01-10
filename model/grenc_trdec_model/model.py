@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from utils.clip_projection import ProjectionHead
 
 class ClipModel(nn.Module):
@@ -43,9 +44,7 @@ class ClipModel(nn.Module):
     def forward(
         self,
         imgs=None,
-        batch = None,
         mml=None,
-        is_test=False,
     ):  
         # ENCODING IMAGES
         vit_enc_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
@@ -61,6 +60,18 @@ class ClipModel(nn.Module):
         xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
 
         # CLIP 
-        projected_img = self.projection(vit_enc_output)
-        projected_mml = self.projection(xfmer_enc_output)
-        
+        projected_img = self.projection(vit_enc_output, img=True)
+        projected_mml = self.projection(xfmer_enc_output, img=False)
+
+        # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
+        # Calculating the Loss
+        logits = (projected_mml @ projected_img.T) / self.temperature
+        images_similarity = projected_img @ projected_img.T
+        texts_similarity = projected_mml @ projected_mml.T
+        targets = F.softmax(
+            (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
+        )
+        texts_loss = nn.CrossEntropyLoss(logits, targets)
+        images_loss = nn.CrossEntropyLoss(logits.T, targets.T)
+        loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
+        return loss.mean()

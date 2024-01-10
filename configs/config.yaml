@@ -36,6 +36,7 @@ model:
   isVitPixel: False
   dropout: 0.1
   projection_dim: 256
+  temperature: 1.0
 
   vit:
     input_dim: 3

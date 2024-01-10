@@ -233,7 +233,7 @@ def train_model(rank=None,):
     print(f"The model has {count_parameters(model)} trainable parameters")
 
     # intializing loss function
-    criterion = torch.nn.CrossEntropyLoss(ignore_index=vocab.stoi["<pad>"])
+    # criterion = torch.nn.CrossEntropyLoss(ignore_index=vocab.stoi["<pad>"])
 
     # optimizer
     optimizer = torch.optim.AdamW(

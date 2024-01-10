@@ -1,4 +1,4 @@
-# https://towardsdatascience.com/simple-implementation-of-openai-clip-model-a-tutorial-ace6ff01d9f2
+# https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
 
 import torch
 from torch import nn
@@ -12,14 +12,19 @@ class ProjectionHead(nn.Module):
         dropout,
     ):
         super().__init__()
-        self.projection = nn.Linear(embedding_dim, projection_dim)
+        self.img_projection = nn.Linear(vit_emb_dim, projection_dim)
+        self.text_projection = nn.Linear(xfmer_emb_dim, projection_dim)
         self.gelu = nn.GELU()
         self.fc = nn.Linear(projection_dim, projection_dim)
         self.dropout = nn.Dropout(dropout)
         self.layer_norm = nn.LayerNorm(projection_dim)
     
-    def forward(self, x):
-        projected = self.projection(x)
+    def forward(self, x, img=True):
+        if img:
+            projected = self.img_projection(x)
+        else:
+            projected = self.text_projection(x)
+            
         x = self.gelu(projected)
         x = self.fc(x)
         x = self.dropout(x)
