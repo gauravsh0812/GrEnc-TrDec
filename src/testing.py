@@ -2,7 +2,6 @@
 
 import torch
 from utils.garbage_to_pad import garbage2pad
-from torch_geometric.data import Data, Batch
 
 def evaluate(
     model,
@@ -33,17 +32,6 @@ def evaluate(
             for im in img:
                 # for vit patch encoder 
                 _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
-
-                # for pixel encoders
-                # for vit pixel encoder, _imgs will be same
-                if isGraphPixel:
-                    G = torch.load(f"{img_graph_path}/{int(im.item())}.pt")
-                    _data_list.append(G)
-            
-            if isGraphPixel:
-                batch = Batch.from_data_list(_data_list).to(device)
-            else:
-                batch=None
 
             imgs = torch.stack(_imgs).to(device)
 

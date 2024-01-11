@@ -11,6 +11,7 @@ class ClipModel(nn.Module):
                  xfmer_emb_dim,
                  projection_dim,
                  dropout,
+                 temperature,
                  Vit_ENC=None,
                  isVitPixel=True,
                  Xfmer_ENC=None,
@@ -27,6 +28,7 @@ class ClipModel(nn.Module):
         self.vocab = vocab
         self.device = device
         self.output_dim = len(vocab)
+        self.temperature = temperature
 
         # for pixel information
         self.isVitPixel = isVitPixel
@@ -71,7 +73,10 @@ class ClipModel(nn.Module):
         targets = F.softmax(
             (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
         )
+        
+        # training or validation
         texts_loss = nn.CrossEntropyLoss(logits, targets)
         images_loss = nn.CrossEntropyLoss(logits.T, targets.T)
         loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
         return loss.mean()
+    

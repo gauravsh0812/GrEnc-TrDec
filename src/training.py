@@ -7,7 +7,6 @@ def train(
     img_tnsr_path,
     train_dataloader,
     optimizer,
-    criterion,
     clip,
     device,
     ddp=False,
@@ -48,8 +47,9 @@ def train(
         epoch_loss += loss.item()
 
         if (not ddp) or (ddp and rank == 0):
-            desc = 'Loss: %.4f - Learning Rate: %.6f' % (loss.item(), optimizer.param_groups[0]['lr'])
-            tset.set_description(desc)
+            # desc = 'Loss: %.4f - Learning Rate: %.6f' % (loss.item(), optimizer.param_groups[0]['lr'])
+            # tset.set_description(desc)
+            tset.set_postfix(train_loss=loss.item(), lr=optimizer.param_groups[0]['lr'])
 
     net_loss = epoch_loss / len(train_dataloader)
     return net_loss
