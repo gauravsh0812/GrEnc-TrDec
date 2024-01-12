@@ -63,12 +63,6 @@ def define_model(vocab, device):
     
     assert image_w % cfg.model.vit.patch_size == 0
     assert image_h % cfg.model.vit.patch_size == 0
-
-    n_patches = (
-        image_w // cfg.model.vit.patch_size
-        ) * (
-        image_h // cfg.model.vit.patch_size
-        )
     
     Vit_ENC = VisionTransformer(
                     img_size=[image_w,image_h],
@@ -260,7 +254,11 @@ def train_model(rank=None,):
 
     # raw data paths
     img_tnsr_path = f"{preprocessing_args.path_to_data}/image_tensors"
-    img_graph_path = f"{preprocessing_args.path_to_data}/image_graphs"
+
+    # model only for decoding part while testing or validating
+    decoder_model_path = cfg.model.decoder_model_path
+    # loading pre_tained_model for decoding
+    decoding_model.load_state_dict(torch.load(decoder_model_path))
 
     if not load_trained_model_for_testing:
         count_es = 0
@@ -272,27 +270,22 @@ def train_model(rank=None,):
                 train_loss = train(
                     model,
                     img_tnsr_path,
-                    img_graph_path,
                     train_dataloader,
                     optimizer,
-                    criterion,
                     clip,
                     device,
-                    isGraphPixel=cfg["model"]["isGraphPixel"],
                     ddp=ddp,
                     rank=rank,
                 )
 
                 val_loss = evaluate(
                     model,
+                    decoding_model,
                     img_tnsr_path,
-                    img_graph_path,
                     batch_size,
                     val_dataloader,
-                    criterion,
                     device,
                     vocab,
-                    isGraphPixel=cfg["model"]["isGraphPixel"],
                 )
 
                 if training_args.wandb:
@@ -383,7 +376,6 @@ def train_model(rank=None,):
         img_graph_path,
         batch_size,
         test_dataloader,
-        criterion,
         device,
         vocab,
         isGraphPixel=cfg["model"]["isGraphPixel"],

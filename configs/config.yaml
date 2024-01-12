@@ -37,6 +37,7 @@ model:
   dropout: 0.1
   projection_dim: 256
   temperature: 1.0
+  decoder_model_path: "trained_models/best_models/vit_vit_20_4_E50.pt"
 
   vit:
     input_dim: 3
