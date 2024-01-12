@@ -129,7 +129,7 @@ def define_model(vocab, device):
         xfmer_args.emb_dim, 
         cfg.model.projection_dim,
         dropout,
-        cfg.moddel.temperature,
+        cfg.model.temperature,
         Vit_ENC,
         Tr_ENC, 
         isVitPixel=isVitPixel,
