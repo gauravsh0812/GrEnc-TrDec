@@ -26,11 +26,20 @@ class DecodingModel(nn.Module):
 
     def forward(
         self,
+        imgs=None,
         enc_output=None,
         mml=None,
         is_test=False,
     ):  
         
+        # running the Vit for Patch information
+        vit_patch_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
+
+        if self.isVitPixel:
+            vit_patch_output = self.vit_enc(imgs, 
+                                      vit_patch_output, 
+                                      isVitPixel=True)  # (n_samples, n_pixels, embed_dim)
+            
         # normal training and testing part
         # we will be using torchtext.vocab object
         # while inference, we will provide them
