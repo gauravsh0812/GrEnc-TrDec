@@ -31,6 +31,7 @@ training_args = cfg.training
 preprocessing_args = cfg.preprocessing
 vit_args = cfg.model.vit
 xfmer_args = cfg.model.xfmer_enc
+xfmer_dec_args = cfg.model.xfmer_dec
 
 # for deterministic results, make it False.
 # to optimize performance, make it True, but that 
@@ -100,15 +101,15 @@ def define_model(vocab, device):
 
     Tr_DEC = Transformer_Decoder(
         vit_emb_dim=vit_args.emb_dim,
-        dec_emb_dim=xfmer_args.emb_dim,
-        dec_hid_dim=xfmer_args.dec_hid_dim,
-        nheads=xfmer_args.nheads,
+        dec_emb_dim=xfmer_dec_args.emb_dim,
+        dec_hid_dim=xfmer_dec_args.hid_dim,
+        nheads=xfmer_dec_args.nheads,
         output_dim=len(vocab),
         n_patches=n_patches,
         dropout=dropout,
         max_len=xfmer_args.max_len,
-        n_xfmer_decoder_layers=xfmer_args.n_xfmer_decoder_layers,
-        dim_feedfwd=xfmer_args.dim_feedfwd,
+        n_xfmer_decoder_layers=xfmer_dec_args.n_xfmer_decoder_layers,
+        dim_feedfwd=xfmer_dec_args.dim_feedfwd,
         device=device,
     )
 

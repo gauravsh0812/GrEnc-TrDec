@@ -56,3 +56,10 @@ model:
     nheads: 4
     n_xfmer_encoder_layers: 4
     dim_feedfwd: 512
+  
+  xfmer_dec:
+    emb_dim: 256
+    hid_dim: 512
+    nheads: 4
+    n_xfmer_decoder_layers: 4
+    dim_feedfwd: 1024
