@@ -5,14 +5,12 @@ from utils.garbage_to_pad import garbage2pad
 
 def evaluate(
     model,
+    decoding_model,
     img_tnsr_path,
-    img_graph_path,
-    batch_size,
-    test_dataloader,
     criterion,
+    test_dataloader,
     device,
     vocab,
-    isGraphPixel=True,
     is_test=False,
 ):
     model.eval()
@@ -37,11 +35,14 @@ def evaluate(
             we will pass "mml" just to provide initial <sos> token.
             There will no teacher forcing while validation and testing.
             """
-            loss, logits = model(
+            encodded_img = model(
                 imgs,
-                mml, 
-                is_test=is_test,
-            )  # O: (B, max_len, output_dim), preds: (B, max_len)
+                only_img=True,
+            )  # O: (B, max_len, output_dim)
+
+            decoding_model(
+                
+            )
 
             epoch_loss += loss.item()
 

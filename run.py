@@ -18,8 +18,10 @@ from src.training import train
 from src.testing import evaluate
 from model.preprocessing.preprocess_data import preprocess_dataset
 from model.grenc_trdec_model.model import ClipModel
+from model.grenc_trdec_model.decoding_model import DecodingModel
 from model.grenc_trdec_model.vit_encoder import VisionTransformer
 from model.grenc_trdec_model.xfmer_encoder import Transformer_Encoder
+from model.grenc_trdec_model.decoder import Transformer_Decoder
 
 # opening training_args file
 with open('configs/config.yaml') as f:
@@ -89,6 +91,35 @@ def define_model(vocab, device):
         dim_feedfwd=xfmer_args.dim_feedfwd,
     ) 
 
+    n_patches = (
+        image_w // cfg.model.vit.patch_size
+        ) * (
+        image_h // cfg.model.vit.patch_size
+        )
+
+    Tr_DEC = Transformer_Decoder(
+        vit_emb_dim=vit_args.emb_dim,
+        dec_emb_dim=xfmer_args.emb_dim,
+        dec_hid_dim=xfmer_args.dec_hid_dim,
+        nheads=xfmer_args.nheads,
+        output_dim=len(vocab),
+        n_patches=n_patches,
+        dropout=dropout,
+        max_len=xfmer_args.max_len,
+        n_xfmer_decoder_layers=xfmer_args.n_xfmer_decoder_layers,
+        dim_feedfwd=xfmer_args.dim_feedfwd,
+        device=device,
+    )
+
+    decoding_model = DecodingModel(
+        vocab, 
+        device,
+        Vit_ENC,
+        Tr_DEC, 
+        isVitPixel=isVitPixel,
+    )
+
+
     model = ClipModel(
         vocab, 
         device,
@@ -102,7 +133,7 @@ def define_model(vocab, device):
         isVitPixel=isVitPixel,
     )
 
-    return model
+    return model, decoding_model
 
 
 def init_weights(m):
@@ -191,13 +222,20 @@ def train_model(rank=None,):
                 vocab,
             ) = preprocess_dataset(preprocessing_args)
 
-            model = define_model(vocab, rank)
+            model, decoding_model = define_model(vocab, rank)
             model = DDP(
                 model.to(device),
                 device_ids=[rank],
                 output_device=rank,
                 find_unused_parameters=True,
             )
+            decoding_model = DDP(
+                decoding_model.to(device),
+                device_ids=[rank],
+                output_device=rank,
+                find_unused_parameters=True,
+            )
+
         else:
             print(f"using gpu {str(gpus)}...")
             # os.environ["CUDA_VISIBLE_DEVICES"] = str(gpus)
@@ -209,7 +247,7 @@ def train_model(rank=None,):
                 val_dataloader,
                 vocab,
             ) = preprocess_dataset(preprocessing_args)
-            model = define_model(vocab, device).to("cuda")
+            model,decoding_model = define_model(vocab, device).to("cuda")
 
     else:
         import warnings
@@ -222,13 +260,13 @@ def train_model(rank=None,):
             val_dataloader,
             vocab,
         ) = preprocess_dataset(preprocessing_args)
-        model = define_model(vocab, device).to(device)
+        model,decoding_model = define_model(vocab, device).to(device)
 
     print("MODEL: ")
     print(f"The model has {count_parameters(model)} trainable parameters")
 
     # intializing loss function
-    # criterion = torch.nn.CrossEntropyLoss(ignore_index=vocab.stoi["<pad>"])
+    criterion = torch.nn.CrossEntropyLoss(ignore_index=vocab.stoi["<pad>"])
 
     # optimizer
     optimizer = torch.optim.AdamW(
@@ -282,7 +320,7 @@ def train_model(rank=None,):
                     model,
                     decoding_model,
                     img_tnsr_path,
-                    batch_size,
+                    criterion,
                     val_dataloader,
                     device,
                     vocab,

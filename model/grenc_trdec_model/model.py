@@ -47,6 +47,7 @@ class ClipModel(nn.Module):
         self,
         imgs=None,
         mml=None,
+        only_img=False,
     ):  
         # ENCODING IMAGES
         vit_enc_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
@@ -55,28 +56,30 @@ class ClipModel(nn.Module):
             vit_enc_output = self.vit_enc(imgs, 
                                       vit_enc_output, 
                                       isVitPixel=True)  # (n_samples, n_pixels, embed_dim)
-       
+        if only_img:
+            return vit_enc_output
+            
         # ENCODING TEXTS
-        embedded_mml = self.embed_text(mml)   # (B, max_len, emb_dim)
-        xfmer_enc_output = self.Xfmer_ENC(embedded_mml)  # (max_len, B, emb_dim)
-        xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
+        else:
+            embedded_mml = self.embed_text(mml)   # (B, max_len, emb_dim)
+            xfmer_enc_output = self.Xfmer_ENC(embedded_mml)  # (max_len, B, emb_dim)
+            xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
 
-        # CLIP 
-        projected_img = self.projection(vit_enc_output, img=True)
-        projected_mml = self.projection(xfmer_enc_output, img=False)
+            # CLIP 
+            projected_img = self.projection(vit_enc_output, img=True)
+            projected_mml = self.projection(xfmer_enc_output, img=False)
 
-        # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
-        # Calculating the Loss
-        logits = (projected_mml @ projected_img.T) / self.temperature
-        images_similarity = projected_img @ projected_img.T
-        texts_similarity = projected_mml @ projected_mml.T
-        targets = F.softmax(
-            (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
-        )
-        
-        # training or validation
-        texts_loss = nn.CrossEntropyLoss(logits, targets)
-        images_loss = nn.CrossEntropyLoss(logits.T, targets.T)
-        loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
-        return loss.mean()
-    
+            # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
+            # Calculating the Loss
+            logits = (projected_mml @ projected_img.T) / self.temperature
+            images_similarity = projected_img @ projected_img.T
+            texts_similarity = projected_mml @ projected_mml.T
+            targets = F.softmax(
+                (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
+            )
+            
+            # training or validation
+            texts_loss = nn.CrossEntropyLoss(logits, targets)
+            images_loss = nn.CrossEntropyLoss(logits.T, targets.T)
+            loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
+            return loss.mean()
