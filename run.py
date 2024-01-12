@@ -68,19 +68,19 @@ def define_model(vocab, device):
     assert image_h % cfg.model.vit.patch_size == 0
     
     Vit_ENC = VisionTransformer(
-                    img_size=[image_w,image_h],
-                    patch_size=vit_args.patch_size,
-                    pixel_patch_size=vit_args.pixel_patch_size,
-                    in_chns=vit_args.input_channels,
-                    embed_dim=vit_args.emb_dim,
-                    depth=vit_args.depth,
-                    n_heads=vit_args.nheads,
-                    mlp_ratio=vit_args.mlp_ratio,
-                    qkv_bias=vit_args.qkv_bias,
-                    p=dropout,
-                    attn_p=dropout,
-                    isVitPixel=isVitPixel,
-                    )
+        img_size=[image_w,image_h],
+        patch_size=vit_args.patch_size,
+        pixel_patch_size=vit_args.pixel_patch_size,
+        in_chns=vit_args.input_channels,
+        embed_dim=vit_args.emb_dim,
+        depth=vit_args.depth,
+        n_heads=vit_args.nheads,
+        mlp_ratio=vit_args.mlp_ratio,
+        qkv_bias=vit_args.qkv_bias,
+        p=dropout,
+        attn_p=dropout,
+        isVitPixel=isVitPixel,
+    )
 
     Tr_ENC = Transformer_Encoder(
         emb_dim=xfmer_args.emb_dim,
@@ -97,7 +97,7 @@ def define_model(vocab, device):
         image_w // cfg.model.vit.patch_size
         ) * (
         image_h // cfg.model.vit.patch_size
-        )
+    )
 
     Tr_DEC = Transformer_Decoder(
         vit_emb_dim=vit_args.emb_dim,

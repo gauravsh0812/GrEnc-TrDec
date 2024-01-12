@@ -13,8 +13,8 @@ class ClipModel(nn.Module):
                  dropout,
                  temperature,
                  Vit_ENC=None,
-                 isVitPixel=True,
                  Xfmer_ENC=None,
+                 isVitPixel=True,                 
                  ):
         """
         :param encoder: encoders CNN and XFMER
