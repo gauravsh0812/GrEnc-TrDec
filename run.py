@@ -86,6 +86,7 @@ def define_model(vocab, device):
         hid_dim=xfmer_args.hid_dim,
         nheads=xfmer_args.nheads,
         dropout=dropout,
+        device=device,
         max_len=xfmer_args.max_len,
         n_xfmer_encoder_layers=xfmer_args.n_xfmer_encoder_layers,
         dim_feedfwd=xfmer_args.dim_feedfwd,
