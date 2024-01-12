@@ -33,7 +33,7 @@ preprocessing:
   pin_memory: False
 
 model:
-  isVitPixel: False
+  isVitPixel: True
   dropout: 0.1
   projection_dim: 256
   temperature: 1.0
