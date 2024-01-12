@@ -40,7 +40,7 @@ model:
   decoder_model_path: "trained_models/best_models/vit_vit_20_4_E50.pt"
 
   vit:
-    input_dim: 3
+    input_channels: 3
     patch_size: 4
     pixel_patch_size: 4
     nheads: 8
