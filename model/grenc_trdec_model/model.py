@@ -37,6 +37,8 @@ class ClipModel(nn.Module):
         # self.embed_img = nn.Embeddding(self.output_dim, vit_emb_dim)
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
+        self.change_length = nn.Linear(75,350)
+
         self.projection = ProjectionHead(
             vit_emb_dim,
             xfmer_emb_dim,
@@ -68,6 +70,8 @@ class ClipModel(nn.Module):
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
 
             # CLIP 
+            vit_enc_output = self.change_length(
+                vit_enc_output.permute(0,2,1)).permute(0,2,1) # (B, max_len, emb_dim)
             projected_img = self.projection(vit_enc_output, img=True)
             projected_mml = self.projection(xfmer_enc_output, img=False)
         
