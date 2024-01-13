@@ -70,6 +70,7 @@ class ClipModel(nn.Module):
             # CLIP 
             projected_img = self.projection(vit_enc_output, img=True).permute(2,0,1)
             projected_mml = self.projection(xfmer_enc_output, img=False)
+            print("img mml shpe: ", projected_mml.shape, projected_img.shape,  (projected_img.T).shape)
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
