@@ -74,6 +74,8 @@ class ClipModel(nn.Module):
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
+            print("pmml and pmmlT: ", projected_mml.shape, projected_mml.T.shape)
+            print("pimg and pimgT: ", projected_img.shape, projected_img.T.shape)
             
             logits = (projected_mml @ projected_img.permute(0,2,1)) / self.temperature
             images_similarity = projected_img @ projected_img.permute(0,1,2)
