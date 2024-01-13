@@ -20,6 +20,7 @@ class ProjectionHead(nn.Module):
         self.layer_norm = nn.LayerNorm(projection_dim)
     
     def forward(self, x, img=True):
+        print("x shpe: ", x.shape)
         if img:
             projected = self.img_projection(x)
         else:

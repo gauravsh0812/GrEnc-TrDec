@@ -68,7 +68,6 @@ class Transformer_Encoder(nn.Module):
         )  # (max_len, B, hid_dim)
 
         # adding positoinal encoding
-        print("text size: ", text.shape)
         pos_src = self.pos(text)  # (max_len, B, hid_dim)
 
         # xfmer encoder
