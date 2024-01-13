@@ -56,7 +56,7 @@ class Transformer_Encoder(nn.Module):
             text
         )  # (B, max_len, hid_dim)
         text = text.permute(
-            2, 0, 1
+            1, 0, 2
         )  # (max_len, B, hid_dim)
 
         # embedding + normalization
