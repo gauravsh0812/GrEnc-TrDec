@@ -20,7 +20,7 @@ class Transformer_Encoder(nn.Module):
         super(Transformer_Encoder, self).__init__()
         self.hid_dim = hid_dim
         self.device = device
-        self.pos = PositionalEncoding(hid_dim, dropout, max_len)
+        self.pos = PositionalEncoding(emb_dim, dropout, max_len)
 
         """
         NOTE:
