@@ -9,6 +9,7 @@ class ClipModel(nn.Module):
                  device,
                  vit_emb_dim,
                  xfmer_emb_dim,
+                 xfmer_hid_dim,
                  projection_dim,
                  dropout,
                  temperature,
@@ -39,6 +40,7 @@ class ClipModel(nn.Module):
         self.projection = ProjectionHead(
             vit_emb_dim,
             xfmer_emb_dim,
+            xfmer_hid_dim,
             projection_dim,
             dropout,
         )
