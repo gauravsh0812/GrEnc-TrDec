@@ -68,17 +68,16 @@ class ClipModel(nn.Module):
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
 
             # CLIP 
-            projected_img = self.projection(vit_enc_output, img=True).permute(1,2,0)
+            projected_img = self.projection(vit_enc_output, img=True)
             projected_mml = self.projection(xfmer_enc_output, img=False)
-            print("img mml shpe: ", projected_mml.shape, projected_img.shape)
-            print("img mml shpe: ", projected_mml.T.shape, projected_img.T.shape)
         
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
-            logits = (projected_mml @ projected_img.T) / self.temperature
-            images_similarity = projected_img @ projected_img.T
-            texts_similarity = projected_mml @ projected_mml.T
+            
+            logits = (projected_mml @ projected_img.permute(0,2,1)) / self.temperature
+            images_similarity = projected_img @ projected_img.permute(0,1,2)
+            texts_similarity = projected_mml @ projected_mml.permute(0,2,1)
             targets = F.softmax(
                 (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
