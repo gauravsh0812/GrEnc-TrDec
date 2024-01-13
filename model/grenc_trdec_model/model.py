@@ -85,11 +85,11 @@ class ClipModel(nn.Module):
             images_similarity = projected_img @ projected_img.permute(0,2,1)
             texts_similarity = projected_mml @ projected_mml.permute(0,2,1)
             targets = F.softmax(
-                (images_similarity + texts_similarity) / 2 * self.temperature, dim=1
+                (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
             
             # training or validation
-            print("logits tgts: ", logits.shape, targets.shape)
+            print("logits tgts: ", logits.shape, targets.reshape(:,-1).shape)
             texts_loss = nn.CrossEntropyLoss(logits, targets)
             images_loss = nn.CrossEntropyLoss(logits.T, targets.T)
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
