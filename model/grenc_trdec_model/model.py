@@ -70,7 +70,8 @@ class ClipModel(nn.Module):
             # CLIP 
             projected_img = self.projection(vit_enc_output, img=True)
             projected_mml = self.projection(xfmer_enc_output, img=False)
-
+            print("img mml shpe: ", projected_img.shape, projected_mml.shape)
+            
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
             logits = (projected_mml @ projected_img.T) / self.temperature
