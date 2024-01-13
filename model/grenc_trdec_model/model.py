@@ -80,6 +80,7 @@ class ClipModel(nn.Module):
             logits = (projected_mml @ projected_img.permute(0,2,1)) / self.temperature
             images_similarity = projected_img @ projected_img.permute(0,2,1)
             texts_similarity = projected_mml @ projected_mml.permute(0,2,1)
+            print("is, ts: ", images_similarity.shape, texts_similarity.shape )
             targets = F.softmax(
                 (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
