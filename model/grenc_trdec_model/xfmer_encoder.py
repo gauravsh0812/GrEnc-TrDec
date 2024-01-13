@@ -51,7 +51,7 @@ class Transformer_Encoder(nn.Module):
     def forward(self, text):
         # text: (B, max_len, emb_dim)
         # change the L=H*W to max_len
-        print("text size: ", text.shape)
+        
         text = self.change_length(
             text
         )  # (B, max_len, hid_dim)
@@ -68,6 +68,7 @@ class Transformer_Encoder(nn.Module):
         )  # (max_len, B, hid_dim)
 
         # adding positoinal encoding
+        print("text size: ", text.shape)
         pos_src = self.pos(text)  # (max_len, B, hid_dim)
 
         # xfmer encoder
