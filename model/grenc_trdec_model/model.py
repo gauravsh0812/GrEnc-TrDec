@@ -85,7 +85,7 @@ class ClipModel(nn.Module):
             images_similarity = projected_img @ projected_img.permute(0,2,1)
             texts_similarity = projected_mml @ projected_mml.permute(0,2,1)
             targets = F.softmax(
-                (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
+                (images_similarity + texts_similarity) / 2 * self.temperature, dim=1
             )
             
             # training or validation
