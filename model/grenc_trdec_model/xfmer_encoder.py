@@ -21,6 +21,7 @@ class Transformer_Encoder(nn.Module):
         self.hid_dim = hid_dim
         self.device = device
         self.pos = PositionalEncoding(emb_dim, dropout, max_len)
+        self.change_length = nn.Linear(emb_dim, hid_dim)
 
         """
         NOTE:
@@ -48,16 +49,15 @@ class Transformer_Encoder(nn.Module):
         return mask
     
     def forward(self, text):
-        # text: (B, L, emb_dim)
+        # text: (B, max_len, emb_dim)
         # change the L=H*W to max_len
         print("text size: ", text.shape)
-        text = text.permute(0, 2, 1)  # (B, emb_dim, max_len)
-        # text = self.change_length(
-        #     text
-        # )  # (B, emb_dim, max_len)
+        text = self.change_length(
+            text
+        )  # (B, max_len, hid_dim)
         text = text.permute(
             2, 0, 1
-        )  # (max_len, B, emb_dim)
+        )  # (max_len, B, hid_dim)
 
         # embedding + normalization
         """
@@ -65,10 +65,10 @@ class Transformer_Encoder(nn.Module):
         """
         text *= math.sqrt(
             self.hid_dim
-        )  # (max_len, B, emb_dim)
+        )  # (max_len, B, hid_dim)
 
         # adding positoinal encoding
-        pos_src = self.pos(text)  # (max_len, B, emb_dim)
+        pos_src = self.pos(text)  # (max_len, B, hid_dim)
 
         # xfmer encoder
         self.generate_square_subsequent_mask(pos_src.shape[0]).to(
@@ -76,6 +76,6 @@ class Transformer_Encoder(nn.Module):
         )
         xfmer_enc_output = self.xfmer_encoder(
             src=pos_src, mask=None
-        )  # (max_len, B, emb_dim)
+        )  # (max_len, B, hid_dim)
 
         return xfmer_enc_output
