@@ -52,12 +52,12 @@ class ClipModel(nn.Module):
         only_img=False,
     ):  
         # ENCODING IMAGES
-        vit_enc_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
+        vit_enc_output = self.vit_enc(imgs)  # (B, n_patches, embed_dim)
 
         if self.isVitPixel:
             vit_enc_output = self.vit_enc(imgs, 
                                       vit_enc_output, 
-                                      isVitPixel=True)  # (n_samples, n_pixels, embed_dim)
+                                      isVitPixel=True)  # (B, n_pixels, embed_dim)
         if only_img:
             return vit_enc_output
             
@@ -68,9 +68,8 @@ class ClipModel(nn.Module):
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
 
             # CLIP 
-            projected_img = self.projection(vit_enc_output, img=True)
+            projected_img = self.projection(vit_enc_output, img=True).permute(2,0,1)
             projected_mml = self.projection(xfmer_enc_output, img=False)
-            print("img mml shpe: ", projected_mml.shape, projected_img.shape,  (projected_img.T).shape)
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
