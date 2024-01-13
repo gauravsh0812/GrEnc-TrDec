@@ -50,10 +50,11 @@ class Transformer_Encoder(nn.Module):
     def forward(self, text):
         # text: (B, L, emb_dim)
         # change the L=H*W to max_len
-        text = text.permute(0, 2, 1)  # (B, emb_dim, L)
-        text = self.change_length(
-            text
-        )  # (B, emb_dim, max_len)
+        print("text size: ", text.shape)
+        text = text.permute(0, 2, 1)  # (B, emb_dim, max_len)
+        # text = self.change_length(
+        #     text
+        # )  # (B, emb_dim, max_len)
         text = text.permute(
             2, 0, 1
         )  # (max_len, B, emb_dim)
