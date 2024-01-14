@@ -89,9 +89,9 @@ class ClipModel(nn.Module):
             )
             
             # training or validation
-            texts_loss = nn.CrossEntropyLoss(logits.view(-1, logits.shape[-1]), 
+            texts_loss = nn.CrossEntropyLoss(logits.contiguous().view(-1, logits.shape[-1]), 
                                              targets.view(-1))
-            images_loss = nn.CrossEntropyLoss(logits.T.view(-1, logits.shape[-1]), 
+            images_loss = nn.CrossEntropyLoss(logits.T.contiguous().view(-1, logits.T.shape[-1]), 
                                               targets.T.view(-1))
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
             return loss.mean()
