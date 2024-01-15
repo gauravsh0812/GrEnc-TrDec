@@ -38,7 +38,7 @@ def evaluate(
             encodded_img = model(
                 imgs,
                 only_img=True,
-            )  # O: (B, max_len, output_dim)
+            )  # O: (B, max_len, emb_dim)
 
             print("decoding model #43: ", encodded_img.shape)
             outputs, preds = decoding_model(

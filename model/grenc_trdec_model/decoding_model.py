@@ -33,12 +33,12 @@ class DecodingModel(nn.Module):
     ):  
         
         # running the Vit for Patch information
-        vit_patch_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
+        # vit_patch_output = self.vit_enc(imgs)  # (n_samples, n_patches, embed_dim)
 
-        if self.isVitPixel:
-            vit_patch_output = self.vit_enc(imgs, 
-                                      vit_patch_output, 
-                                      isVitPixel=True)  # (n_samples, n_pixels, embed_dim)
+        # if self.isVitPixel:
+        #     vit_patch_output = self.vit_enc(imgs, 
+        #                               vit_patch_output, 
+        #                               isVitPixel=True)  # (n_samples, n_pixels, embed_dim)
             
         # normal training and testing part
         # we will be using torchtext.vocab object
