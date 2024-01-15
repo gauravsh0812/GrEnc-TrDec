@@ -70,8 +70,8 @@ class ClipModel(nn.Module):
             # CLIP 
             # reshaping the tensors fom 3D to 2D - (B,-1). 
             batch_size = vit_enc_output.shape[0]
-            vit_enc_output = vit_enc_output.view(batch_size, -1)
-            xfmer_enc_output = xfmer_enc_output.view(batch_size, -1)
+            vit_enc_output = vit_enc_output.reshape(batch_size, -1)
+            xfmer_enc_output = xfmer_enc_output.reshape(batch_size, -1)
 
             # projection head - both will be (B, proj_dim)
             projected_img = self.projection(vit_enc_output, img=True)
