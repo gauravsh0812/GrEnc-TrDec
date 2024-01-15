@@ -98,7 +98,7 @@ class ClipModel(nn.Module):
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
             return loss.mean()
 
-    def cross_entropy(preds, targets, reduction='none'):
+    def crossEntropyLoss(preds, targets, reduction='none'):
         log_softmax = nn.LogSoftmax(dim=-1)
         loss = (-targets * log_softmax(preds)).sum(1)
         if reduction == "none":
