@@ -37,8 +37,6 @@ class ClipModel(nn.Module):
         # self.embed_img = nn.Embeddding(self.output_dim, vit_emb_dim)
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
-        self.change_length = nn.Linear(75,350)
-
         self.projection = ProjectionHead(
             vit_emb_dim,
             xfmer_emb_dim,
@@ -70,8 +68,12 @@ class ClipModel(nn.Module):
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
 
             # CLIP 
-            vit_enc_output = self.change_length(
-                vit_enc_output.permute(0,2,1)).permute(0,2,1) # (B, max_len, emb_dim)
+            # reshaping the tensors fom 3D to 2D - (B,-1). 
+            batch_size = vit_enc_output.shape[0]
+            vit_enc_output = vit_enc_output.view(batch_size, -1)
+            xfmer_enc_output = xfmer_enc_output.view(batch_size, -1)
+
+            # projection head - both will be (B, proj_dim)
             projected_img = self.projection(vit_enc_output, img=True)
             projected_mml = self.projection(xfmer_enc_output, img=False)
         
@@ -81,17 +83,15 @@ class ClipModel(nn.Module):
             # print("pmml and pmmlT: ", projected_mml.shape, projected_mml.T.shape)
             # print("pimg and pimgT: ", projected_img.shape, projected_img.T.shape)
 
-            logits = (projected_mml @ projected_img.permute(0,2,1)) / self.temperature
-            images_similarity = projected_img @ projected_img.permute(0,2,1)
-            texts_similarity = projected_mml @ projected_mml.permute(0,2,1)
+            logits = (projected_mml @ projected_img.T) / self.temperature
+            images_similarity = projected_img @ projected_img.T
+            texts_similarity = projected_mml @ projected_mml.T
             targets = F.softmax(
                 (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
             
             # training or validation
-            texts_loss = nn.CrossEntropyLoss(logits.contiguous().view(-1, logits.shape[-1]), 
-                                             targets.view(-1))
-            images_loss = nn.CrossEntropyLoss(logits.T.contiguous().view(-1, logits.T.shape[-1]), 
-                                              targets.T.view(-1))
+            texts_loss = nn.CrossEntropyLoss(logits, targets)
+            images_loss = nn.CrossEntropyLoss(logits.T, targets.T)
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
             return loss.mean()
