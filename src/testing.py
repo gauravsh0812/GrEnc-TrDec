@@ -40,6 +40,7 @@ def evaluate(
                 only_img=True,
             )  # O: (B, max_len, output_dim)
 
+            print("decoding model #43: ", encodded_img.shape)
             outputs, preds = decoding_model(
                 encodded_img,
                 mml,
