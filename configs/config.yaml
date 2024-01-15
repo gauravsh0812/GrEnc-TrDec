@@ -13,7 +13,7 @@ training:
   ddp: True
   gpus: 0,1,2
   world_size: 3
-  epochs: 1
+  epochs: 20
   batch_size: 20
   learning_rate: 0.0001
   weight_decay: 0.00001
@@ -21,7 +21,7 @@ training:
   early_stopping: 5
   scheduler_step_size: 50
   scheduler_gamma: 0.5
-  load_trained_model_for_testing: True
+  load_trained_model_for_testing: False
 
 preprocessing:
   path_to_data: "/home/gauravs/data/grenc_trdec"

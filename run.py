@@ -413,13 +413,12 @@ def train_model(rank=None,):
 
     test_loss = evaluate(
         model,
+        decoding_model,
         img_tnsr_path,
-        img_graph_path,
-        batch_size,
+        criterion,        
         test_dataloader,
         device,
         vocab,
-        isGraphPixel=cfg["model"]["isGraphPixel"],
         is_test=True,
     )
 
