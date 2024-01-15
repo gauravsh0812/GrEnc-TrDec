@@ -91,8 +91,6 @@ class ClipModel(nn.Module):
             )
             
             # training or validation
-            print("pmml and pmmlT: ", logits.shape, targets.shape)
-
             texts_loss = self.crossEntropyLoss(logits, targets)
             images_loss = self.crossEntropyLoss(logits.T, targets.T)
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
