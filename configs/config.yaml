@@ -21,7 +21,7 @@ training:
   early_stopping: 5
   scheduler_step_size: 50
   scheduler_gamma: 0.5
-  load_trained_model_for_testing: false
+  load_trained_model_for_testing: True
 
 preprocessing:
   path_to_data: "/home/gauravs/data/grenc_trdec"
