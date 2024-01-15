@@ -93,15 +93,12 @@ class ClipModel(nn.Module):
             # training or validation
             print("pmml and pmmlT: ", logits.shape, targets.shape)
 
-            texts_loss = self.crossEntropyLoss(logits, targets, reduction = "none")
-            images_loss = self.crossEntropyLoss(logits.T, targets.T, reduction = "none")
+            texts_loss = self.crossEntropyLoss(logits, targets)
+            images_loss = self.crossEntropyLoss(logits.T, targets.T)
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
             return loss.mean()
 
-    def crossEntropyLoss(preds, targets, reduction='none'):
+    def crossEntropyLoss(preds, targets):
         log_softmax = nn.LogSoftmax(dim=-1)
         loss = (-targets * log_softmax(preds)).sum(1)
-        if reduction == "none":
-            return loss
-        elif reduction == "mean":
-            return loss.mean()
+        return loss
