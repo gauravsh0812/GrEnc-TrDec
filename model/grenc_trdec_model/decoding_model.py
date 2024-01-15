@@ -26,7 +26,6 @@ class DecodingModel(nn.Module):
 
     def forward(
         self,
-        imgs=None,
         enc_output=None,
         mml=None,
         is_test=False,
