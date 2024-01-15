@@ -13,7 +13,8 @@ class ProjectionHead(nn.Module):
         dropout,
     ):
         super().__init__()
-        self.img_projection = nn.Linear(vit_emb_dim, projection_dim)
+        # self.img_projection = nn.Linear(vit_emb_dim, projection_dim)
+        self.img_projection = nn.Linear(9600, projection_dim)
         self.text_projection = nn.Linear(xfmer_hid_dim, projection_dim)
         self.gelu = nn.GELU()
         self.fc = nn.Linear(projection_dim, projection_dim)
@@ -24,7 +25,6 @@ class ProjectionHead(nn.Module):
         if img:
             projected = self.img_projection(x)
         else:
-
             projected = self.text_projection(x)
             
         x = self.gelu(projected)
