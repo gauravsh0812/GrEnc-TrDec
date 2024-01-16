@@ -7,6 +7,7 @@ class ClipModel(nn.Module):
     def __init__(self,  
                  vocab, 
                  device,
+                #  decoder_emb_dim,   # trying
                  vit_emb_dim,
                  xfmer_emb_dim,
                  xfmer_hid_dim,
@@ -34,7 +35,8 @@ class ClipModel(nn.Module):
         # for pixel information
         self.isVitPixel = isVitPixel
 
-        # self.embed_img = nn.Embeddding(self.output_dim, vit_emb_dim)
+        # self.change_emb_dim = nn.Linear(self.vit_emb_dim, self.decoder_emb_dim)  # trying
+
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
         self.projection = ProjectionHead(
@@ -59,6 +61,9 @@ class ClipModel(nn.Module):
                                       vit_enc_output, 
                                       isVitPixel=True)  # (B, n_pixels, embed_dim)
         if only_img:
+            # if vit_enc_output.shape[-1] != self.dec_emb_dim:  # tryinng
+            #     vit_enc_output = self.change_emb_dim(vit_enc_output)
+
             return vit_enc_output
             
         # ENCODING TEXTS

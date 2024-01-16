@@ -125,6 +125,7 @@ def define_model(vocab, device):
     model = ClipModel(
         vocab, 
         device,
+        # xfmer_dec_args.emb_dim,  # trying
         vit_args.emb_dim,  
         xfmer_args.emb_dim, 
         xfmer_args.hid_dim,

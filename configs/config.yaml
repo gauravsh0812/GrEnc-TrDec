@@ -54,8 +54,8 @@ model:
     hid_dim: 512
     max_len: 350
     nheads: 4
-    n_xfmer_encoder_layers: 4
-    dim_feedfwd: 512
+    n_xfmer_encoder_layers: 6
+    dim_feedfwd: 1024
   
   xfmer_dec:
     emb_dim: 256
