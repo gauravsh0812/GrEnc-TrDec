@@ -7,7 +7,7 @@ class ClipModel(nn.Module):
     def __init__(self,  
                  vocab, 
                  device,
-                #  decoder_emb_dim,   # trying
+                 decoder_emb_dim,   # trying
                  vit_emb_dim,
                  xfmer_emb_dim,
                  xfmer_hid_dim,
@@ -16,6 +16,7 @@ class ClipModel(nn.Module):
                  temperature,
                  Vit_ENC=None,
                  Xfmer_ENC=None,
+                 xfmer_DEC=None,
                  isVitPixel=True,                 
                  ):
         """
@@ -27,9 +28,11 @@ class ClipModel(nn.Module):
 
         self.vit_enc = Vit_ENC
         self.Xfmer_ENC = Xfmer_ENC
+        self.Xfmer_DEC = xfmer_DEC
         self.vocab = vocab
         self.device = device
         self.output_dim = len(vocab)
+        self.decoder_emb_dim = decoder_emb_dim
         self.temperature = temperature
 
         # for pixel information
@@ -51,7 +54,7 @@ class ClipModel(nn.Module):
         self,
         imgs=None,
         mml=None,
-        only_img=False,
+        train_dec=False,
     ):  
         # ENCODING IMAGES
         vit_enc_output = self.vit_enc(imgs)  # (B, n_patches, embed_dim)
@@ -60,19 +63,14 @@ class ClipModel(nn.Module):
             vit_enc_output = self.vit_enc(imgs, 
                                       vit_enc_output, 
                                       isVitPixel=True)  # (B, n_pixels, embed_dim)
-        if only_img:
-            # if vit_enc_output.shape[-1] != self.dec_emb_dim:  # tryinng
-            #     vit_enc_output = self.change_emb_dim(vit_enc_output)
 
-            return vit_enc_output
-            
-        # ENCODING TEXTS
-        else:
+        if not train_dec:
+            # CLIP 
+            # ENCODING TEXTS
             embedded_mml = self.embed_text(mml)   # (B, max_len, emb_dim)
             xfmer_enc_output = self.Xfmer_ENC(embedded_mml)  # (max_len, B, emb_dim)
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
-
-            # CLIP 
+        
             # reshaping the tensors fom 3D to 2D - (B,-1). 
             batch_size = vit_enc_output.shape[0]
             vit_enc_output = vit_enc_output.reshape(batch_size, -1)
@@ -81,25 +79,34 @@ class ClipModel(nn.Module):
             # projection head - both will be (B, proj_dim)
             projected_img = self.projection(vit_enc_output, img=True)
             projected_mml = self.projection(xfmer_enc_output, img=False)
-        
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
-            # print("pmml and pmmlT: ", projected_mml.shape, projected_mml.T.shape)
-            # print("pimg and pimgT: ", projected_img.shape, projected_img.T.shape)
-
             logits = (projected_mml @ projected_img.T) / self.temperature
             images_similarity = projected_img @ projected_img.T
             texts_similarity = projected_mml @ projected_mml.T
             targets = F.softmax(
                 (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
-            
+
             # training or validation
             texts_loss = self.crossEntropyLoss(logits, targets)
             images_loss = self.crossEntropyLoss(logits.T, targets.T)
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
             return loss.mean()
+        
+        else:
+            # Train Dec
+            embed_fv = self.embed_text(vit_enc_output)
+            xfmer_enc_output = self.Xfmer_ENC(embed_fv).permute(1,0,2) # (B, l, emb_dim)
+            xfmer_dec_output = self.Xfmer_DEC(mml, 
+                                              xfmer_enc_output,
+                                              self.vocab["<sos>"],
+                                              self.vocab["<pad>"])
+        
+            loss = self.crossEntropyLoss(xfmer_dec_output, mml)
+            return loss
+
 
     def crossEntropyLoss(self, preds, targets):
         log_softmax = nn.LogSoftmax(dim=-1)

@@ -5,7 +5,7 @@ from utils.garbage_to_pad import garbage2pad
 
 def evaluate(
     model,
-    decoding_model,
+    # decoding_model,
     img_tnsr_path,
     criterion,
     test_dataloader,
@@ -37,14 +37,17 @@ def evaluate(
             """
             encodded_img = model(
                 imgs,
-                only_img=True,
+                mml,
+                test=True,
+                # only_img=True,
             )  # O: (B, max_len, dec_emb_dim)
 
-            outputs, preds = decoding_model(
-                encodded_img,
-                mml,
-                is_test=is_test,
-            )
+
+            # outputs, preds = decoding_model(
+            #     encodded_img,
+            #     mml,
+            #     is_test=is_test,
+            # )
 
             if is_test:
                 preds = garbage2pad(preds, vocab, is_test=is_test)

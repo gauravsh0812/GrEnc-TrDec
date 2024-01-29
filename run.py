@@ -18,10 +18,10 @@ from src.training import train
 from src.testing import evaluate
 from model.preprocessing.preprocess_data import preprocess_dataset
 from model.grenc_trdec_model.model import ClipModel
-from model.grenc_trdec_model.decoding_model import DecodingModel
+# from model.grenc_trdec_model.decoding_model import DecodingModel
 from model.grenc_trdec_model.vit_encoder import VisionTransformer
 from model.grenc_trdec_model.xfmer_encoder import Transformer_Encoder
-from model.grenc_trdec_model.decoder import Transformer_Decoder
+from model.grenc_trdec_model.xfmer_decoder import Transformer_Decoder
 
 # opening training_args file
 with open('configs/config.yaml') as f:
@@ -93,19 +93,19 @@ def define_model(vocab, device):
         dim_feedfwd=xfmer_args.dim_feedfwd,
     ) 
 
-    n_patches = (
-        image_w // cfg.model.vit.patch_size
-        ) * (
-        image_h // cfg.model.vit.patch_size
-    )
+    # n_patches = (
+    #     image_w // cfg.model.vit.patch_size
+    #     ) * (
+    #     image_h // cfg.model.vit.patch_size
+    # )
 
     Tr_DEC = Transformer_Decoder(
-        vit_emb_dim=vit_args.emb_dim,
+        tr_enc_emb_dim=xfmer_args.emb_dim,
         dec_emb_dim=xfmer_dec_args.emb_dim,
         dec_hid_dim=xfmer_dec_args.hid_dim,
         nheads=xfmer_dec_args.nheads,
         output_dim=len(vocab),
-        n_patches=n_patches,
+        # n_patches=n_patches,
         dropout=dropout,
         max_len=xfmer_args.max_len,
         n_xfmer_decoder_layers=xfmer_dec_args.n_xfmer_decoder_layers,
@@ -113,19 +113,19 @@ def define_model(vocab, device):
         device=device,
     )
 
-    decoding_model = DecodingModel(
-        vocab, 
-        device,
-        Vit_ENC,
-        Tr_DEC, 
-        isVitPixel=isVitPixel,
-    )
+    # decoding_model = DecodingModel(
+    #     vocab, 
+    #     device,
+    #     Vit_ENC,
+    #     Tr_DEC, 
+    #     isVitPixel=isVitPixel,
+    # )
 
 
     model = ClipModel(
         vocab, 
         device,
-        # xfmer_dec_args.emb_dim,  # trying
+        xfmer_dec_args.emb_dim,  # trying
         vit_args.emb_dim,  
         xfmer_args.emb_dim, 
         xfmer_args.hid_dim,
@@ -134,10 +134,11 @@ def define_model(vocab, device):
         cfg.model.temperature,
         Vit_ENC,
         Tr_ENC, 
+        Tr_DEC,
         isVitPixel=isVitPixel,
     )
 
-    return model, decoding_model
+    return model#, decoding_model
 
 
 def init_weights(m):
@@ -226,7 +227,8 @@ def train_model(rank=None,):
                 vocab,
             ) = preprocess_dataset(preprocessing_args)
 
-            model, decoding_model = define_model(vocab, rank)
+            # model, decoding_model = define_model(vocab, rank)
+            model = define_model(vocab, rank)
             model = DDP(
                 model.to(device),
                 device_ids=[rank],
@@ -251,7 +253,8 @@ def train_model(rank=None,):
                 val_dataloader,
                 vocab,
             ) = preprocess_dataset(preprocessing_args)
-            model,decoding_model = define_model(vocab, device).to("cuda")
+            # model,decoding_model = define_model(vocab, device).to("cuda")
+            model = define_model(vocab, rank).to("cuda")
 
     else:
         import warnings
@@ -264,7 +267,8 @@ def train_model(rank=None,):
             val_dataloader,
             vocab,
         ) = preprocess_dataset(preprocessing_args)
-        model,decoding_model = define_model(vocab, device).to(device)
+        # model,decoding_model = define_model(vocab, device).to(device)
+        model = define_model(vocab, rank).to(device)
 
     print("MODEL: ")
     print(f"The model has {count_parameters(model)} trainable parameters")
@@ -273,16 +277,23 @@ def train_model(rank=None,):
     criterion = torch.nn.CrossEntropyLoss(ignore_index=vocab.stoi["<pad>"])
 
     # optimizer
-    optimizer = torch.optim.AdamW(
+    optimizer_clip = torch.optim.AdamW(
         params=model.parameters(),
         lr=learning_rate,
         weight_decay=weight_decay,
         betas=(beta1, beta2),
     )
     
+    optimizer_dec = torch.optim.AdamW(
+        params=model.parameters(),
+        lr=learning_rate,
+        weight_decay=weight_decay,
+        betas=(beta1, beta2),
+    )
+
     # multistep_lr scheduler
     scheduler = torch.optim.lr_scheduler.MultiStepLR(
-        optimizer,
+        optimizer_clip,
         # step_size=training_args.scheduler_step_size,
         milestones=[50],
         gamma=training_args.scheduler_gamma,
@@ -297,10 +308,10 @@ def train_model(rank=None,):
     # raw data paths
     img_tnsr_path = f"{preprocessing_args.path_to_data}/image_tensors"
 
-    # model only for decoding part while testing or validating
-    decoder_model_path = cfg.model.decoder_model_path
-    # loading pre_tained_model for decoding
-    decoding_model.load_state_dict(torch.load(decoder_model_path))
+    # # model only for decoding part while testing or validating
+    # decoder_model_path = cfg.model.decoder_model_path
+    # # loading pre_tained_model for decoding
+    # decoding_model.load_state_dict(torch.load(decoder_model_path))
 
     if not load_trained_model_for_testing:
         count_es = 0
@@ -313,7 +324,8 @@ def train_model(rank=None,):
                     model,
                     img_tnsr_path,
                     train_dataloader,
-                    optimizer,
+                    optimizer_clip,
+                    optimizer_dec,
                     clip,
                     device,
                     ddp=ddp,
@@ -322,7 +334,7 @@ def train_model(rank=None,):
 
                 val_loss = evaluate(
                     model,
-                    decoding_model,
+                    # decoding_model,
                     img_tnsr_path,
                     criterion,
                     val_dataloader,
@@ -414,7 +426,7 @@ def train_model(rank=None,):
 
     test_loss = evaluate(
         model,
-        decoding_model,
+        # decoding_model,
         img_tnsr_path,
         criterion,        
         test_dataloader,

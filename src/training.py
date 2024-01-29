@@ -6,7 +6,8 @@ def train(
     model,
     img_tnsr_path,
     train_dataloader,
-    optimizer,
+    optimizer_clip,
+    optimizer_dec,
     clip,
     device,
     ddp=False,
@@ -31,24 +32,38 @@ def train(
 
         imgs = torch.stack(_imgs).to(device)
         
-        # setting gradients to zero
-        optimizer.zero_grad()
+        # =========== training CLIP ================ #
 
-        loss = model(
+        # setting gradients to zero
+        optimizer_clip.zero_grad()
+        loss_clip = model(
             imgs,
             mml,
         )
-        
-        loss.backward()
+
+        loss_clip.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-        optimizer.step()
-
-        epoch_loss += loss.item()
-
+        optimizer_clip.step()
+# 
         if (not ddp) or (ddp and rank == 0):
             # desc = 'Loss: %.4f - Learning Rate: %.6f' % (loss.item(), optimizer.param_groups[0]['lr'])
             # tset.set_description(desc)
-            tset.set_postfix(train_loss=loss.item(), lr=optimizer.param_groups[0]['lr'])
+            tset.set_postfix(train_loss=loss_clip.item(), lr=optimizer_clip.param_groups[0]['lr'])
+
+        # ================= training Decoder ================= #
+        
+        optimizer_dec.zero_grad()
+        loss_dec = model(
+            imgs, 
+            mml, 
+            train_dec=True,
+        )
+
+        loss_dec.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+        optimizer_dec.step()
+
+        epoch_loss += loss_clip.item() + loss_dec.item()
 
     net_loss = epoch_loss / len(train_dataloader)
     return net_loss

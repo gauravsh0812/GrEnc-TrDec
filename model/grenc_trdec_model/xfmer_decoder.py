@@ -7,12 +7,12 @@ from model.grenc_trdec_model.position_encoding import PositionalEncoding
 class Transformer_Decoder(nn.Module):
     def __init__(
         self,
-        vit_emb_dim,
+        tr_enc_emb_dim,
         dec_emb_dim,
         dec_hid_dim,
         nheads,
         output_dim,
-        n_patches,       # n_patches = img_w//patche_size * img_h//patch_size
+        # n_patches,       # n_patches = img_w//patche_size * img_h//patch_size
         dropout,
         max_len,
         n_xfmer_decoder_layers,
@@ -25,8 +25,8 @@ class Transformer_Decoder(nn.Module):
         self.emb_dim = dec_emb_dim
         self.embed = nn.Embedding(output_dim, dec_emb_dim)
         self.pos = PositionalEncoding(dec_emb_dim, dropout, max_len)
-        self.change_len = nn.Linear(n_patches, max_len)
-        self.change_dim = nn.Linear(vit_emb_dim, dec_hid_dim)
+        self.change_len = nn.Linear(512, max_len)
+        self.change_dim = nn.Linear(tr_enc_emb_dim, dec_hid_dim)
 
         """
         NOTE:
@@ -80,7 +80,7 @@ class Transformer_Decoder(nn.Module):
         pad_idx,
         is_test=False,
     ):
-        # enc_output: (B, n_patches, vit_emb_dim)
+        # enc_output: (B, l, vit_emb_dim)
         # trg: (B, max_len)
         """
         we provide input: [<sos>, x1, x2, ...]
@@ -112,8 +112,8 @@ class Transformer_Decoder(nn.Module):
         pos_trg = self.modify_dimension(pos_trg)  # (max_len-1, B, dec_hid_dim)
 
         # changing n_patches to max_len
-        enc_output = enc_output.permute(0,2,1) # (B, vit_emb, n_patches)
-        enc_output = self.change_len(enc_output).permute(2,0,1)  # (max_len, B, vit_emb)
+        enc_output = enc_output.permute(0,2,1) # (B, emb, l)
+        enc_output = self.change_len(enc_output).permute(2,0,1)  # (max_len, B, emb)
         enc_output = self.change_dim(enc_output) # (max_len, B, dec_hid_dim)
 
         # outputs: (max_len-1,B, dec_hid_dim)
