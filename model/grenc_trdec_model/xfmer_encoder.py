@@ -55,6 +55,7 @@ class Transformer_Encoder(nn.Module):
         text = self.change_length(
             text
         )  # (B, max_len, hid_dim)
+        print("text shape:", text.shape)
         text = text.permute(
             1, 0, 2
         )  # (max_len, B, hid_dim)
