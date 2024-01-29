@@ -235,12 +235,12 @@ def train_model(rank=None,):
                 output_device=rank,
                 find_unused_parameters=True,
             )
-            decoding_model = DDP(
-                decoding_model.to(device),
-                device_ids=[rank],
-                output_device=rank,
-                find_unused_parameters=True,
-            )
+            # decoding_model = DDP(
+            #     decoding_model.to(device),
+            #     device_ids=[rank],
+            #     output_device=rank,
+            #     find_unused_parameters=True,
+            # )
 
         else:
             print(f"using gpu {str(gpus)}...")
