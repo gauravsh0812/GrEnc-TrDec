@@ -97,7 +97,7 @@ class ClipModel(nn.Module):
         
         else:
             # Train Dec
-            embed_fv = self.embed_text(vit_enc_output)
+            embed_fv = self.embed_text(vit_enc_output.long())
             xfmer_enc_output = self.Xfmer_ENC(embed_fv).permute(1,0,2) # (B, l, emb_dim)
             xfmer_dec_output = self.Xfmer_DEC(mml, 
                                               xfmer_enc_output,
