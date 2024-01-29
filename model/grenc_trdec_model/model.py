@@ -97,9 +97,8 @@ class ClipModel(nn.Module):
         
         else:
             # Train Dec
-            print("dec vit_enc_output shpae: ", vit_enc_output.shape)
-            # vit_enc_output = vit_enc_output.view()
-            embed_fv = self.embed_text(vit_enc_output)
+            vit_enc_output = vit_enc_output.view(vit_enc_output.shape[0],-1) # (B, w*h)
+            embed_fv = self.embed_text(vit_enc_output)  # (b, l, emb)
             xfmer_enc_output = self.Xfmer_ENC(embed_fv).permute(1,0,2) # (B, l, emb_dim)
             xfmer_dec_output = self.Xfmer_DEC(mml, 
                                               xfmer_enc_output,
