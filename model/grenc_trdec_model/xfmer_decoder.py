@@ -111,10 +111,11 @@ class Transformer_Decoder(nn.Module):
         pos_trg = self.modify_dimension(pos_trg)  # (max_len-1, B, dec_hid_dim)
 
         # changing n_patches to max_len
-        print("ennc_output shape: ", enc_output.shape)
         enc_output = self.change_dim(enc_output) # (max_len, B, dec_hid_dim)
 
         # outputs: (max_len-1,B, dec_hid_dim)
+        print(enc_output.is_cuda, pos_trg.is_cuda)
+
         xfmer_dec_outputs = self.xfmer_decoder(
             tgt=pos_trg,
             memory=enc_output,
