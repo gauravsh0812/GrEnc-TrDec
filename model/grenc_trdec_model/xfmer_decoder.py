@@ -92,15 +92,13 @@ class Transformer_Decoder(nn.Module):
         """
         
         (B, max_len) = trg.shape
-        print("device: ", self.device)
         _preds = torch.zeros(max_len, B)#.to(self.device)  # (max_len, B)
         trg = trg.permute(1, 0)  # (max_len, B)
         trg = trg[:-1, :]  # (max_len-1, B)
 
         sequence_length = trg.shape[0]
-        print("------------ :", sequence_length)
         trg_attn_mask = self.generate_square_subsequent_mask(
-                                    sequence_length).to(self.device)  # (max_len-1, max_len-1)
+                                    sequence_length).to("cuda")  # (max_len-1, max_len-1)
 
         trg_padding_mask = self.create_pad_mask(
                                     trg,pad_idx).permute(1,0)  # (B, max_len-1)
