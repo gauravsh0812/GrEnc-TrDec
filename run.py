@@ -247,7 +247,7 @@ def train_model(rank=None,):
             print(f"using gpu {str(gpus)}...")
             # os.environ["CUDA_VISIBLE_DEVICES"] = str(gpus)
             device = torch.device(f"cuda:{gpus}")
-            print("run device: ", device)
+            
             (
                 train_dataloader,
                 test_dataloader,
@@ -255,7 +255,7 @@ def train_model(rank=None,):
                 vocab,
             ) = preprocess_dataset(preprocessing_args)
             # model,decoding_model = define_model(vocab, device).to("cuda")
-            model = define_model(vocab, rank).to("cuda")
+            model = define_model(vocab, device).to("cuda")
 
     else:
         import warnings
