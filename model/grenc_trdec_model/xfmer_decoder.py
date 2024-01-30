@@ -79,7 +79,7 @@ class Transformer_Decoder(nn.Module):
         pad_idx,
         is_test=False,
     ):
-        # enc_output: (B, l, vit_emb_dim)
+        # enc_output: (max_len, B, xfmer-enc hid_dim)
         # trg: (B, max_len)
         """
         we provide input: [<sos>, x1, x2, ...]
@@ -111,8 +111,6 @@ class Transformer_Decoder(nn.Module):
         pos_trg = self.modify_dimension(pos_trg)  # (max_len-1, B, dec_hid_dim)
 
         # changing n_patches to max_len
-        print("xfmer enc output shape: ", enc_output.shape)
-        enc_output = enc_output.permute(0,2,1) # (B, emb, max_len)
         enc_output = self.change_dim(enc_output) # (max_len, B, dec_hid_dim)
 
         # outputs: (max_len-1,B, dec_hid_dim)
