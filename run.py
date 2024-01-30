@@ -99,7 +99,6 @@ def define_model(vocab, device):
     #     image_h // cfg.model.vit.patch_size
     # )
     
-    print("run device: ", device)
     Tr_DEC = Transformer_Decoder(
         tr_enc_hid_dim=xfmer_args.hid_dim,
         dec_emb_dim=xfmer_dec_args.emb_dim,
@@ -248,7 +247,7 @@ def train_model(rank=None,):
             print(f"using gpu {str(gpus)}...")
             # os.environ["CUDA_VISIBLE_DEVICES"] = str(gpus)
             device = torch.device(f"cuda:{gpus}")
-            
+            print("run device: ", device)
             (
                 train_dataloader,
                 test_dataloader,
