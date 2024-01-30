@@ -72,9 +72,7 @@ class Transformer_Encoder(nn.Module):
         pos_src = self.pos(text)  # (max_len, B, hid_dim)
 
         # xfmer encoder
-        self.generate_square_subsequent_mask(pos_src.shape[0]).to(
-            self.device
-        )
+        self.generate_square_subsequent_mask(pos_src.shape[0])#.to(self.device)
         xfmer_enc_output = self.xfmer_encoder(
             src=pos_src, mask=None
         )  # (max_len, B, hid_dim)
