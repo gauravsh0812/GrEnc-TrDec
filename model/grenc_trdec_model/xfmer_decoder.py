@@ -7,7 +7,7 @@ from model.grenc_trdec_model.position_encoding import PositionalEncoding
 class Transformer_Decoder(nn.Module):
     def __init__(
         self,
-        tr_enc_emb_dim,
+        tr_enc_hid_dim,
         dec_emb_dim,
         dec_hid_dim,
         nheads,
@@ -25,7 +25,7 @@ class Transformer_Decoder(nn.Module):
         self.emb_dim = dec_emb_dim
         self.embed = nn.Embedding(output_dim, dec_emb_dim)
         self.pos = PositionalEncoding(dec_emb_dim, dropout, max_len)
-        self.change_dim = nn.Linear(tr_enc_emb_dim, dec_hid_dim)
+        self.change_dim = nn.Linear(tr_enc_hid_dim, dec_hid_dim)
 
         """
         NOTE:

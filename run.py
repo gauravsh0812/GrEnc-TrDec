@@ -100,7 +100,7 @@ def define_model(vocab, device):
     # )
 
     Tr_DEC = Transformer_Decoder(
-        tr_enc_emb_dim=xfmer_args.emb_dim,
+        tr_enc_emb_dim=xfmer_args.hid_dim,
         dec_emb_dim=xfmer_dec_args.emb_dim,
         dec_hid_dim=xfmer_dec_args.hid_dim,
         nheads=xfmer_dec_args.nheads,
