@@ -10,8 +10,8 @@ training:
   wandb: False
   seed: 42
   clip: 1
-  ddp: False
-  gpus: 0
+  ddp: True
+  gpus: 0,1,2
   world_size: 3
   epochs: 1
   batch_size: 20
