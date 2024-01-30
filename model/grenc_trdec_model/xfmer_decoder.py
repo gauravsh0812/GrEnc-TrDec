@@ -92,7 +92,7 @@ class Transformer_Decoder(nn.Module):
         """
         
         (B, max_len) = trg.shape
-        _preds = torch.zeros(max_len, B)#.to(self.device)  # (max_len, B)
+        _preds = torch.zeros(max_len, B).to(self.device)  # (max_len, B)
         trg = trg.permute(1, 0)  # (max_len, B)
         trg = trg[:-1, :]  # (max_len-1, B)
 
