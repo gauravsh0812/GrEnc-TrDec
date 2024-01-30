@@ -12,6 +12,7 @@ class ClipModel(nn.Module):
                  xfmer_emb_dim,
                  xfmer_hid_dim,
                  projection_dim,
+                 max_len,
                  dropout,
                  temperature,
                  Vit_ENC=None,
@@ -39,7 +40,7 @@ class ClipModel(nn.Module):
         self.isVitPixel = isVitPixel
 
         # self.change_emb_dim = nn.Linear(self.vit_emb_dim, self.decoder_emb_dim)  # trying
-
+        self.change_len = nn.Linear(9600,max_len)
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
         self.projection = ProjectionHead(
@@ -99,7 +100,8 @@ class ClipModel(nn.Module):
             # Train Dec
             vit_enc_output = vit_enc_output.reshape(vit_enc_output.shape[0],-1).long() # (B, w*h)
             embed_fv = self.embed_text(vit_enc_output)  # (b, l, emb)
-            xfmer_enc_output = self.Xfmer_ENC(embed_fv).permute(1,0,2) # (B, l, emb_dim)
+            embed_fv = self.change_len(embed_fv.permute(0,2,1)).permute(0,2,1)   # (b, max, emb)
+            xfmer_enc_output = self.Xfmer_ENC(embed_fv).permute(1,0,2) # (B, max_len, hid_dim)
             xfmer_dec_output = self.Xfmer_DEC(mml, 
                                               xfmer_enc_output,
                                               self.vocab["<sos>"],

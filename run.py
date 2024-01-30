@@ -130,6 +130,7 @@ def define_model(vocab, device):
         xfmer_args.emb_dim, 
         xfmer_args.hid_dim,
         cfg.model.projection_dim,
+        xfmer_args.max_len,
         dropout,
         cfg.model.temperature,
         Vit_ENC,
