@@ -117,7 +117,7 @@ class Transformer_Decoder(nn.Module):
         xfmer_dec_outputs = self.xfmer_decoder(
             tgt=pos_trg,
             memory=enc_output,
-            tgt_mask=trg_attn_mask,
+            tgt_mask=trg_attn_mask.to("cuda"),
             tgt_key_padding_mask=trg_padding_mask,
         )
 
