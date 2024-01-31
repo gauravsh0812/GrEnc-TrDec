@@ -91,6 +91,7 @@ class Transformer_Decoder(nn.Module):
         xfmer_enc_output: input from encoder
         """
         torch.cuda.synchronize()
+
         
         (B, max_len) = trg.shape
         _preds = torch.zeros(max_len, B)#.to(self.device)  # (max_len, B)
