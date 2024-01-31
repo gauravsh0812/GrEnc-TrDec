@@ -255,7 +255,7 @@ def train_model(rank=None,):
                 vocab,
             ) = preprocess_dataset(preprocessing_args)
             # model,decoding_model = define_model(vocab, device).to("cuda")
-            model = define_model(vocab, device).to("cuda")
+            model = define_model(vocab, device).to("cuda:0")
 
     else:
         import warnings
