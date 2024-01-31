@@ -97,7 +97,6 @@ class Transformer_Decoder(nn.Module):
         trg = trg[:-1, :]  # (max_len-1, B)
 
         sequence_length = trg.shape[0]
-        print("------------------: ", trg.is_cuda)
         trg_attn_mask = self.generate_square_subsequent_mask(
                                     sequence_length).to(self.device)  # (max_len-1, max_len-1)
 
