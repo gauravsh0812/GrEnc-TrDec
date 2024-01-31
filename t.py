@@ -13,3 +13,4 @@ trg = torch.rand((350,20))
 trg = trg[:-1, :]  # (max_len-1, B)
 sequence_length = trg.shape[0]  
 trg_attn_mask = generate_square_subsequent_mask(sequence_length).to("cuda:0")
+print(trg_attn_mask.shape)
