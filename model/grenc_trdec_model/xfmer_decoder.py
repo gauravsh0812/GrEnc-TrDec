@@ -98,7 +98,7 @@ class Transformer_Decoder(nn.Module):
 
         sequence_length = trg.shape[0]
         trg_attn_mask = self.generate_square_subsequent_mask(
-                                    sequence_length)#.to(self.device)  # (max_len-1, max_len-1)
+                                    sequence_length).to(self.device)  # (max_len-1, max_len-1)
 
         trg_padding_mask = self.create_pad_mask(
                                     trg,pad_idx).permute(1,0)  # (B, max_len-1)
@@ -117,7 +117,7 @@ class Transformer_Decoder(nn.Module):
         xfmer_dec_outputs = self.xfmer_decoder(
             tgt=pos_trg,
             memory=enc_output,
-            tgt_mask=trg_attn_mask.to("cuda"),
+            tgt_mask=trg_attn_mask,
             tgt_key_padding_mask=trg_padding_mask,
         )
 
