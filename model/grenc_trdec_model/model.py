@@ -103,8 +103,10 @@ class ClipModel(nn.Module):
 
             embed_fv = self.embed_text(vit_enc_output)  # (b, l, emb)
             print("========= embed fv: ", embed_fv.shape)
-            
+
             embed_fv = self.change_len(embed_fv.permute(0,2,1)).permute(0,2,1)   # (b, max, emb)
+            print("========= embed fv: ", embed_fv.shape)
+            
             xfmer_enc_output = self.Xfmer_ENC(embed_fv)  # (max_len, B, hid_dim)
             xfmer_dec_output = self.Xfmer_DEC(mml, 
                                               xfmer_enc_output,
