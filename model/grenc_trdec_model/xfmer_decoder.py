@@ -81,6 +81,9 @@ class Transformer_Decoder(nn.Module):
         xfmer_enc_output: input from encoder
         """
 
+        print(self.device)
+        trg = trg.to(self.device)
+
         (B, max_len) = trg.shape
         _preds = torch.zeros(max_len, B).to(self.device)  # (max_len, B)
         trg = trg.permute(1, 0)  # (max_len, B)
