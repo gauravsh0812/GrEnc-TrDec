@@ -93,16 +93,13 @@ class Transformer_Decoder(nn.Module):
         # torch.cuda.synchronize()
 
         trg = trg.to(self.device)
-        
+
         (B, max_len) = trg.shape
         _preds = torch.zeros(max_len, B)#.to(self.device)  # (max_len, B)
         trg = trg.permute(1, 0)  # (max_len, B)
         trg = trg[:-1, :]  # (max_len-1, B)
 
         sequence_length = trg.shape[0]
-        trg_attn_mask = self.generate_square_subsequent_mask(
-                                    sequence_length).to(self.device)  # (max_len-1, max_len-1)
-
         trg_padding_mask = self.create_pad_mask(
                                     trg,pad_idx).permute(1,0)  # (B, max_len-1)
 
@@ -115,6 +112,9 @@ class Transformer_Decoder(nn.Module):
 
         # changing n_patches to max_len
         enc_output = self.change_dim(enc_output) # (max_len, B, dec_hid_dim)
+
+        trg_attn_mask = self.generate_square_subsequent_mask(
+                                    sequence_length).to(self.device)  # (max_len-1, max_len-1)
 
         # outputs: (max_len-1,B, dec_hid_dim)
         xfmer_dec_outputs = self.xfmer_decoder(
