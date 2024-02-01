@@ -1,3 +1,5 @@
+import torch 
+
 def generate_square_subsequent_mask(sz: int) -> torch.Tensor:
     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
     mask = (
