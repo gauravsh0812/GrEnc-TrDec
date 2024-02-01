@@ -61,20 +61,14 @@ class Transformer_Decoder(nn.Module):
         # [False, False, False, True, True, True]
         return matrix == pad_token
 
-    # def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
-    #     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
-    #     mask = (
-    #         mask.float()
-    #         .masked_fill(mask == 0, float("-inf"))
-    #         .masked_fill(mask == 1, float(0.0))
-    #     )
-    #     return mask
-
     def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
-        mask = torch.triu(torch.ones(sz, sz), diagonal=1)
-        mask = mask.masked_fill(mask == 1, float("-inf"))
+        mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
+        mask = (
+            mask.float()
+            .masked_fill(mask == 0, float("-inf"))
+            .masked_fill(mask == 1, float(0.0))
+        )
         return mask
-
 
     def forward(
         self,
@@ -121,7 +115,8 @@ class Transformer_Decoder(nn.Module):
         print("seq length: ", sequence_length)
 
         trg_attn_mask = self.generate_square_subsequent_mask(
-                                    sequence_length).to(self.device)  # (max_len-1, max_len-1)
+                                    sequence_length)  # (max_len-1, max_len-1)
+        trg_attn_mask = trg_attn_mask.to(self.device)
 
         # outputs: (max_len-1,B, dec_hid_dim)
         xfmer_dec_outputs = self.xfmer_decoder(
