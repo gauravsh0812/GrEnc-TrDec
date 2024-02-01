@@ -117,6 +117,8 @@ class Transformer_Decoder(nn.Module):
         trg_attn_mask = self.generate_square_subsequent_mask(
                                     sequence_length)  # (max_len-1, max_len-1)
         print("============self.device, trg mask shaoe: ", self.device, trg_attn_mask.shape)
+        print("Any NaN in trg_attn_mask:", torch.isnan(trg_attn_mask).any())
+        print("Any Inf in trg_attn_mask:", torch.isinf(trg_attn_mask).any())
 
         trg_attn_mask = trg_attn_mask.to(self.device)
 
