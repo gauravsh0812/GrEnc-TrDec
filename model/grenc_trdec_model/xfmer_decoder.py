@@ -61,14 +61,14 @@ class Transformer_Decoder(nn.Module):
         # [False, False, False, True, True, True]
         return matrix == pad_token
 
-    def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
-        mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
-        mask = (
-            mask.float()
-            .masked_fill(mask == 0, float("-inf"))
-            .masked_fill(mask == 1, float(0.0))
-        )
-        return mask
+    # def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
+    #     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
+    #     mask = (
+    #         mask.float()
+    #         .masked_fill(mask == 0, float("-inf"))
+    #         .masked_fill(mask == 1, float(0.0))
+    #     )
+    #     return mask
 
     def forward(
         self,
@@ -114,14 +114,18 @@ class Transformer_Decoder(nn.Module):
 
         print("seq length: ", sequence_length)
 
-        trg_attn_mask = self.generate_square_subsequent_mask(
-                                    sequence_length)  # (max_len-1, max_len-1)
+
+        mask = torch.triu(torch.as_tensor((1,), device=self.device), diagonal=1)
+        trg_attn_mask = torch.full_like(mask, fill_value=float("-inf"))
+        # trg_attn_mask = self.generate_square_subsequent_mask(
+        #                             sequence_length)  # (max_len-1, max_len-1)
         print("============self.device, trg mask shaoe: ", self.device, trg_attn_mask.shape)
         print("Any NaN in trg_attn_mask:", torch.isnan(trg_attn_mask).any())
         print("Any Inf in trg_attn_mask:", torch.isinf(trg_attn_mask).any())
 
         trg_attn_mask = trg_attn_mask.to(self.device)
-
+        torch.cuda.synchronize()
+        
         # outputs: (max_len-1,B, dec_hid_dim)
         xfmer_dec_outputs = self.xfmer_decoder(
             tgt=pos_trg,
