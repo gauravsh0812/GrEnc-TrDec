@@ -124,8 +124,9 @@ class Transformer_Decoder(nn.Module):
         print("Any Inf in trg_attn_mask:", torch.isinf(trg_attn_mask).any())
 
         trg_attn_mask = trg_attn_mask.to(self.device)
-        torch.cuda.synchronize()
-        
+        print("trg_attn mask on device: YES")
+        # torch.cuda.synchronize()
+
         # outputs: (max_len-1,B, dec_hid_dim)
         xfmer_dec_outputs = self.xfmer_decoder(
             tgt=pos_trg,
