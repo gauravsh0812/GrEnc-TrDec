@@ -110,19 +110,7 @@ class ClipModel(nn.Module):
             xfmer_enc_output = self.Xfmer_ENC(embed_fv)  # (max_len, B, hid_dim)
             print("========= xfmer_enc output: ", xfmer_enc_output.shape)
 
-            mask = torch.triu(torch.as_tensor((1,), device=self.device), diagonal=1)
-            trg_attn_mask = torch.full_like(mask, fill_value=float("-inf"))
-            # trg_attn_mask = self.generate_square_subsequent_mask(
-            #                             sequence_length)  # (max_len-1, max_len-1)
-            print("============self.device, trg mask shaoe: ", self.device, trg_attn_mask.shape)
-            print("Any NaN in trg_attn_mask:", torch.isnan(trg_attn_mask).any())
-            print("Any Inf in trg_attn_mask:", torch.isinf(trg_attn_mask).any())
-
-            trg_attn_mask = trg_attn_mask.to(self.device)
-            print("trg_attn mask on device: YES")
-
             xfmer_dec_output = self.Xfmer_DEC(mml, 
-                                              trg_attn_mask, # trying
                                               xfmer_enc_output,
                                               self.vocab["<sos>"],
                                               self.vocab["<pad>"])
