@@ -90,9 +90,9 @@ class Transformer_Decoder(nn.Module):
         trg: sequnece containing total number of token that has been predicted.
         xfmer_enc_output: input from encoder
         """
-        torch.cuda.synchronize()
+        # torch.cuda.synchronize()
 
-        
+        trg = trg.to(self.device)
         (B, max_len) = trg.shape
         _preds = torch.zeros(max_len, B)#.to(self.device)  # (max_len, B)
         trg = trg.permute(1, 0)  # (max_len, B)
