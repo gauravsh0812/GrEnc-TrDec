@@ -92,7 +92,7 @@ def define_model(vocab, device):
         emb_dim=xfmer_args.emb_dim,
         hid_dim=xfmer_args.hid_dim,
         nheads=xfmer_args.nheads,
-        n_patches = n_patches,
+        # n_patches = n_patches,
         dropout=dropout,
         device=device,
         max_len=xfmer_args.max_len,
