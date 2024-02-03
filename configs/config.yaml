@@ -41,7 +41,7 @@ model:
 
   vit:
     input_channels: 3
-    patch_size: 10
+    patch_size: 20
     pixel_patch_size: 4
     nheads: 8
     emb_dim: 128
