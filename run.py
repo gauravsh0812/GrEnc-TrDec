@@ -89,7 +89,7 @@ def define_model(vocab, device):
     )
 
     Tr_ENC = Transformer_Encoder(
-        emb_dim=xfmer_args.emb_dim,
+        # vit_emb_dim=vit_args.emb_dim,
         hid_dim=xfmer_args.hid_dim,
         nheads=xfmer_args.nheads,
         n_patches = n_patches,

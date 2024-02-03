@@ -8,7 +8,7 @@ from model.grenc_trdec_model.position_encoding import (
 class Transformer_Encoder(nn.Module):
     def __init__(
         self,
-        emb_dim,
+        # vit_emb_dim,
         hid_dim,
         nheads,
         n_patches,
@@ -22,7 +22,7 @@ class Transformer_Encoder(nn.Module):
         self.hid_dim = hid_dim
         self.device = device
         self.pos = PositionalEncoding(hid_dim, dropout, max_len)
-        self.change_length = nn.Linear(emb_dim, hid_dim)
+        self.change_length = nn.Linear(n_patches, hid_dim)
 
         """
         NOTE:
@@ -51,9 +51,7 @@ class Transformer_Encoder(nn.Module):
         return mask
     
     def forward(self, text):
-        # text: (B, max_len, n)
-        # change the L=H*W to max_len
-        
+        # text: (B, max_len, n)        
         text = self.change_length(
             text
         )  # (B, max_len, hid_dim)
@@ -62,10 +60,6 @@ class Transformer_Encoder(nn.Module):
             1, 0, 2
         )  # (max_len, B, hid_dim)
 
-        # embedding + normalization
-        """
-        no need to embed as src from cnn already has hid_dim as the 3rd dim
-        """
         text *= math.sqrt(
             self.hid_dim
         )  # (max_len, B, hid_dim)
