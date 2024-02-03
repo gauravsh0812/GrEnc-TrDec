@@ -112,7 +112,7 @@ class ClipModel(nn.Module):
                                               self.vocab.stoi["<pad>"])   # (B, max_len-1, output_dim)
             
             output_dim = xfmer_dec_outputs.shape[-1]
-            xfmer_dec_outputs = xfmer_dec_outputs.view(-1, output_dim)
+            xfmer_dec_outputs = xfmer_dec_outputs.contiguous().view(-1, output_dim)
             mml = mml[:, 1:].contiguous().view(-1)
             print("======= xfmer, mml: ", xfmer_dec_outputs.shape, preds.shape)
             loss = self.criterion(xfmer_dec_outputs, mml)
