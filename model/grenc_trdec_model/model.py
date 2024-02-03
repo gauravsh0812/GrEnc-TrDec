@@ -38,10 +38,7 @@ class ClipModel(nn.Module):
 
         # for pixel information
         self.isVitPixel = isVitPixel
-
-        # self.change_emb_dim = nn.Linear(self.vit_emb_dim, self.decoder_emb_dim)  # trying
-        self.change_len = nn.Linear(9600,max_len)
-        self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
+        self.lin = nn.Linear(vit_emb_dim, max_len)
 
         self.projection = ProjectionHead(
             vit_emb_dim,
@@ -63,7 +60,7 @@ class ClipModel(nn.Module):
         if self.isVitPixel:
             vit_enc_output = self.vit_enc(imgs, 
                                       vit_enc_output, 
-                                      isVitPixel=True)  # (B, n_pixels, embed_dim)
+                                      isVitPixel=True)  # (B, n_patches, embed_dim)
 
         if not train_dec:
             # CLIP 
@@ -98,19 +95,9 @@ class ClipModel(nn.Module):
         
         else:
             # Train Dec
-            print("LET ME KNOW IF VIT IS LONG??? .... ", vit_enc_output.dtype == torch.long)
-
-            vit_enc_output = vit_enc_output.reshape(vit_enc_output.shape[0],-1) # (B, w*h)
-            print("============= vit enc output: ", vit_enc_output.shape)
-
-            embed_fv = self.embed_text(vit_enc_output)  # (b, l, emb)
-            print("========= embed fv: ", embed_fv.shape)
-
-            embed_fv = self.change_len(embed_fv.permute(0,2,1)).permute(0,2,1)   # (b, max, emb)
-            print("========= embed fv: ", embed_fv.shape)
-
-            xfmer_enc_output = self.Xfmer_ENC(embed_fv)  # (max_len, B, hid_dim)
-            print("========= xfmer_enc output: ", xfmer_enc_output.shape)
+            # vit_enc_output: (B, n_pathes/pixels, emb_dim)
+            vit_enc_output = self.lin(vit_enc_output).permute(0,2,1) # (B, max_len, n)
+            xfmer_enc_output = self.Xfmer_ENC(vit_enc_output)  # (max_len, B, hid_dim)
 
             xfmer_dec_output = self.Xfmer_DEC(mml,
                                               xfmer_enc_output,

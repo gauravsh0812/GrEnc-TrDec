@@ -82,22 +82,23 @@ def define_model(vocab, device):
         isVitPixel=isVitPixel,
     )
 
+    n_patches = (
+        image_w // cfg.model.vit.patch_size
+        ) * (
+        image_h // cfg.model.vit.patch_size
+    )
+
     Tr_ENC = Transformer_Encoder(
         emb_dim=xfmer_args.emb_dim,
         hid_dim=xfmer_args.hid_dim,
         nheads=xfmer_args.nheads,
+        n_patches = n_patches,
         dropout=dropout,
         device=device,
         max_len=xfmer_args.max_len,
         n_xfmer_encoder_layers=xfmer_args.n_xfmer_encoder_layers,
         dim_feedfwd=xfmer_args.dim_feedfwd,
     ) 
-
-    # n_patches = (
-    #     image_w // cfg.model.vit.patch_size
-    #     ) * (
-    #     image_h // cfg.model.vit.patch_size
-    # )
     
     Tr_DEC = Transformer_Decoder(
         tr_enc_hid_dim=xfmer_args.hid_dim,
@@ -105,7 +106,7 @@ def define_model(vocab, device):
         dec_hid_dim=xfmer_dec_args.hid_dim,
         nheads=xfmer_dec_args.nheads,
         output_dim=len(vocab),
-        # n_patches=n_patches,
+        n_patches=n_patches,
         dropout=dropout,
         max_len=xfmer_args.max_len,
         n_xfmer_decoder_layers=xfmer_dec_args.n_xfmer_decoder_layers,

@@ -11,6 +11,7 @@ class Transformer_Encoder(nn.Module):
         emb_dim,
         hid_dim,
         nheads,
+        n_patches,
         dropout,
         device,
         max_len,
@@ -38,6 +39,7 @@ class Transformer_Encoder(nn.Module):
         self.xfmer_encoder = nn.TransformerEncoder(
             xfmer_enc_layer, num_layers=n_xfmer_encoder_layers
         )
+        self.change_length = nn.Linear(n_patches, hid_dim)
 
     def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
         mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
@@ -49,7 +51,7 @@ class Transformer_Encoder(nn.Module):
         return mask
     
     def forward(self, text):
-        # text: (B, max_len, emb_dim)
+        # text: (B, max_len, n)
         # change the L=H*W to max_len
         
         text = self.change_length(
