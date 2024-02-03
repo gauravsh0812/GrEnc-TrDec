@@ -80,14 +80,7 @@ class Transformer_Decoder(nn.Module):
         trg: sequnece containing total number of token that has been predicted.
         xfmer_enc_output: input from encoder
         """
-
-        print(self.device)
-        trg = trg.to(self.device)
-
         (B, max_len) = trg.shape
-        print("max_len:", max_len, "B:", B)
-        _preds = torch.zeros(100, 1).to(self.device)
-        
         _preds = torch.zeros(max_len, B).to(self.device)  # (max_len, B)
         trg = trg.permute(1, 0)  # (max_len, B)
         trg = trg[:-1, :]  # (max_len-1, B)
@@ -106,7 +99,7 @@ class Transformer_Decoder(nn.Module):
             )  # (B, max_len-1)
 
         trg = self.embed(trg) * math.sqrt(
-            self.emb_dim
+            self.dec_emb_dim
         )  # (max_len-1, B, emb_dim)
         pos_trg = self.pos(trg)  # (max_len-1, B, emb_dim)
         pos_trg = self.modify_dimension(pos_trg)  # (max_len-1, B, dec_hid_dim)

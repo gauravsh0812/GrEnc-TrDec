@@ -71,7 +71,7 @@ class ClipModel(nn.Module):
             embedded_mml = self.embed_text(mml)   # (B, max_len, emb_dim)
             xfmer_enc_output = self.Xfmer_ENC(embedded_mml)  # (max_len, B, emb_dim)
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
-        
+
             # reshaping the tensors fom 3D to 2D - (B,-1). 
             batch_size = vit_enc_output.shape[0]
             vit_enc_output = vit_enc_output.reshape(batch_size, -1)
