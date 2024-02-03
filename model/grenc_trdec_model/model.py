@@ -101,7 +101,7 @@ class ClipModel(nn.Module):
             vit_enc_output = vit_enc_output.reshape(vit_enc_output.shape[0],-1) # (B, w*h)
             print("============= vit enc output: ", vit_enc_output.shape)
 
-            embed_fv = self.embed_text(vit_enc_output)  # (b, l, emb)
+            embed_fv = self.embed_text(vit_enc_output.long())  # (b, l, emb)
             print("========= embed fv: ", embed_fv.shape)
 
             embed_fv = self.change_len(embed_fv.permute(0,2,1)).permute(0,2,1)   # (b, max, emb)
