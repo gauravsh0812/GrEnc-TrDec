@@ -89,7 +89,7 @@ def define_model(vocab, device):
     )
 
     Tr_ENC = Transformer_Encoder(
-        # vit_emb_dim=vit_args.emb_dim,
+        emb_dim=xfmer_args.emb_dim,
         hid_dim=xfmer_args.hid_dim,
         nheads=xfmer_args.nheads,
         n_patches = n_patches,
@@ -126,6 +126,7 @@ def define_model(vocab, device):
     model = ClipModel(
         vocab, 
         device,
+        n_patches,
         xfmer_dec_args.emb_dim,  # trying
         vit_args.emb_dim,  
         xfmer_args.emb_dim, 

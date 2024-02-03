@@ -7,6 +7,7 @@ class ClipModel(nn.Module):
     def __init__(self,  
                  vocab, 
                  device,
+                 n_patches, 
                  decoder_emb_dim,   # trying
                  vit_emb_dim,
                  xfmer_emb_dim,
@@ -39,6 +40,7 @@ class ClipModel(nn.Module):
         # for pixel information
         self.isVitPixel = isVitPixel
         self.lin = nn.Linear(vit_emb_dim, max_len)
+        self.lin2 = nn.Linear(n_patches, xfmer_emb_dim)
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
         self.projection = ProjectionHead(
@@ -98,6 +100,7 @@ class ClipModel(nn.Module):
             # Train Dec
             # vit_enc_output: (B, n_pathes/pixels, emb_dim)
             vit_enc_output = self.lin(vit_enc_output).permute(0,2,1) # (B, max_len, n)
+            vit_enc_output = self.lin2(vit_enc_output)   # (B, max_len, xfmer_enc_emb_dim)
             xfmer_enc_output = self.Xfmer_ENC(vit_enc_output)  # (max_len, B, hid_dim)
 
             xfmer_dec_output = self.Xfmer_DEC(mml,

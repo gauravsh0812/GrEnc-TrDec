@@ -8,7 +8,7 @@ from model.grenc_trdec_model.position_encoding import (
 class Transformer_Encoder(nn.Module):
     def __init__(
         self,
-        # vit_emb_dim,
+        emb_dim,
         hid_dim,
         nheads,
         n_patches,
@@ -22,7 +22,7 @@ class Transformer_Encoder(nn.Module):
         self.hid_dim = hid_dim
         self.device = device
         self.pos = PositionalEncoding(hid_dim, dropout, max_len)
-        self.change_length = nn.Linear(n_patches, hid_dim)
+        self.change_length = nn.Linear(emb_dim, hid_dim)
 
         """
         NOTE:
@@ -39,7 +39,8 @@ class Transformer_Encoder(nn.Module):
         self.xfmer_encoder = nn.TransformerEncoder(
             xfmer_enc_layer, num_layers=n_xfmer_encoder_layers
         )
-        self.change_length = nn.Linear(n_patches, hid_dim)
+        self.change_length = nn.Linear(emb_dim, hid_dim)
+        
 
     def generate_square_subsequent_mask(self, sz: int) -> torch.Tensor:
         mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
@@ -51,8 +52,7 @@ class Transformer_Encoder(nn.Module):
         return mask
     
     def forward(self, text):
-        # text: (B, max_len, n)   
-        print("text shape: ", text.shape)     
+        # text: (B, max_len, emb_dim)   
         text = self.change_length(
             text
         )  # (B, max_len, hid_dim)
