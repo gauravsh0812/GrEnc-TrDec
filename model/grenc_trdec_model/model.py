@@ -39,6 +39,7 @@ class ClipModel(nn.Module):
         # for pixel information
         self.isVitPixel = isVitPixel
         self.lin = nn.Linear(vit_emb_dim, max_len)
+        self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
         self.projection = ProjectionHead(
             vit_emb_dim,
