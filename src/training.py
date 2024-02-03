@@ -47,14 +47,12 @@ def train(
         optimizer_clip.step()
 # 
         if (not ddp) or (ddp and rank == 0):
-            # desc = 'Loss: %.4f - Learning Rate: %.6f' % (loss.item(), optimizer.param_groups[0]['lr'])
-            # tset.set_description(desc)
             tset.set_postfix(train_loss=loss_clip.item(), lr=optimizer_clip.param_groups[0]['lr'])
 
         # ================= training Decoder ================= #
         
         optimizer_dec.zero_grad()
-        loss_dec = model(
+        _, _, loss_dec = model(
             imgs, 
             mml, 
             train_dec=True,
