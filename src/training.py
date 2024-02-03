@@ -39,6 +39,7 @@ def train(
         loss_clip = model(
             imgs,
             mml,
+            train_dec=False,
         )
 
         loss_clip.backward()

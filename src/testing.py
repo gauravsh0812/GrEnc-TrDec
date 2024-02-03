@@ -35,36 +35,24 @@ def evaluate(
             we will pass "mml" just to provide initial <sos> token.
             There will no teacher forcing while validation and testing.
             """
-            encodded_img = model(
+            outputs, preds, loss = model(
                 imgs,
                 mml,
-                test=True,
-                # only_img=True,
+                train_dec=True,
+                is_test=is_test,
             )  # O: (B, max_len, dec_emb_dim)
 
-
-            # outputs, preds = decoding_model(
-            #     encodded_img,
-            #     mml,
-            #     is_test=is_test,
-            # )
-
             if is_test:
+                # calculate new loss
                 preds = garbage2pad(preds, vocab, is_test=is_test)
                 output_dim = outputs.shape[-1]
                 mml_reshaped = mml[:, 1:].contiguous().view(-1)
                 outputs_reshaped = outputs.contiguous().view(
                     -1, output_dim
                 )  # (B * max_len-1, output_dim)
+                loss = criterion(outputs_reshaped, mml_reshaped)
 
-            else:
-                output_dim = outputs.shape[-1]            
-                outputs_reshaped = outputs.contiguous().view(
-                    -1, output_dim
-                )  # (B * max_len-1, output_dim)
-                mml_reshaped = mml[:, 1:].contiguous().view(-1)
-
-            loss = criterion(outputs_reshaped, mml_reshaped)
+            # for validation just use the loss
             epoch_loss += loss.item()
 
             if is_test:

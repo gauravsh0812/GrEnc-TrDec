@@ -58,7 +58,9 @@ class ClipModel(nn.Module):
         self,
         imgs=None,
         mml=None,
+        is_test=False,
         train_dec=False,
+
     ):  
         # ENCODING IMAGES
         vit_enc_output = self.vit_enc(imgs)  # (B, n_patches, embed_dim)
@@ -111,13 +113,15 @@ class ClipModel(nn.Module):
                                               self.vocab.stoi["<sos>"],
                                               self.vocab.stoi["<pad>"])   # (B, max_len-1, output_dim)
             
-            output_dim = xfmer_dec_outputs.shape[-1]
-            xfmer_dec_outputs = xfmer_dec_outputs.contiguous().view(-1, output_dim)
-            mml = mml[:, 1:].contiguous().view(-1)
-            loss = self.criterion(xfmer_dec_outputs, mml)
-            
-            return loss
-
+            # calculate loss for training only
+            if not is_test:
+                output_dim = xfmer_dec_outputs.shape[-1]
+                xfmer_dec_outputs = xfmer_dec_outputs.contiguous().view(-1, output_dim)
+                mml = mml[:, 1:].contiguous().view(-1)
+                loss = self.criterion(xfmer_dec_outputs, mml)
+                return xfmer_dec_outputs, preds, loss
+            else:
+                return xfmer_dec_outputs, preds, loss
 
     def crossEntropyLoss(self, preds, targets):
         log_softmax = nn.LogSoftmax(dim=-1)
