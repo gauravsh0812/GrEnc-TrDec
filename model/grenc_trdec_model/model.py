@@ -105,10 +105,13 @@ class ClipModel(nn.Module):
 
             xfmer_dec_output = self.Xfmer_DEC(mml,
                                               xfmer_enc_output,
-                                              self.vocab["<sos>"],
-                                              self.vocab["<pad>"])
+                                              self.vocab.stoi["<sos>"],
+                                              self.vocab.stoi["<pad>"])
         
-            loss = nn.CrossEntropyLoss(xfmer_dec_output, mml)
+            loss = nn.CrossEntropyLoss(
+                ignore_index=self.vocab.stoi["<pad>"]
+                )(xfmer_dec_output, mml)
+            
             return loss
 
 
