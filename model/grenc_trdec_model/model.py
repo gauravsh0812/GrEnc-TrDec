@@ -109,10 +109,8 @@ class ClipModel(nn.Module):
             xfmer_dec_outputs, preds = self.Xfmer_DEC(mml,
                                               xfmer_enc_output,
                                               self.vocab.stoi["<sos>"],
-                                              self.vocab.stoi["<pad>"])
-            
-            print("decoder shape==========: ", xfmer_dec_outputs.shape)
-
+                                              self.vocab.stoi["<pad>"])   # (B, max_len-1, output_dim)
+            print("======= xfmer, mml: ", xfmer_dec_outputs.shape, preds.shape)
             loss = self.criterion(xfmer_dec_outputs, mml)
             
             return loss
