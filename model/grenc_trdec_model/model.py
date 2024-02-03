@@ -36,6 +36,9 @@ class ClipModel(nn.Module):
         self.output_dim = len(vocab)
         self.decoder_emb_dim = decoder_emb_dim
         self.temperature = temperature
+        self.criterion = nn.CrossEntropyLoss(
+                ignore_index=self.vocab.stoi["<pad>"]
+                )
 
         # for pixel information
         self.isVitPixel = isVitPixel
@@ -107,10 +110,10 @@ class ClipModel(nn.Module):
                                               xfmer_enc_output,
                                               self.vocab.stoi["<sos>"],
                                               self.vocab.stoi["<pad>"])
-        
-            loss = nn.CrossEntropyLoss(
-                ignore_index=self.vocab.stoi["<pad>"]
-                )(xfmer_dec_output, mml)
+            
+            print("decoder shape==========: ", xfmer_dec_output.shape)
+
+            loss = self.criterion(xfmer_dec_output, mml)
             
             return loss
 
