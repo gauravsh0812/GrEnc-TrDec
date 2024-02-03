@@ -51,7 +51,8 @@ class Transformer_Encoder(nn.Module):
         return mask
     
     def forward(self, text):
-        # text: (B, max_len, n)        
+        # text: (B, max_len, n)   
+        print("text shape: ", text.shape)     
         text = self.change_length(
             text
         )  # (B, max_len, hid_dim)
