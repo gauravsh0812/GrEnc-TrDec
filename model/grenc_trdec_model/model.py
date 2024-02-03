@@ -111,7 +111,8 @@ class ClipModel(nn.Module):
                                               self.vocab.stoi["<sos>"],
                                               self.vocab.stoi["<pad>"])   # (B, max_len-1, output_dim)
             print("======= xfmer, mml: ", xfmer_dec_outputs.shape, preds.shape)
-            loss = self.criterion(xfmer_dec_outputs, mml)
+            loss = self.criterion(xfmer_dec_outputs, 
+                                  mml[:, 1:].contiguous().view(-1))
             
             return loss
 
