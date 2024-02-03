@@ -121,7 +121,7 @@ class ClipModel(nn.Module):
                 loss = self.criterion(xfmer_dec_outputs, mml)
                 return xfmer_dec_outputs, preds, loss
             else:
-                return xfmer_dec_outputs, preds, loss
+                return xfmer_dec_outputs, preds, []
 
     def crossEntropyLoss(self, preds, targets):
         log_softmax = nn.LogSoftmax(dim=-1)
