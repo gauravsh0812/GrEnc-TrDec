@@ -106,14 +106,14 @@ class ClipModel(nn.Module):
             vit_enc_output = self.lin2(vit_enc_output)   # (B, max_len, xfmer_enc_emb_dim)
             xfmer_enc_output = self.Xfmer_ENC(vit_enc_output)  # (max_len, B, hid_dim)
 
-            xfmer_dec_output = self.Xfmer_DEC(mml,
+            xfmer_dec_outputs, preds = self.Xfmer_DEC(mml,
                                               xfmer_enc_output,
                                               self.vocab.stoi["<sos>"],
                                               self.vocab.stoi["<pad>"])
             
-            print("decoder shape==========: ", xfmer_dec_output.shape)
+            print("decoder shape==========: ", xfmer_dec_outputs.shape)
 
-            loss = self.criterion(xfmer_dec_output, mml)
+            loss = self.criterion(xfmer_dec_outputs, mml)
             
             return loss
 
