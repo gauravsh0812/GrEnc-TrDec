@@ -62,7 +62,7 @@ def train(
         if (not ddp) or (ddp and rank == 0):
             tset.set_postfix(train_loss=f'CLIP: {loss_clip.item()}, DEC: {loss_dec.item()}', lr=optimizer_clip.param_groups[0]['lr'])
 
-        epoch_loss += loss_clip.item() + loss_dec.item()
+        epoch_loss += (loss_clip.item() + loss_dec.item())/2
 
     net_loss = epoch_loss / len(train_dataloader)
     return net_loss, loss_clip.item(), loss_dec.item()
