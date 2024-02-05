@@ -179,8 +179,10 @@ def train_model(rank=None,):
     epochs = training_args["epochs"]
     clip_learning_rate = training_args["clip_learning_rate"]
     dec_learning_rate = training_args["dec_learning_rate"]
-    weight_decay = training_args["weight_decay"]
-    [beta1, beta2] = training_args["betas"]
+    clip_weight_decay = training_args["clip_weight_decay"]
+    dec_weight_decay = training_args["dec_weight_decay"]
+    [clip_beta1, clip_beta2] = training_args["clip_betas"]
+    [dec_beta1, dec_beta2] = training_args["dec_betas"]
     clip = training_args["clip"]
     seed = training_args["seed"]
     ddp = training_args["ddp"]
@@ -283,15 +285,15 @@ def train_model(rank=None,):
     optimizer_clip = torch.optim.AdamW(
         params=model.parameters(),
         lr=clip_learning_rate,
-        weight_decay=weight_decay,
-        betas=(beta1, beta2),
+        weight_decay=clip_weight_decay,
+        betas=(clip_beta1, clip_beta2),
     )
     
     optimizer_dec = torch.optim.AdamW(
         params=model.parameters(),
         lr=dec_learning_rate,
-        weight_decay=weight_decay,
-        betas=(beta1, beta2),
+        weight_decay=dec_weight_decay,
+        betas=(dec_beta1, dec_beta2),
     )
 
     # multistep_lr scheduler
