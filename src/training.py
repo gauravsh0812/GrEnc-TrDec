@@ -45,9 +45,6 @@ def train(
         loss_clip.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer_clip.step()
-# 
-        if (not ddp) or (ddp and rank == 0):
-            tset.set_postfix(train_loss=loss_clip.item(), lr=optimizer_clip.param_groups[0]['lr'])
 
         # ================= training Decoder ================= #
         
@@ -61,6 +58,9 @@ def train(
         loss_dec.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer_dec.step()
+
+        if (not ddp) or (ddp and rank == 0):
+            tset.set_postfix(train_loss=f'CLIP: {loss_clip.item()}, DEC: {loss_dec.item()}', lr=optimizer_clip.param_groups[0]['lr'])
 
         epoch_loss += loss_clip.item() + loss_dec.item()
 

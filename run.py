@@ -177,8 +177,8 @@ def epoch_time(start_time, end_time):
 def train_model(rank=None,):
     # parameters
     epochs = training_args["epochs"]
-    batch_size = training_args["batch_size"]
-    learning_rate = training_args["learning_rate"]
+    clip_learning_rate = training_args["clip_learning_rate"]
+    dec_learning_rate = training_args["dec_learning_rate"]
     weight_decay = training_args["weight_decay"]
     [beta1, beta2] = training_args["betas"]
     clip = training_args["clip"]
@@ -282,14 +282,14 @@ def train_model(rank=None,):
     # optimizer
     optimizer_clip = torch.optim.AdamW(
         params=model.parameters(),
-        lr=learning_rate,
+        lr=clip_learning_rate,
         weight_decay=weight_decay,
         betas=(beta1, beta2),
     )
     
     optimizer_dec = torch.optim.AdamW(
         params=model.parameters(),
-        lr=learning_rate,
+        lr=dec_learning_rate,
         weight_decay=weight_decay,
         betas=(beta1, beta2),
     )
