@@ -337,7 +337,7 @@ def train_model(rank=None,):
                     rank=rank,
                 )
 
-                val_loss, loss_clip_val, loss_dec_val = evaluate(
+                val_loss = evaluate(
                     model,
                     # decoding_model,
                     img_tnsr_path,
@@ -388,7 +388,7 @@ def train_model(rank=None,):
                         f"\tTrain/clip/dec Loss: {train_loss:.3f}, {loss_clip:.3f}, {loss_dec:.3f} | Train PPL: {math.exp(train_loss):7.3f}"
                     )
                     print(
-                        f"\t Val. Loss: {val_loss:.3f}, {loss_clip_val:.3f}, {loss_dec_val:.3f} |  Val. PPL: {math.exp(val_loss):7.3f}"
+                        f"\t Val. Loss: {val_loss:.3f} |  Val. PPL: {math.exp(val_loss):7.3f}"
                     )
 
                     loss_file.write(
@@ -398,7 +398,7 @@ def train_model(rank=None,):
                         f"\tTrain/clip/dec Loss: {train_loss:.3f}, {loss_clip:.3f}, {loss_dec:.3f} | Train PPL: {math.exp(train_loss):7.3f}\n"
                     )
                     loss_file.write(
-                        f"\t Val. Loss: {val_loss:.3f}, {loss_clip_val:.3f}, {loss_dec_val:.3f} |  Val. PPL: {math.exp(val_loss):7.3f}\n"
+                        f"\t Val. Loss: {val_loss:.3f} |  Val. PPL: {math.exp(val_loss):7.3f}\n"
                     )
 
             else:
