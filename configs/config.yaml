@@ -15,7 +15,7 @@ training:
   world_size: 3
   epochs: 5
   batch_size: 20
-  clip_learning_rate: 0.001
+  clip_learning_rate: 0.01
   dec_learning_rate: 0.0001
   clip_weight_decay: 0.00001
   dec_weight_decay: 0.0001
