@@ -65,4 +65,4 @@ def train(
         epoch_loss += loss_clip.item() + loss_dec.item()
 
     net_loss = epoch_loss / len(train_dataloader)
-    return net_loss
+    return net_loss, loss_clip.item(), loss_dec.item()
