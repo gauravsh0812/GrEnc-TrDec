@@ -66,6 +66,7 @@ def evaluate(
                     pred_arr = [
                         vocab.itos[ipred] for ipred in preds.int()[idx, :]
                     ]
+                    print("pred_arr: ", pred_arr)
                     pred_seq = " ".join(pred_arr)
                     pred_seqs.write(pred_seq + "\n")
 
