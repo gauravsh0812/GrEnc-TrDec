@@ -117,7 +117,6 @@ class Transformer_Decoder(nn.Module):
 
   
         _preds[0, :] = torch.full(_preds[0, :].shape, sos_idx)
-        print("is test: ", is_test)
         if is_test:
             for i in range(xfmer_dec_outputs.shape[0]):
                 top1 = xfmer_dec_outputs[i, :, :].argmax(1)  # (B)
