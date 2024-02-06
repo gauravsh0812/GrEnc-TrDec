@@ -90,10 +90,7 @@ class Transformer_Decoder(nn.Module):
         )  # (max_len-1, max_len-1)
 
         # no need of padding for inference
-        if is_inference:
-            trg_padding_mask = None
-        else:
-            trg_padding_mask = self.create_pad_mask(trg, pad_idx).permute(
+        trg_padding_mask = self.create_pad_mask(trg, pad_idx).permute(
                 1, 0
             )  # (B, max_len-1)
 
