@@ -112,12 +112,11 @@ class ClipModel(nn.Module):
                                               xfmer_enc_output,
                                               self.vocab.stoi["<sos>"],
                                               self.vocab.stoi["<pad>"])   # (B, max_len-1, output_dim)
-            
+            print(preds)
             # calculate loss for training only
             if not is_test:
                 output_dim = xfmer_dec_outputs.shape[-1]
                 xfmer_dec_outputs = xfmer_dec_outputs.contiguous().view(-1, output_dim)
-                print(xfmer_dec_outputs)
                 mml = mml[:, 1:].contiguous().view(-1)
                 loss = self.criterion(xfmer_dec_outputs, mml)
                 return xfmer_dec_outputs, preds, loss
