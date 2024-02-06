@@ -112,7 +112,6 @@ class ClipModel(nn.Module):
                                               xfmer_enc_output,
                                               self.vocab.stoi["<sos>"],
                                               self.vocab.stoi["<pad>"])   # (B, max_len-1, output_dim)
-            print(preds)
             # calculate loss for training only
             if not is_test:
                 output_dim = xfmer_dec_outputs.shape[-1]
