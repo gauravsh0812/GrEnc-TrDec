@@ -67,7 +67,6 @@ class Transformer_Decoder(nn.Module):
         sos_idx,
         pad_idx,
         is_test=False,
-        is_inference=False,
     ):
         # xfmer_enc_output: (max_len, B, tr_enc_hid_dim)
         # trg: (B, max_len)
