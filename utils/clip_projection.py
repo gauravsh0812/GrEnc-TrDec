@@ -14,7 +14,7 @@ class ProjectionHead(nn.Module):
     ):
         super().__init__()
         # self.img_projection = nn.Linear(vit_emb_dim, projection_dim)
-        self.img_projection = nn.Linear(9600, projection_dim)
+        self.img_projection = nn.Linear(9600, projection_dim) #9600
         # self.text_projection = nn.Linear(xfmer_hid_dim, projection_dim)
         self.text_projection = nn.Linear(179200, projection_dim)
         self.gelu = nn.GELU()
@@ -24,6 +24,7 @@ class ProjectionHead(nn.Module):
     
     def forward(self, x, img=True):
         if img:
+            print(x.shape)
             projected = self.img_projection(x)
         else:
             projected = self.text_projection(x)
