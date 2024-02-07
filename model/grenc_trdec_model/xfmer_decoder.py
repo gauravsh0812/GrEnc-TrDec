@@ -121,7 +121,6 @@ class Transformer_Decoder(nn.Module):
             for i in range(xfmer_dec_outputs.shape[0]):
                 top1 = xfmer_dec_outputs[i, :, :].argmax(1)  # (B)
                 _preds[i + 1, :] = top1
-                print(_preds)
 
         # xfmer_dec_outputs: (max_len-1, B, output_dim); _preds: (max_len, B)
         # permute them to make "Batch first"
