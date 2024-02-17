@@ -13,7 +13,7 @@ training:
   ddp: True
   gpus: 0,1
   world_size: 2
-  epochs: 10
+  epochs: 20
   batch_size: 20
   clip_learning_rate: 0.0001
   clip_betas: [0.9, 0.9]
