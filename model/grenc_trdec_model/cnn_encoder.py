@@ -2,8 +2,7 @@
 
 import torch
 import torch.nn as nn
-from position_encoding import Positional_features
-
+from model.grenc_trdec_model.position_encoding import PositionalEncoding 
 
 class CNN_Encoder(nn.Module):
     def __init__(self, input_channels, hid_dim, dropout, device):
