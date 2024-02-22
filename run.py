@@ -58,7 +58,7 @@ def define_model(vocab, device):
     
     Cnn_ENC = CNN_Encoder(
         input_channels=cnn_args.input_channels,
-        hid_dim=cnn_args.model.hid_dim,
+        hid_dim=cnn_args.hid_dim,
         dropout=dropout,
         device=device,
     )
