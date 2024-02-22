@@ -11,7 +11,6 @@ class Transformer_Encoder(nn.Module):
         emb_dim,
         hid_dim,
         nheads,
-        n_patches,
         dropout,
         device,
         max_len,

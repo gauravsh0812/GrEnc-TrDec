@@ -36,21 +36,13 @@ preprocessing:
   pin_memory: False
 
 model:
-  isVitPixel: False
   dropout: 0.2
   projection_dim: 256
   temperature: 1.0
-  decoder_model_path: "trained_models/best_models/vit_vit_20_4_E50.pt"
 
-  vit:
+  cnn:
     input_channels: 3
-    patch_size: 4
-    pixel_patch_size: 4
-    nheads: 8
-    emb_dim: 256
-    depth: 4
-    mlp_ratio: 4
-    qkv_bias: True
+    hid_dim: 256
 
   xfmer_enc:
     emb_dim: 256

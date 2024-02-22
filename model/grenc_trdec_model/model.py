@@ -7,19 +7,17 @@ class ClipModel(nn.Module):
     def __init__(self,  
                  vocab, 
                  device,
-                 n_patches, 
                  decoder_emb_dim,   # trying
-                 vit_emb_dim,
+                 cnn_hid_dim,
                  xfmer_emb_dim,
                  xfmer_hid_dim,
                  projection_dim,
                  max_len,
                  dropout,
                  temperature,
-                 Vit_ENC=None,
+                 Cnn_ENC=None,
                  Xfmer_ENC=None,
                  xfmer_DEC=None,
-                 isVitPixel=True,                 
                  ):
         """
         :param encoder: encoders CNN and XFMER
@@ -28,7 +26,7 @@ class ClipModel(nn.Module):
         """
         super(ClipModel, self).__init__()
 
-        self.vit_enc = Vit_ENC
+        self.cnn_enc = Cnn_ENC
         self.Xfmer_ENC = Xfmer_ENC
         self.Xfmer_DEC = xfmer_DEC
         self.vocab = vocab
@@ -41,13 +39,13 @@ class ClipModel(nn.Module):
                 )
 
         # for pixel information
-        self.isVitPixel = isVitPixel
-        self.lin = nn.Linear(vit_emb_dim, max_len)
-        self.lin2 = nn.Linear(n_patches, xfmer_emb_dim)
+        L = 356
+        self.lin = nn.Linear(cnn_hid_dim, max_len)
+        self.lin2 = nn.Linear(L, xfmer_emb_dim)
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
         self.projection = ProjectionHead(
-            vit_emb_dim,
+            cnn_hid_dim,
             xfmer_emb_dim,
             xfmer_hid_dim,
             projection_dim,
@@ -63,12 +61,7 @@ class ClipModel(nn.Module):
 
     ):  
         # ENCODING IMAGES
-        vit_enc_output = self.vit_enc(imgs)  # (B, n_patches, embed_dim)
-
-        if self.isVitPixel:
-            vit_enc_output = self.vit_enc(imgs, 
-                                      vit_enc_output, 
-                                      isVitPixel=True)  # (B, n_patches, embed_dim)
+        cnn_enc_output = self.cnn_enc(imgs)  # (B, L, enc_hid_dim)
 
         if not train_dec:
             # CLIP 
@@ -78,12 +71,12 @@ class ClipModel(nn.Module):
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
 
             # reshaping the tensors fom 3D to 2D - (B,-1). 
-            batch_size = vit_enc_output.shape[0]
-            vit_enc_output = vit_enc_output.reshape(batch_size, -1)
+            batch_size = cnn_enc_output.shape[0]
+            cnn_enc_output = cnn_enc_output.reshape(batch_size, -1)
             xfmer_enc_output = xfmer_enc_output.reshape(batch_size, -1)
 
             # projection head - both will be (B, proj_dim)
-            projected_img = self.projection(vit_enc_output, img=True)
+            projected_img = self.projection(cnn_enc_output, img=True)
             projected_mml = self.projection(xfmer_enc_output, img=False)
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
@@ -103,10 +96,10 @@ class ClipModel(nn.Module):
         
         else:
             # Train Dec
-            # vit_enc_output: (B, n_pathes/pixels, emb_dim)
-            vit_enc_output = self.lin(vit_enc_output).permute(0,2,1) # (B, max_len, n)
-            vit_enc_output = self.lin2(vit_enc_output)   # (B, max_len, xfmer_enc_emb_dim)
-            xfmer_enc_output = self.Xfmer_ENC(vit_enc_output)  # (max_len, B, hid_dim)
+            # cnn_enc_output: (B, n_pathes/pixels, emb_dim)
+            cnn_enc_output = self.lin(cnn_enc_output).permute(0,2,1) # (B, max_len, L)
+            cnn_enc_output = self.lin2(cnn_enc_output)   # (B, max_len, xfmer_enc_emb_dim)
+            xfmer_enc_output = self.Xfmer_ENC(cnn_enc_output)  # (max_len, B, hid_dim)
 
             xfmer_dec_outputs, preds = self.Xfmer_DEC(mml,
                                               xfmer_enc_output,

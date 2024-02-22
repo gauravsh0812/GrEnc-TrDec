@@ -19,7 +19,7 @@ from src.testing import evaluate
 from model.preprocessing.preprocess_data import preprocess_dataset
 from model.grenc_trdec_model.model import ClipModel
 # from model.grenc_trdec_model.decoding_model import DecodingModel
-from model.grenc_trdec_model.vit_encoder import VisionTransformer
+from model.grenc_trdec_model.cnn_encoder import CNN_Encoder
 from model.grenc_trdec_model.xfmer_encoder import Transformer_Encoder
 from model.grenc_trdec_model.xfmer_decoder import Transformer_Decoder
 
@@ -29,7 +29,7 @@ with open('configs/config.yaml') as f:
 buiding_graph_args = cfg.building_graph
 training_args = cfg.training
 preprocessing_args = cfg.preprocessing
-vit_args = cfg.model.vit
+cnn_args = cfg.model.cnn
 xfmer_args = cfg.model.xfmer_enc
 xfmer_dec_args = cfg.model.xfmer_dec
 
@@ -54,45 +54,19 @@ def define_model(vocab, device):
 
     print("defining model...")
 
-    isVitPixel = cfg.model.isVitPixel
     dropout = cfg.model.dropout
     
-    # assert isGraphPixel or isVitPixel, "Need to select either one of the encoder or both of them."
-    if (not isVitPixel):
-        print(" NO PIXEL ENCODER IS PRESENT!!")
-    
-    image_w = buiding_graph_args.preprocessed_image_width
-    image_h = buiding_graph_args.preprocessed_image_height
-    
-    assert image_w % cfg.model.vit.patch_size == 0
-    assert image_h % cfg.model.vit.patch_size == 0
-    
-    Vit_ENC = VisionTransformer(
-        img_size=[image_w,image_h],
-        patch_size=vit_args.patch_size,
-        pixel_patch_size=vit_args.pixel_patch_size,
-        in_chns=vit_args.input_channels,
-        embed_dim=vit_args.emb_dim,
-        depth=vit_args.depth,
-        n_heads=vit_args.nheads,
-        mlp_ratio=vit_args.mlp_ratio,
-        qkv_bias=vit_args.qkv_bias,
-        p=dropout,
-        attn_p=dropout,
-        isVitPixel=isVitPixel,
-    )
-
-    n_patches = (
-        image_w // cfg.model.vit.patch_size
-        ) * (
-        image_h // cfg.model.vit.patch_size
+    Cnn_ENC = CNN_Encoder(
+        input_channels=cnn_args.input_channels,
+        hid_dim=cnn_args.model.hid_dim,
+        dropout=dropout,
+        device=device,
     )
 
     Tr_ENC = Transformer_Encoder(
         emb_dim=xfmer_args.emb_dim,
         hid_dim=xfmer_args.hid_dim,
         nheads=xfmer_args.nheads,
-        n_patches = n_patches,
         dropout=dropout,
         device=device,
         max_len=xfmer_args.max_len,
@@ -106,7 +80,6 @@ def define_model(vocab, device):
         dec_hid_dim=xfmer_dec_args.hid_dim,
         nheads=xfmer_dec_args.nheads,
         output_dim=len(vocab),
-        # n_patches=n_patches,
         dropout=dropout,
         max_len=xfmer_args.max_len,
         n_xfmer_decoder_layers=xfmer_dec_args.n_xfmer_decoder_layers,
@@ -114,31 +87,20 @@ def define_model(vocab, device):
         device=device,
     )
 
-    # decoding_model = DecodingModel(
-    #     vocab, 
-    #     device,
-    #     Vit_ENC,
-    #     Tr_DEC, 
-    #     isVitPixel=isVitPixel,
-    # )
-
-
     model = ClipModel(
         vocab, 
         device,
-        n_patches,
         xfmer_dec_args.emb_dim,  # trying
-        vit_args.emb_dim,  
+        cnn_args.hid_dim,  
         xfmer_args.emb_dim, 
         xfmer_args.hid_dim,
         cfg.model.projection_dim,
         xfmer_args.max_len,
         dropout,
         cfg.model.temperature,
-        Vit_ENC,
+        Cnn_ENC,
         Tr_ENC, 
         Tr_DEC,
-        isVitPixel=isVitPixel,
     )
 
     return model#, decoding_model
