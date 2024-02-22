@@ -45,9 +45,6 @@ class ClipModel(nn.Module):
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
 
         self.projection = ProjectionHead(
-            cnn_hid_dim,
-            xfmer_emb_dim,
-            xfmer_hid_dim,
             projection_dim,
             dropout,
         )
