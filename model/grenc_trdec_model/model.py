@@ -88,8 +88,8 @@ class ClipModel(nn.Module):
             # training or validation
             texts_loss = self.crossEntropyLoss(logits, targets)
             images_loss = self.crossEntropyLoss(logits.T, targets.T)
-            print("text loss, image loss: ", texts_loss, images_loss)
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
+            print("loss: ", loss)
             return loss.mean()
         
         else:
