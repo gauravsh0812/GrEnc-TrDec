@@ -19,7 +19,7 @@ class ProjectionHead(nn.Module):
     
     def forward(self, x, img=True):
         if img:
-            print(x.shape)
+            # print(x.shape)
             projected = self.img_projection(x)
         else:
             projected = self.text_projection(x)

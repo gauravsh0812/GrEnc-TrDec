@@ -39,7 +39,7 @@ class ClipModel(nn.Module):
                 )
 
         # for pixel information
-        L = 356
+        L = 930
         self.lin = nn.Linear(cnn_hid_dim, max_len)
         self.lin2 = nn.Linear(L, xfmer_emb_dim)
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
