@@ -84,8 +84,8 @@ class ClipModel(nn.Module):
             images_similarity = projected_img @ projected_img_T
             texts_similarity = projected_mml @ projected_mml_T
             print("logits, img_sim, mml_sim shape: ", logits.shape, 
-                                                        images_similarity,
-                                                        texts_similarity)
+                                                        images_similarity.shape,
+                                                        texts_similarity.shape)
             # ============================== #
             
 
