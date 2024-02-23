@@ -83,9 +83,9 @@ class ClipModel(nn.Module):
             logits = (projected_mml @ projected_img_T) / self.temperature
             images_similarity = projected_img @ projected_img_T
             texts_similarity = projected_mml @ projected_mml_T
-            print("logits, img_sim, mml_sim shape: ", logits.shape, 
-                                                        images_similarity.shape,
-                                                        texts_similarity.shape)
+            # print("logits, img_sim, mml_sim shape: ", logits.shape, 
+            #                                             images_similarity.shape,
+            #                                             texts_similarity.shape)
             # ============================== #
             
 
@@ -107,7 +107,7 @@ class ClipModel(nn.Module):
                 (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
             
-            print("targets shape: ", targets.shape)
+            # print("targets shape: ", targets.shape)
 
             # training or validation
             texts_loss = self.crossEntropyLoss(logits, targets)
