@@ -42,7 +42,7 @@ model:
 
   cnn:
     input_channels: 3
-    hid_dim: 256
+    hid_dim: 512
 
   xfmer_enc:
     emb_dim: 256

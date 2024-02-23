@@ -66,7 +66,7 @@ class ClipModel(nn.Module):
             # ENCODING TEXTS
             embedded_mml = self.embed_text(mml)   # (B, max_len, emb_dim)
             xfmer_enc_output = self.Xfmer_ENC(embedded_mml)  # (max_len, B, emb_dim)
-            xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
+            xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, hid_dim)
             
             # =========== TRYING =========== #
             # keeping cnn_hid_dim == xfmer_enc emb_dim
