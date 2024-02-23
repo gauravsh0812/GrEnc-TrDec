@@ -81,7 +81,11 @@ class ClipModel(nn.Module):
                   projected_mml_T.shape)
             
             logits = (projected_mml @ projected_img_T) / self.temperature
-            print("logits shape: ", logits.shape)
+            images_similarity = projected_img @ projected_img_T
+            texts_similarity = projected_mml @ projected_mml_T
+            print("logits, img_sim, mml_sim shape: ", logits.shape, 
+                                                        images_similarity,
+                                                        texts_similarity)
             # ============================== #
             
 
