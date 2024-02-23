@@ -101,8 +101,8 @@ class ClipModel(nn.Module):
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
             # logits = (projected_mml @ projected_img.T) / self.temperature
-            images_similarity = projected_img @ projected_img.T
-            texts_similarity = projected_mml @ projected_mml.T
+            # images_similarity = projected_img @ projected_img.T
+            # texts_similarity = projected_mml @ projected_mml.T
             targets = F.softmax(
                 (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
