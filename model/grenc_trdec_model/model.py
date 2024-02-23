@@ -74,11 +74,11 @@ class ClipModel(nn.Module):
             projected_mml = xfmer_enc_output  # (B, max_len, hid_dim)
             projected_img_T = projected_img.permute(0,2,1) # (B, hid_dim, max_len)
             projected_mml_T = projected_mml.permute(0,2,1) # (B, hid_dim, max_len)
-            print("p_img, p_mml, p_imgT, p_mmlT: ", 
-                  projected_img.shape,
-                  projected_mml.shape,
-                  projected_img_T.shape,
-                  projected_mml_T.shape)
+            # print("p_img, p_mml, p_imgT, p_mmlT: ", 
+            #       projected_img.shape,
+            #       projected_mml.shape,
+            #       projected_img_T.shape,
+            #       projected_mml_T.shape)
             
             logits = (projected_mml @ projected_img_T) / self.temperature
             images_similarity = projected_img @ projected_img_T
