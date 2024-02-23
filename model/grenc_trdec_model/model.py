@@ -106,10 +106,15 @@ class ClipModel(nn.Module):
             targets = F.softmax(
                 (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
             )
+            
+            print("targets shape: ", targets.shape)
 
             # training or validation
             texts_loss = self.crossEntropyLoss(logits, targets)
             images_loss = self.crossEntropyLoss(logits.T, targets.T)
+
+            print()
+
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
             return loss.mean()
         
