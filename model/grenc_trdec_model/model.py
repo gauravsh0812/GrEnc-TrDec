@@ -40,6 +40,7 @@ class ClipModel(nn.Module):
 
         # for pixel information
         L = 930
+        self.try_lin = nn.Linear(L, max_len)
         self.lin = nn.Linear(cnn_hid_dim, max_len)
         self.lin2 = nn.Linear(L, xfmer_emb_dim)
         self.embed_text = nn.Embedding(self.output_dim, xfmer_emb_dim)
@@ -66,15 +67,22 @@ class ClipModel(nn.Module):
             embedded_mml = self.embed_text(mml)   # (B, max_len, emb_dim)
             xfmer_enc_output = self.Xfmer_ENC(embedded_mml)  # (max_len, B, emb_dim)
             xfmer_enc_output = xfmer_enc_output.permute(1,0,2)  # (B, max_len, emb_dim)
+            
+            # =========== TRYING =========== #
+            # keeping cnn_hid_dim == xfmer_enc emb_dim
+            projected_img = self.try_lin(cnn_enc_output.permute(0,2,1))  # (B, max_len, emb_dim)
+            projected_mml = xfmer_enc_output
+            # ============================== #
+            
 
             # reshaping the tensors fom 3D to 2D - (B,-1). 
-            batch_size = cnn_enc_output.shape[0]
-            cnn_enc_output = cnn_enc_output.reshape(batch_size, -1)
-            xfmer_enc_output = xfmer_enc_output.reshape(batch_size, -1)
+            # batch_size = cnn_enc_output.shape[0]
+            # cnn_enc_output = cnn_enc_output.reshape(batch_size, -1)
+            # xfmer_enc_output = xfmer_enc_output.reshape(batch_size, -1)
 
-            # projection head - both will be (B, proj_dim)
-            projected_img = self.projection(cnn_enc_output, img=True)
-            projected_mml = self.projection(xfmer_enc_output, img=False)
+            # # projection head - both will be (B, proj_dim)
+            # projected_img = self.projection(cnn_enc_output, img=True)
+            # projected_mml = self.projection(xfmer_enc_output, img=False)
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
@@ -89,7 +97,6 @@ class ClipModel(nn.Module):
             texts_loss = self.crossEntropyLoss(logits, targets)
             images_loss = self.crossEntropyLoss(logits.T, targets.T)
             loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
-            print("mean loss: ", loss.mean())
             return loss.mean()
         
         else:
