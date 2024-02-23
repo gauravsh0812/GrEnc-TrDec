@@ -80,6 +80,8 @@ class ClipModel(nn.Module):
                   projected_img_T.shape,
                   projected_mml_T.shape)
             
+            logits = (projected_mml @ projected_img_T) / self.temperature
+            print("logits shape: ", logits.shape)
             # ============================== #
             
 
@@ -94,7 +96,7 @@ class ClipModel(nn.Module):
             
             # https://github.com/moein-shariatnia/OpenAI-CLIP/blob/master/config.py
             # Calculating the Loss
-            logits = (projected_mml @ projected_img.T) / self.temperature
+            # logits = (projected_mml @ projected_img.T) / self.temperature
             images_similarity = projected_img @ projected_img.T
             texts_similarity = projected_mml @ projected_mml.T
             targets = F.softmax(
