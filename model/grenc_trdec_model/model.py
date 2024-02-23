@@ -72,6 +72,11 @@ class ClipModel(nn.Module):
             # keeping cnn_hid_dim == xfmer_enc emb_dim
             projected_img = self.try_lin(cnn_enc_output.permute(0,2,1))  # (B, max_len, emb_dim)
             projected_mml = xfmer_enc_output
+            print("p_img, p_mml, p_imgT, p_mmlT: ", 
+                  projected_img.shape,
+                  projected_mml.shape,
+                  projected_img.T.shape,
+                  projected_mml.T.shape)
             # ============================== #
             
 
