@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-"Main script to train the model."
 
 import os
 import random
