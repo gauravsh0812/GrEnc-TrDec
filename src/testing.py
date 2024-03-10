@@ -32,7 +32,7 @@ def evaluate(
             _data_list = list()
             for im in img:
                 # for vit patch encoder 
-                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.pt"))
+                _imgs.append(torch.load(f"{img_tnsr_path}/{int(im.item())}.txt"))
 
                 # for pixel encoders
                 # for vit pixel encoder, _imgs will be same

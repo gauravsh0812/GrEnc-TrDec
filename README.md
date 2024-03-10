@@ -15,5 +15,5 @@ python utils/image2graph.py
 
 ### Training
 ```
-CUDA_VISIBLE_DEVICES=5 python run.py
+CUDA_VISIBLE_DEVICES=4,5 python run.py
 ```
