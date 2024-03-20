@@ -25,7 +25,7 @@ training:
 
 preprocessing:
   path_to_data: "/home/gauravs/data/img2mml_data/skema_resnet/"
-  markup: "mml"
+  markup: "latex"
   vocab_freq: 5
   device: "cuda"
   shuffle: True
