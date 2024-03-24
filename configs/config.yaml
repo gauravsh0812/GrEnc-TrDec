@@ -62,5 +62,5 @@ temp:
   bin_comparison: True
   length_based_binning: True
   content_based_binning: False
-  start_bin: 0
-  end_bin: 50
+  start_bin: 50
+  end_bin: 100
