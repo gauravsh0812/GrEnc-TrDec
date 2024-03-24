@@ -59,7 +59,7 @@ model:
     dim_feedfwd: 1024
 
 temp:
-  bin_comparison: True
+  bin_comparison: False
   length_based_binning: True
   content_based_binning: False
   start_bin: 0
