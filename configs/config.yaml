@@ -10,8 +10,8 @@ training:
   wandb: False
   seed: 42
   clip: 1
-  ddp: True
-  gpus: 0,1
+  ddp: False
+  gpus: 0
   world_size: 2
   epochs: 50
   batch_size: 20
@@ -21,7 +21,7 @@ training:
   early_stopping: 5
   scheduler_step_size: 50
   scheduler_gamma: 0.5
-  load_trained_model_for_testing: False
+  load_trained_model_for_testing: True
 
 preprocessing:
   path_to_data: "/home/gauravs/data/img2mml_data/skema_resnet/"
@@ -57,3 +57,10 @@ model:
     max_len: 350
     n_xfmer_decoder_layers: 4
     dim_feedfwd: 1024
+
+temp:
+  bin_comparison: True
+  length_based_binning: True
+  content_based_binning: False
+  start_bin: 0
+  end_bin: 50

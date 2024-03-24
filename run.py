@@ -395,6 +395,29 @@ def train_model(rank=None,):
         )
     )
 
+    # =========================
+    # TEMP
+
+    """
+    bin comparison
+    """
+    if cfg.temp.bin_comparison:
+        print("comparing bin...")
+        from temp import bin_test_dataloader
+
+        test_dataloader = bin_test_dataloader(
+            vocab,
+            device,
+            start=cfg.temp.start_bin,
+            end=cfg.temp.end_bin,
+            length_based_binning=cfg.temp.length_based_binning,
+            content_based_binning=cfg.temp.content_based_binning,
+        )
+
+
+    # =========================
+    
+
     test_loss = evaluate(
         model,
         img_tnsr_path,
